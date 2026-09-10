@@ -153,6 +153,8 @@ public class ExtractLog extends Order {
         DateTimeFormatter paramFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         LocalDateTime startTime = LocalDateTime.parse(targetDateStr + startTimeStr, paramFormatter);
         LocalDateTime endTime = LocalDateTime.parse(targetDateStr + endTimeStr, paramFormatter);
+        
+        getConfig().getLogger().log(Level.INFO, "ExtractLog target file: " + filePath + ", range: " + startTime + " to " + endTime);
 
         List<RegexRule> rules = new ArrayList<>();
         if (dateRegexObj instanceof JSONArray) {
@@ -211,7 +213,7 @@ public class ExtractLog extends Order {
                     if (previousTime != null && ts.toLocalTime().isBefore(previousTime) && previousTime.getHour() >= 23 && ts.getHour() == 0) {
                         currentDate = currentDate.plusDays(1);
                         ts = LocalDateTime.of(currentDate, ts.toLocalTime());
-                    } else if (ts.toLocalDate().isAfter(currentDate)) {
+                    } else if (!ts.toLocalDate().equals(currentDate)) {
                         currentDate = ts.toLocalDate();
                     }
                     previousTime = ts.toLocalTime();
@@ -239,6 +241,7 @@ public class ExtractLog extends Order {
         for (Accumulator acc : accByFirstLine.values()) {
             results.add(new BlockResult(acc.text, acc.count));
         }
+        getConfig().getLogger().log(Level.INFO, "ExtractLog found " + results.size() + " unique blocks matching criteria.");
         return results;
     }
 
