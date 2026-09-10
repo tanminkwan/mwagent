@@ -3,7 +3,7 @@ REM =========================================
 REM  오프라인 배포 패키지 준비 스크립트
 REM =========================================
 
-set DEPLOY_DIR=mwmanger-offline-deployment
+set DEPLOY_DIR=mwagent-offline-deployment
 set TIMESTAMP=%date:~0,4%%date:~5,2%%date:~8,2%
 
 echo =========================================

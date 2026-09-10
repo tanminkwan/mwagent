@@ -283,8 +283,8 @@ def generate_access_token(agent_id, client_ip, scope, method):
 |------|------|
 | `test-server/generate-certs.sh` | 인증서 생성 스크립트 |
 | `test-server/mock_server.py` | 인증서버 (DN 파싱, JWT 생성) |
-| `src/main/java/mwmanger/common/Common.java` | Java Agent mTLS 클라이언트 |
-| `src/main/java/mwmanger/common/Config.java` | mTLS 설정 관리 |
+| `src/main/java/mwagent/common/Common.java` | Java Agent mTLS 클라이언트 |
+| `src/main/java/mwagent/common/Config.java` | mTLS 설정 관리 |
 
 ---
 

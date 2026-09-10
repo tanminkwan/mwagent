@@ -5,7 +5,7 @@
 
 set -e
 
-DEPLOY_DIR="mwmanger-offline-deployment"
+DEPLOY_DIR="mwagent-offline-deployment"
 TIMESTAMP=$(date +%Y%m%d)
 
 echo "========================================="

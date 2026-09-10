@@ -58,8 +58,8 @@ javac -cp ".:vo/*" test/demos/QuickTest.java
 java -cp ".:vo/*:test/demos" QuickTest
 
 # 또는 Fat JAR 사용
-javac -cp "target/mwmanger-0000.0008.0005-jar-with-dependencies.jar" test/demos/QuickTest.java
-java -cp "target/mwmanger-0000.0008.0005-jar-with-dependencies.jar:test/demos" QuickTest
+javac -cp "target/mwagent-0000.0008.0005-jar-with-dependencies.jar" test/demos/QuickTest.java
+java -cp "target/mwagent-0000.0008.0005-jar-with-dependencies.jar:test/demos" QuickTest
 ```
 
 **테스트 항목**:
@@ -107,8 +107,8 @@ javac -cp ".:vo/*:common/*" test/demos/SimpleTest.java
 java -ea -cp ".:vo/*:common/*:test/demos" SimpleTest
 
 # 또는 Fat JAR 사용
-javac -cp "target/mwmanger-0000.0008.0005-jar-with-dependencies.jar" test/demos/SimpleTest.java
-java -ea -cp "target/mwmanger-0000.0008.0005-jar-with-dependencies.jar:test/demos" SimpleTest
+javac -cp "target/mwagent-0000.0008.0005-jar-with-dependencies.jar" test/demos/SimpleTest.java
+java -ea -cp "target/mwagent-0000.0008.0005-jar-with-dependencies.jar:test/demos" SimpleTest
 ```
 
 **테스트 항목**:
@@ -208,12 +208,12 @@ mvn clean package
 gradle fatJar
 
 # 2. 테스트 컴파일
-javac -cp "target/mwmanger-0000.0008.0005-jar-with-dependencies.jar" test/demos/*.java
+javac -cp "target/mwagent-0000.0008.0005-jar-with-dependencies.jar" test/demos/*.java
 
 # 3. 테스트 실행
 cd test/demos
-java -cp "../../target/mwmanger-0000.0008.0005-jar-with-dependencies.jar:." QuickTest
-java -ea -cp "../../target/mwmanger-0000.0008.0005-jar-with-dependencies.jar:." SimpleTest
+java -cp "../../target/mwagent-0000.0008.0005-jar-with-dependencies.jar:." QuickTest
+java -ea -cp "../../target/mwagent-0000.0008.0005-jar-with-dependencies.jar:." SimpleTest
 java TestDataDemo
 java DirectTest
 ```
@@ -224,7 +224,7 @@ java DirectTest
 
 - [프로젝트 README](../../README.md)
 - [정식 테스트 가이드](../../TESTING.md)
-- [정식 테스트 README](../../src/test/java/mwmanger/README_TESTS.md)
+- [정식 테스트 README](../../src/test/java/mwagent/README_TESTS.md)
 
 ---
 

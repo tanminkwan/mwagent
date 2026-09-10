@@ -21,8 +21,8 @@
 
 | 항목 | 경로 |
 |------|------|
-| **메인 소스** | `src/main/java/mwmanger/` |
-| **테스트 소스** | `src/test/java/mwmanger/` |
+| **메인 소스** | `src/main/java/mwagent/` |
+| **테스트 소스** | `src/test/java/mwagent/` |
 | **설정 파일** | `agent.properties` |
 
 > AI는 작업 시작 시 소스 구조를 직접 분석한다.

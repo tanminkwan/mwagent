@@ -220,7 +220,7 @@ public class MyService {
 
 ### 좋은 커버리지 예시
 ```
-Package: mwmanger.vo
+Package: mwagent.vo
 ├── AgentStatus.java          95% (19/20 lines)
 ├── RegistrationRequest.java  100% (12/12 lines)
 └── RegistrationResponse.java 100% (15/15 lines)
@@ -228,7 +228,7 @@ Package: mwmanger.vo
 
 ### 개선 필요한 예시
 ```
-Package: mwmanger.order
+Package: mwagent.order
 ├── ExeShell.java            20% (15/75 lines) ⚠️
 ├── ExeScript.java           18% (12/68 lines) ⚠️
 └── DownloadFile.java        10% (8/80 lines)  🔴

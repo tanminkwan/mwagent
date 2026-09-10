@@ -71,7 +71,7 @@ start build/reports/jacoco/test/html/index.html
 **효과**: 커버리지 +5%
 
 ```java
-// src/test/java/mwmanger/vo/RawCommandsVOTest.java
+// src/test/java/mwagent/vo/RawCommandsVOTest.java
 @Test
 void setAndGetCommands_ShouldWork() {
     RawCommandsVO vo = new RawCommandsVO();
@@ -149,7 +149,7 @@ void executeShell_WithMaliciousInput_ShouldFail() {
 
 ### VO 클래스 테스트 템플릿
 ```java
-package mwmanger.vo;
+package mwagent.vo;
 
 import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.Test;
@@ -184,7 +184,7 @@ class MyVOTest {
 
 ### Service 클래스 테스트 템플릿
 ```java
-package mwmanger.service;
+package mwagent.service;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;

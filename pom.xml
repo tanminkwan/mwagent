@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.leebalso</groupId>
-    <artifactId>mwmanger</artifactId>
+    <artifactId>mwagent</artifactId>
     <version>0.9.27</version>
     <packaging>jar</packaging>
 
@@ -148,10 +148,10 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.2.0</version>
                 <configuration>
-                    <finalName>mwmanger</finalName>
+                    <finalName>mwagent</finalName>
                     <archive>
                         <manifest>
-                            <mainClass>mwmanger.MwAgent</mainClass>
+                            <mainClass>mwagent.MwAgent</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

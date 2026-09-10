@@ -4,8 +4,8 @@ REM Maven/Gradle 없이 javac만으로 빌드합니다.
 
 setlocal enabledelayedexpansion
 
-set PROJECT_NAME=mwmanger
-set MAIN_CLASS=mwmanger.MwAgent
+set PROJECT_NAME=mwagent
+set MAIN_CLASS=mwagent.MwAgent
 
 echo =========================================
 echo   MwManger Offline Build

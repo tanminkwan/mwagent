@@ -42,7 +42,7 @@ AI는 레거시 소스를 분석하여 다음을 스스로 파악한다:
 #### 소스 구조 (분석 대상)
 
 ```
-src/main/java/mwmanger/
+src/main/java/mwagent/
 ├── MwAgent.java              # 메인 진입점
 ├── PreWork.java              # 에이전트 등록 로직
 ├── FirstWork.java            # Kafka 초기화
@@ -136,9 +136,9 @@ Phase 시작 전, 레거시 소스를 main 브랜치에 커밋:
 git clone https://github.com/tanminkwan/mwmanger-auto.git
 cd mwmanger-auto
 
-# 2. 레거시 소스 복사 (mwmanger-asis/ → src/main/java/mwmanger/)
+# 2. 레거시 소스 복사 (mwmanger-asis/ → src/main/java/mwagent/)
 mkdir -p src/main/java
-cp -r ./mwmanger-asis src/main/java/mwmanger
+cp -r ./mwmanger-asis src/main/java/mwagent
 
 # 3. 요구사항 문서 복사
 cp /path/to/AI-AUTONOMOUS-REQUIREMENTS.md ./

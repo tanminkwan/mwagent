@@ -179,7 +179,7 @@ mvn clean install
 mvn clean package
 
 # 생성된 파일
-target/mwmanger-0000.0008.0005-jar-with-dependencies.jar
+target/mwagent-0000.0008.0005-jar-with-dependencies.jar
 ```
 
 ### Gradle 사용
@@ -192,7 +192,7 @@ gradle build
 gradle fatJar
 
 # 생성된 파일
-build/libs/mwmanger-all-0000.0008.0005.jar
+build/libs/mwagent-all-0000.0008.0005.jar
 ```
 
 ## 실행 방법
@@ -201,16 +201,16 @@ build/libs/mwmanger-all-0000.0008.0005.jar
 
 ```bash
 # Maven으로 빌드한 경우
-java -jar target/mwmanger-0000.0008.0005-jar-with-dependencies.jar
+java -jar target/mwagent-0000.0008.0005-jar-with-dependencies.jar
 
 # Gradle으로 빌드한 경우
-java -jar build/libs/mwmanger-all-0000.0008.0005.jar
+java -jar build/libs/mwagent-all-0000.0008.0005.jar
 ```
 
 ### 수동 classpath 설정
 
 ```bash
-java -cp ".:lib/*" mwmanger.MwAgent
+java -cp ".:lib/*" mwagent.MwAgent
 ```
 
 ## 라이브러리 다운로드 (수동)
@@ -234,7 +234,7 @@ java -cp ".:lib/*" mwmanger.MwAgent
 
 3. **lib 디렉토리에 배치**:
    ```
-   mwmanger/
+   mwagent/
    ├── lib/
    │   ├── httpclient-4.5.14.jar
    │   ├── httpcore-4.4.16.jar

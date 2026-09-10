@@ -368,7 +368,7 @@ Total Tests: 215
 #### Before (리팩토링 전)
 
 ```
-mwmanger/
+mwagent/
 ├── MwAgent.java          # 모든 로직 집중
 ├── PreWork.java          # 150줄, 복잡한 등록 로직
 ├── common/
@@ -381,7 +381,7 @@ mwmanger/
 #### After (리팩토링 후)
 
 ```
-mwmanger/
+mwagent/
 ├── MwAgent.java                    # 진입점만 담당
 ├── lifecycle/                      # ★ Phase 1
 │   ├── AgentLifecycle.java
@@ -729,7 +729,7 @@ HTTPS_PROXY=http://70.10.15.10:8080 \
 # 오프라인 빌드 (Windows)
 /c/Windows/System32/cmd.exe //c "cd /d C:\GitHub\mwmanger && build-offline.bat"
 
-# 결과물: build/mwmanger.jar
+# 결과물: build/mwagent.jar
 ```
 
 ### C. 테스트 서버 실행

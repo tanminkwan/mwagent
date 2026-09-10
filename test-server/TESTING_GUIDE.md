@@ -85,7 +85,7 @@ server_url=https://localhost:8443
 cp test-server/test-agent.properties agent.properties
 
 # Agent 실행
-java -jar build/libs/mwmanger-*.jar
+java -jar build/libs/mwagent-*.jar
 ```
 
 3. 로그 확인:

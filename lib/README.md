@@ -79,10 +79,10 @@ build-offline.bat
 
 ```bash
 # Windows
-java -cp "lib/*;build/classes" mwmanger.MwAgent
+java -cp "lib/*;build/classes" mwagent.MwAgent
 
 # Linux/Mac
-java -cp "lib/*:build/classes" mwmanger.MwAgent
+java -cp "lib/*:build/classes" mwagent.MwAgent
 ```
 
 ## 배포 패키지 구성
@@ -90,7 +90,7 @@ java -cp "lib/*:build/classes" mwmanger.MwAgent
 오프라인 환경으로 배포 시 다음 파일들을 함께 복사:
 
 ```
-mwmanger/
+mwagent/
 ├── lib/                    ← 모든 JAR 파일 (12개)
 │   ├── httpclient-4.5.13.jar
 │   ├── kafka-clients-3.1.0.jar

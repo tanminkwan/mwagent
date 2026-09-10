@@ -267,7 +267,7 @@ if(conn != null){
 #### 새로운 구조
 
 ```
-src/main/java/mwmanger/
+src/main/java/mwagent/
 ├── application/
 │   ├── AgentApplication.java      # Main entry point
 │   └── ApplicationContext.java    # DI Container (수동)
@@ -498,7 +498,7 @@ public class AuthenticationService {
 
 ```
 /opt/mwagent/
-├── mwmanger-0000.0009.0001.jar
+├── mwagent-0000.0009.0001.jar
 ├── agent.properties              # mTLS 설정 포함
 ├── lib/
 │   └── *.jar

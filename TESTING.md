@@ -42,10 +42,10 @@ mvn clean package -DskipTests
 cp test-server/test-agent.properties agent.properties
 
 # 3. JAR 실행 (lib 폴더 필요)
-java -cp "build/mwmanger.jar;lib/*" mwmanger.MwAgent
+java -cp "build/mwagent.jar;lib/*" mwagent.MwAgent
 
 # 4. 버전 확인만 하려면
-java -cp "build/mwmanger.jar;lib/*" mwmanger.common.Version
+java -cp "build/mwagent.jar;lib/*" mwagent.common.Version
 ```
 
 ---
@@ -84,7 +84,7 @@ mvn test -Dtest=CommandVOTest
 mvn test -Dtest=CommandVOTest#testCommandVOGettersAndSetters
 
 # 특정 패키지의 테스트 실행
-mvn test -Dtest=mwmanger.vo.*
+mvn test -Dtest=mwagent.vo.*
 
 # 테스트 건너뛰고 빌드
 mvn package -DskipTests
@@ -106,7 +106,7 @@ gradle test --tests CommandVOTest
 gradle test --tests CommandVOTest.testCommandVOGettersAndSetters
 
 # 특정 패키지의 테스트 실행
-gradle test --tests "mwmanger.vo.*"
+gradle test --tests "mwagent.vo.*"
 
 # 테스트 건너뛰고 빌드
 gradle build -x test
@@ -137,9 +137,9 @@ Maven은 테스트 결과를 다음 위치에 저장합니다:
 
 ```
 target/surefire-reports/
-├── TEST-mwmanger.vo.CommandVOTest.xml
-├── TEST-mwmanger.vo.ResultVOTest.xml
-├── mwmanger.vo.CommandVOTest.txt
+├── TEST-mwagent.vo.CommandVOTest.xml
+├── TEST-mwagent.vo.ResultVOTest.xml
+├── mwagent.vo.CommandVOTest.txt
 └── ...
 ```
 
@@ -167,7 +167,7 @@ open build/reports/tests/test/index.html
 
 ```
 src/test/
-├── java/mwmanger/
+├── java/mwagent/
 │   ├── vo/                         # Value Object 테스트
 │   │   ├── CommandVOTest.java     # CommandVO 테스트
 │   │   └── ResultVOTest.java       # ResultVO 테스트

@@ -105,7 +105,7 @@ download-dependencies.bat
 build-offline.bat
 
 # 생성된 파일
-build/jar/mwmanger-0000.0009.0006.jar
+build/jar/mwagent-0000.0009.0006.jar
 ```
 
 자세한 내용은 [lib/README.md](lib/README.md) 참조
@@ -120,7 +120,7 @@ mvn clean package
 mvn test
 
 # 생성된 파일
-target/mwmanger-0000.0009.0006-jar-with-dependencies.jar
+target/mwagent-0000.0009.0006-jar-with-dependencies.jar
 ```
 
 ### Gradle 사용 (온라인 환경)
@@ -133,7 +133,7 @@ gradle fatJar
 gradle test
 
 # 생성된 파일
-build/libs/mwmanger-all-0000.0009.0006.jar
+build/libs/mwagent-all-0000.0009.0006.jar
 ```
 
 ## 버전 관리
@@ -145,7 +145,7 @@ build/libs/mwmanger-all-0000.0009.0006.jar
 **Version.java**가 유일한 버전 소스(Single Source of Truth)입니다:
 
 ```
-src/main/java/mwmanger/common/Version.java
+src/main/java/mwagent/common/Version.java
     │
     └─→ Config.java (Version.VERSION 참조)
             ↓
@@ -157,7 +157,7 @@ src/main/java/mwmanger/common/Version.java
 버전을 변경하려면 **Version.java 파일 한 곳만 수정**하면 됩니다:
 
 ```java
-// src/main/java/mwmanger/common/Version.java
+// src/main/java/mwagent/common/Version.java
 public static final String VERSION = "0000.0010.0000";  // 여기만 수정!
 ```
 
@@ -173,8 +173,8 @@ public static final String VERSION = "0000.0010.0000";  // 여기만 수정!
 
 ### JAR 파일명
 
-빌드 결과물은 버전 없이 `mwmanger.jar`로 생성됩니다:
-- `build/mwmanger.jar`
+빌드 결과물은 버전 없이 `mwagent.jar`로 생성됩니다:
+- `build/mwagent.jar`
 
 ### 버전 형식
 
@@ -248,11 +248,11 @@ CREATED → STARTING → RUNNING → STOPPING → STOPPED
 표준 Maven/Gradle 프로젝트 구조를 따릅니다:
 
 ```
-mwmanger/
+mwagent/
 ├── src/
 │   ├── main/
 │   │   └── java/
-│   │       └── mwmanger/
+│   │       └── mwagent/
 │   │           ├── MwAgent.java                 # 메인 진입점 (Lifecycle 기반)
 │   │           ├── PreWork.java                 # Bootstrap 위임 (Legacy)
 │   │           ├── FirstWork.java               # Kafka 초기화 (Legacy)
@@ -317,7 +317,7 @@ mwmanger/
 │   │
 │   └── test/
 │       ├── java/
-│       │   └── mwmanger/                        # JUnit 5 단위 테스트 (106개)
+│       │   └── mwagent/                        # JUnit 5 단위 테스트 (106개)
 │       │       ├── lifecycle/                   # ★ Lifecycle 테스트
 │       │       │   ├── LifecycleStateTest.java
 │       │       │   └── GracefulShutdownHandlerTest.java
@@ -434,26 +434,26 @@ Maven 또는 Gradle로 빌드한 경우:
 
 ```bash
 # Maven으로 빌드한 경우
-java -jar target/mwmanger-0000.0009.0001-jar-with-dependencies.jar
+java -jar target/mwagent-0000.0009.0001-jar-with-dependencies.jar
 
 # Gradle로 빌드한 경우
-java -jar build/libs/mwmanger-all-0000.0009.0001.jar
+java -jar build/libs/mwagent-all-0000.0009.0001.jar
 ```
 
 ### Classpath 직접 지정
 
 ```bash
-java -cp "build/jar/mwmanger-0000.0009.0001.jar:lib/*" mwmanger.MwAgent
+java -cp "build/jar/mwagent-0000.0009.0001.jar:lib/*" mwagent.MwAgent
 ```
 
 ### 백그라운드 실행
 
 ```bash
 # Fat JAR 실행
-nohup java -jar mwmanger-all.jar > /dev/null 2>&1 &
+nohup java -jar mwagent-all.jar > /dev/null 2>&1 &
 
 # Classpath 지정 실행
-nohup java -cp "build/jar/mwmanger.jar:lib/*" mwmanger.MwAgent > /dev/null 2>&1 &
+nohup java -cp "build/jar/mwagent.jar:lib/*" mwagent.MwAgent > /dev/null 2>&1 &
 ```
 
 ### 서비스 등록 (systemd 예제)
@@ -470,9 +470,9 @@ Type=simple
 User=mwagent
 WorkingDirectory=/opt/mwagent
 # Fat JAR 실행 (권장)
-ExecStart=/usr/bin/java -jar /opt/mwagent/mwmanger-all.jar
+ExecStart=/usr/bin/java -jar /opt/mwagent/mwagent-all.jar
 # 또는 Classpath 지정
-# ExecStart=/usr/bin/java -cp ".:lib/*" mwmanger.MwAgent
+# ExecStart=/usr/bin/java -cp ".:lib/*" mwagent.MwAgent
 Restart=always
 RestartSec=10
 
@@ -780,7 +780,7 @@ Test Breakdown:
 자세한 정보는 다음 문서 참조:
 - [COVERAGE.md](COVERAGE.md) - 포괄적인 커버리지 가이드
 - [COVERAGE_QUICKSTART.md](COVERAGE_QUICKSTART.md) - 빠른 시작 가이드
-- [src/test/java/mwmanger/README_TESTS.md](src/test/java/mwmanger/README_TESTS.md) - 테스트 상세
+- [src/test/java/mwagent/README_TESTS.md](src/test/java/mwagent/README_TESTS.md) - 테스트 상세
 
 ### 테스트 프레임워크
 
@@ -826,7 +826,7 @@ Test Breakdown:
 
 예:
 ```java
-package mwmanger.order;
+package mwagent.order;
 
 public class CustomOrder extends Order {
     public CustomOrder(JSONObject command) {

@@ -21,7 +21,7 @@ HTTP_PROXY=http://70.10.15.10:8080 HTTPS_PROXY=http://70.10.15.10:8080 ./tools/a
 
 ### Offline Build (For deployment)
 ```bash
-# From Git Bash on Windows - Output: build/mwmanger.jar
+# From Git Bash on Windows - Output: build/mwagent.jar
 /c/Windows/System32/cmd.exe //c "cd /d C:\GitHub\mwmanger && C:\GitHub\mwmanger\build-offline.bat"
 ```
 
@@ -61,9 +61,9 @@ HTTP_PROXY=http://70.10.15.10:8080 HTTPS_PROXY=http://70.10.15.10:8080 \
 
 | File | Purpose |
 |------|---------|
-| `src/main/java/mwmanger/common/Version.java` | **Single source of truth for version** |
-| `src/main/java/mwmanger/common/Config.java` | Configuration management |
-| `src/main/java/mwmanger/common/Common.java` | HTTP communication, token refresh |
+| `src/main/java/mwagent/common/Version.java` | **Single source of truth for version** |
+| `src/main/java/mwagent/common/Config.java` | Configuration management |
+| `src/main/java/mwagent/common/Common.java` | HTTP communication, token refresh |
 | `agent.properties` | Runtime configuration |
 | `test-server/test-agent.properties` | Test configuration |
 
@@ -72,5 +72,5 @@ HTTP_PROXY=http://70.10.15.10:8080 HTTPS_PROXY=http://70.10.15.10:8080 \
 2. Log directory existence check added
 3. Version output at startup
 4. Version management unified to Version.java (single source of truth)
-5. JAR filename simplified to `mwmanger.jar` (no version suffix)
+5. JAR filename simplified to `mwagent.jar` (no version suffix)
 6. All 215 tests passing

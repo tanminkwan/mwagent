@@ -12,7 +12,7 @@ git remote -v
 
 2. If it's using SSH (`git@github.com...`), change it to HTTPS:
 ```bash
-git remote set-url origin https://github.com/tanminkwan/mwmanger.git
+git remote set-url origin https://github.com/tanminkwan/mwagent.git
 ```
 
 3. Push the changes

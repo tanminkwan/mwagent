@@ -527,12 +527,12 @@ claude --dangerously-skip-permissions \
 
 ```
 mwmanger-auto/
-├── src/main/java/mwmanger/    # 리팩토링된 소스코드
+├── src/main/java/mwagent/    # 리팩토링된 소스코드
 │   ├── lifecycle/             # 생명주기 관리
 │   ├── service/               # 서비스 레이어
 │   ├── infrastructure/        # 인프라 (HTTP, 설정)
 │   └── security/              # 보안 검증
-├── src/test/java/mwmanger/    # 215개 테스트
+├── src/test/java/mwagent/    # 215개 테스트
 ├── test-server/               # Mock Auth Server (Python)
 ├── biz-service/               # Biz Service (Python)
 ├── ca-server/                 # CA Server (Python)

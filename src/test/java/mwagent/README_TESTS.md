@@ -6,7 +6,7 @@
 
 ```
 src/test/java/
-├── mwmanger/
+├── mwagent/
 │   ├── vo/                    # Value Object 테스트
 │   │   ├── CommandVOTest.java
 │   │   ├── ResultVOTest.java
@@ -51,7 +51,7 @@ mvn test
 mvn test -Dtest=CommandVOTest
 
 # 특정 패키지의 테스트만 실행
-mvn test -Dtest=mwmanger.vo.*
+mvn test -Dtest=mwagent.vo.*
 ```
 
 ### Gradle 사용
@@ -64,7 +64,7 @@ gradle test
 gradle test --tests CommandVOTest
 
 # 특정 패키지의 테스트만 실행
-gradle test --tests "mwmanger.vo.*"
+gradle test --tests "mwagent.vo.*"
 ```
 
 ## 테스트 커버리지
