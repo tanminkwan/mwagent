@@ -21,7 +21,7 @@ class CommandExecutorServiceTest {
     @BeforeEach
     void setUp() {
         // Initialize Config for testing
-        mwmanger.common.Config.getConfig().setLogger(Logger.getLogger("TestLogger"));
+        mwagent.common.Config.getConfig().setLogger(Logger.getLogger("TestLogger"));
         service = new CommandExecutorService(5); // 5 second timeout for tests
     }
 

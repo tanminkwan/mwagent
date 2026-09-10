@@ -34,7 +34,7 @@ class BootstrapServiceTest {
     @BeforeEach
     void setUp() {
         // Set command_check_cycle to 0 to avoid sleep in tests
-        mwmanger.common.Config.getConfig().setCommand_check_cycle(0);
+        mwagent.common.Config.getConfig().setCommand_check_cycle(0);
         bootstrapService = new BootstrapService(registrationService, statusService);
     }
 

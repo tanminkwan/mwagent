@@ -32,7 +32,7 @@ class GracefulShutdownHandlerTest {
     @BeforeEach
     void setUp() {
         // Initialize Config for testing
-        mwmanger.common.Config.getConfig().setLogger(Logger.getLogger("TestLogger"));
+        mwagent.common.Config.getConfig().setLogger(Logger.getLogger("TestLogger"));
         handler = new GracefulShutdownHandler(10); // 10 second timeout
     }
 

@@ -4,6 +4,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
@@ -325,28 +332,194 @@ public final class Config implements ConfigurationProvider {
 		
     }
     
+    /** Lock guarding read-modify-write of agent.properties (GetRefreshToken orders run on a thread pool). */
+    private static final Object PROPERTY_FILE_LOCK = new Object();
+
+    /**
+     * Update a single key in agent.properties.
+     *
+     * Only the matching "key=value" line is rewritten; comments, ordering and the
+     * other entries are preserved byte-for-byte. The result is written to a temp
+     * file and atomically moved over the original so a crash or a concurrent
+     * caller can never observe a truncated / half-written file.
+     */
     public long updatePropertyLegacy(String item, String value){
 
-    	try{
+        if (item == null || item.trim().isEmpty()) {
+            getLogger().severe("updateProperty: key is null or empty.");
+            return -2;
+        }
+        if (value == null) {
+            getLogger().severe("updateProperty: value for '" + item + "' is null. Property file is left unchanged.");
+            return -2;
+        }
 
-    		Properties prop = new Properties();
-			FileReader in = new FileReader("agent.properties");
-			prop.load(in);
-			in.close();
+        synchronized (PROPERTY_FILE_LOCK) {
+            try {
+                updatePropertyInFile(new File("agent.properties"), item, value);
+            } catch (IOException e) {
+                getLogger().log(Level.SEVERE, "Failed to update property '" + item + "' in agent.properties: " + e.getMessage(), e);
+                return -1;
+            }
+        }
 
-			prop.setProperty(item, value);
+        return 1;
 
-			FileOutputStream out = new FileOutputStream("agent.properties");
-			prop.store(out, null);
-			out.close();
+    }
 
-    	}catch(IOException e){
-			getLogger().log(Level.SEVERE, e.getMessage(), e);
-			return -1;
-		}
+    /**
+     * Line-oriented, atomic rewrite of one property in a .properties file.
+     * Package-private so it can be unit tested against a temp file.
+     * Java 8 compatible (no Files.readString / String.isBlank etc).
+     */
+    static void updatePropertyInFile(File file, String key, String value) throws IOException {
 
-		return 1;
+        // ISO-8859-1 maps every byte to exactly one char and back, so all lines we do not
+        // touch are rewritten byte-for-byte regardless of the platform default charset.
+        // The new value is escaped to pure ASCII (backslash-u-XXXX for non-ASCII), which
+        // Properties.load() decodes correctly under any charset used by setConfig().
+        Charset cs = StandardCharsets.ISO_8859_1;
 
+        String content = file.exists()
+                ? new String(Files.readAllBytes(file.toPath()), cs)
+                : "";
+
+        String eol = content.contains("\r\n") ? "\r\n" : "\n";
+        String[] lines = content.isEmpty() ? new String[0] : content.split("\r?\n", -1);
+
+        String newLine = key + "=" + escapePropertyValue(value);
+
+        StringBuilder sb = new StringBuilder(content.length() + newLine.length() + 2);
+        boolean replaced = false;
+        int i = 0;
+        while (i < lines.length) {
+            String line = lines[i];
+            if (!replaced && key.equals(parsePropertyKey(line))) {
+                sb.append(newLine).append(eol);
+                replaced = true;
+                // Skip continuation lines (odd number of trailing backslashes) of the old entry
+                while (hasContinuation(lines[i]) && i + 1 < lines.length) {
+                    i++;
+                }
+                i++;
+                continue;
+            }
+            sb.append(line);
+            if (i < lines.length - 1) {
+                sb.append(eol);
+            }
+            i++;
+        }
+
+        if (!replaced) {
+            if (sb.length() > 0 && !endsWith(sb, eol)) {
+                sb.append(eol);
+            }
+            sb.append(newLine).append(eol);
+        }
+
+        File dir = file.getAbsoluteFile().getParentFile();
+        File tmp = File.createTempFile(file.getName() + ".", ".tmp", dir);
+        try {
+            try (Writer w = new OutputStreamWriter(new FileOutputStream(tmp), cs)) {
+                w.write(sb.toString());
+                w.flush();
+            }
+            try {
+                Files.move(tmp.toPath(), file.toPath(),
+                        StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+            } catch (AtomicMoveNotSupportedException e) {
+                Files.move(tmp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            }
+        } finally {
+            if (tmp.exists()) {
+                tmp.delete();
+            }
+        }
+    }
+
+    /**
+     * Return the key of a properties line (per java.util.Properties syntax) or null for
+     * blank / comment lines. Handles escaped separators inside the key.
+     */
+    static String parsePropertyKey(String line) {
+        int len = line.length();
+        int start = 0;
+        while (start < len && isPropWhitespace(line.charAt(start))) {
+            start++;
+        }
+        if (start >= len) {
+            return null;
+        }
+        char first = line.charAt(start);
+        if (first == '#' || first == '!') {
+            return null;
+        }
+        StringBuilder key = new StringBuilder();
+        for (int i = start; i < len; i++) {
+            char c = line.charAt(i);
+            if (c == '\\') {
+                if (i + 1 < len) {
+                    key.append(line.charAt(++i)); // keep escaped char (e.g. "\:" -> ":")
+                }
+                continue;
+            }
+            if (c == '=' || c == ':' || isPropWhitespace(c)) {
+                break;
+            }
+            key.append(c);
+        }
+        return key.toString();
+    }
+
+    private static boolean isPropWhitespace(char c) {
+        return c == ' ' || c == '\t' || c == '\f';
+    }
+
+    private static boolean hasContinuation(String line) {
+        int backslashes = 0;
+        for (int i = line.length() - 1; i >= 0 && line.charAt(i) == '\\'; i--) {
+            backslashes++;
+        }
+        return backslashes % 2 == 1;
+    }
+
+    private static boolean endsWith(StringBuilder sb, String suffix) {
+        int n = suffix.length();
+        return sb.length() >= n && sb.substring(sb.length() - n).equals(suffix);
+    }
+
+    /**
+     * Escape a value so Properties.load() reads it back verbatim (same rules as
+     * Properties.store()): backslash, line breaks, tabs and a leading space are
+     * backslash-escaped, and anything outside printable ASCII becomes backslash-u-XXXX so the
+     * output is charset independent. '=' ':' '#' '!' need no escaping inside a value.
+     */
+    static String escapePropertyValue(String value) {
+        StringBuilder sb = new StringBuilder(value.length() + 8);
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            switch (c) {
+                case '\\': sb.append("\\\\"); break;
+                case '\n': sb.append("\\n"); break;
+                case '\r': sb.append("\\r"); break;
+                case '\t': sb.append("\\t"); break;
+                case '\f': sb.append("\\f"); break;
+                case ' ':
+                    if (i == 0) { sb.append("\\ "); } else { sb.append(c); }
+                    break;
+                default:
+                    if (c < 0x20 || c > 0x7E) {
+                        sb.append("\\u");
+                        String hex = Integer.toHexString(c).toUpperCase();
+                        for (int pad = hex.length(); pad < 4; pad++) { sb.append('0'); }
+                        sb.append(hex);
+                    } else {
+                        sb.append(c);
+                    }
+            }
+        }
+        return sb.toString();
     }
 
     // ========== ConfigurationProvider Interface Implementation ==========
