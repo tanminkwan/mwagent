@@ -42,6 +42,10 @@ log_level=INFO
 # Security Configuration
 # Path traversal check - validates paths to prevent directory traversal attacks (default: true)
 security.path_traversal_check=true
+# Extra directories readable by the 'ReadFullPathFile' command, comma separated.
+# These are ADDED to the built-in defaults (agent working dir, temp dir, /var/log, /opt, C:\logs, C:\Program Files).
+# Only used when security.path_traversal_check=true.
+# security.allowed_read_paths=/sw/webtob,/usr/local/tomcat/logs
 # Command injection check - validates command parameters for shell metacharacters (default: false)
 # WARNING: Enabling this may break legitimate use cases with special characters in parameters
 security.command_injection_check=false

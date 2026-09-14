@@ -398,6 +398,7 @@ log_level=INFO
 
 # 보안 설정 (선택 사항)
 security.path_traversal_check=true
+security.allowed_read_paths=/sw/webtob,/usr/local/tomcat/logs
 security.command_injection_check=false
 ```
 
@@ -423,6 +424,10 @@ security.command_injection_check=false
 
 #### 보안 설정 (선택 사항)
 - **security.path_traversal_check**: 경로 탐색 공격 방어 (`true`/`false`, 기본값: `true`)
+- **security.allowed_read_paths**: `ReadFullPathFile` 명령이 읽을 수 있는 디렉토리 추가 (콤마 구분, 기본값: 없음)
+  - 기본 허용 목록(에이전트 작업 디렉토리, 임시 디렉토리, `/var/log`, `/opt`, `C:\logs`, `C:\Program Files`)에 **추가**됩니다
+  - `security.path_traversal_check=true` 인 경우에만 의미가 있습니다
+  - 허용되지 않은 경로를 요청하면 로그에 `Security: Path traversal or unauthorized path detected` 가 기록되고 파일을 읽지 않습니다
 - **security.command_injection_check**: 명령 주입 공격 방어 (`true`/`false`, 기본값: `false`)
   - 주의: 활성화 시 특수 문자(`;`, `|`, `` ` ``, `$()` 등)를 포함한 파라미터가 차단됩니다
 
@@ -578,6 +583,16 @@ CREATED ─(start)→ STARTING ─(initialized)→ RUNNING ─(stop)→ STOPPING
 | **ReadFullPathFile** | 전체 경로로 파일 읽기 |
 | **DownloadFile** | 서버에서 파일 다운로드 |
 | **GetRefreshToken** | Refresh Token 갱신 |
+
+#### ReadPlainFile / ReadFullPathFile 의 additional_params
+
+| 클래스 | 서버 Command Type 라벨 | additional_params 에 넣는 값 |
+|--------|------------------------|------------------------------|
+| **ReadPlainFile** | 파일 Read | 확장자만 (점 없이). 예: `conf` → `<target_file_path><target_file_name>.conf` 를 읽음 |
+| **ReadFullPathFile** | 파일 Read(파일 이름 후 지정) | 읽을 파일의 **절대경로 전체**. 예: `/sw/webtob/config/rewrite_https.conf` |
+
+`ReadFullPathFile` 은 `target_file_path`/`target_file_name` 을 읽기 경로로 사용하지 않고 결과 식별용으로만 사용합니다.
+읽을 경로는 `security.allowed_read_paths` 로 허용된 디렉토리 하위여야 합니다.
 
 ### Agent Function (플러그인)
 
@@ -906,6 +921,7 @@ public class CustomOrder extends Order {
 | 설정 | 기본값 | 설명 |
 |------|--------|------|
 | `security.path_traversal_check` | `true` | 경로 탐색 공격 방어 |
+| `security.allowed_read_paths` | (없음) | ReadFullPathFile이 읽을 수 있는 디렉토리 추가 (콤마 구분, 기본 허용 목록에 추가됨) |
 | `security.command_injection_check` | `false` | 명령 주입 공격 방어 (특수 문자 차단) |
 
 ### Phase 3: Dependency Injection Architecture (2025-12-03)

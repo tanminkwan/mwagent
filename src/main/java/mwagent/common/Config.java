@@ -11,7 +11,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.FileHandler;
@@ -53,6 +55,7 @@ public final class Config implements ConfigurationProvider {
 	// Security Configuration
 	private boolean security_command_injection_check = false;
 	private boolean security_path_traversal_check = true;
+	private String[] security_allowed_read_paths = new String[0];
 
 	private Logger logger;
 	
@@ -200,6 +203,27 @@ public final class Config implements ConfigurationProvider {
 	public void setSecurityPathTraversalCheck(boolean security_path_traversal_check) {
 		this.security_path_traversal_check = security_path_traversal_check;
 	}
+	/**
+	 * Extra directories allowed for ReadFullPathFile, added to the built-in defaults.
+	 */
+	public String[] getSecurityAllowedReadPaths() {
+		return security_allowed_read_paths;
+	}
+	/**
+	 * @param allowed_read_paths comma separated absolute paths, e.g. "/sw/webtob,/usr/local/tomcat/logs"
+	 */
+	public void setSecurityAllowedReadPaths(String allowed_read_paths) {
+		List<String> paths = new ArrayList<String>();
+		if (allowed_read_paths != null) {
+			for (String token : allowed_read_paths.split(",")) {
+				String path = token.trim();
+				if (!path.isEmpty()) {
+					paths.add(path);
+				}
+			}
+		}
+		this.security_allowed_read_paths = paths.toArray(new String[0]);
+	}
 
     public long setConfig() {
 
@@ -257,6 +281,7 @@ public final class Config implements ConfigurationProvider {
 			// Security Configuration (default: command injection check OFF, path traversal check ON)
 			setSecurityCommandInjectionCheck(Boolean.parseBoolean(prop.getProperty("security.command_injection_check", "false")));
 			setSecurityPathTraversalCheck(Boolean.parseBoolean(prop.getProperty("security.path_traversal_check", "true")));
+			setSecurityAllowedReadPaths(prop.getProperty("security.allowed_read_paths", ""));
 
 			// Reconfigure logger with settings from properties file
 			Logger logger = getLogger();
