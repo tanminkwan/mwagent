@@ -22,7 +22,7 @@ LOG_FILE="$WORK_DIR/run_reboot.log"
     
     echo "[$(date)] Starting new agent..."
     sleep 1
-    nohup $JAVA_HOME/bin/java -cp $WORK_DIR/lib/*:$WORK_DIR/mwagent.jar -Dname=mwagent.$USER -Xms128m -Xmx128m mwagent.MwAgent >> nohup.out 2>&1 &
+    nohup $JAVA_HOME/bin/java -cp $WORK_DIR/lib/*:$WORK_DIR/build/mwagent.jar -Dname=mwagent.$USER -Xms128m -Xmx128m mwagent.MwAgent >> nohup.out 2>&1 &
     
     echo "[$(date)] New agent PID: $!"
     echo "[$(date)] --- Reboot Script Finished ---"

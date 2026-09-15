@@ -32,6 +32,7 @@ download-dependencies.bat
 | httpcore-4.4.13.jar | 4.4.13 | https://repo1.maven.org/maven2/org/apache/httpcomponents/httpcore/4.4.13/httpcore-4.4.13.jar |
 | commons-logging-1.2.jar | 1.2 | https://repo1.maven.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar |
 | kafka-clients-3.1.0.jar | 3.1.0 | https://repo1.maven.org/maven2/org/apache/kafka/kafka-clients/3.1.0/kafka-clients-3.1.0.jar |
+| org.eclipse.paho.mqttv5.client-1.2.5.jar | 1.2.5 | https://repo1.maven.org/maven2/org/eclipse/paho/org.eclipse.paho.mqttv5.client/1.2.5/org.eclipse.paho.mqttv5.client-1.2.5.jar |
 | bcprov-jdk15on-1.70.jar | 1.70 | https://repo1.maven.org/maven2/org/bouncycastle/bcprov-jdk15on/1.70/bcprov-jdk15on-1.70.jar |
 | json-simple-1.1.1.jar | 1.1.1 | https://repo1.maven.org/maven2/com/googlecode/json-simple/json-simple/1.1.1/json-simple-1.1.1.jar |
 | commons-codec-1.11.jar | 1.11 | https://repo1.maven.org/maven2/commons-codec/commons-codec/1.11/commons-codec-1.11.jar |
@@ -41,23 +42,24 @@ download-dependencies.bat
 | snappy-java-1.1.8.4.jar | 1.1.8.4 | https://repo1.maven.org/maven2/org/xerial/snappy/snappy-java/1.1.8.4/snappy-java-1.1.8.4.jar |
 | zstd-jni-1.5.2-1.jar | 1.5.2-1 | https://repo1.maven.org/maven2/com/github/luben/zstd-jni/1.5.2-1/zstd-jni-1.5.2-1.jar |
 
-## 필요한 JAR 파일 (총 12개)
+## 필요한 JAR 파일 (총 13개)
 
 ### 핵심 의존성
 1. **httpclient-4.5.13.jar** - HTTP/HTTPS 통신
 2. **httpcore-4.4.13.jar** - HttpClient 코어
 3. **commons-logging-1.2.jar** - HttpClient 로깅
 4. **kafka-clients-3.1.0.jar** - Kafka 클라이언트
-5. **bcprov-jdk15on-1.70.jar** - BouncyCastle (TLS 1.2 지원)
-6. **json-simple-1.1.1.jar** - JSON 처리
-7. **commons-codec-1.11.jar** - 인코딩 유틸리티
-8. **slf4j-api-1.7.30.jar** - SLF4J API
-9. **slf4j-simple-1.7.30.jar** - SLF4J 구현체
+5. **org.eclipse.paho.mqttv5.client-1.2.5.jar** - MQTT v5 클라이언트 (명령 구독)
+6. **bcprov-jdk15on-1.70.jar** - BouncyCastle (TLS 1.2 지원)
+7. **json-simple-1.1.1.jar** - JSON 처리
+8. **commons-codec-1.11.jar** - 인코딩 유틸리티
+9. **slf4j-api-1.7.30.jar** - SLF4J API
+10. **slf4j-simple-1.7.30.jar** - SLF4J 구현체
 
 ### Kafka 의존성
-10. **lz4-java-1.8.0.jar** - LZ4 압축
-11. **snappy-java-1.1.8.4.jar** - Snappy 압축
-12. **zstd-jni-1.5.2-1.jar** - Zstandard 압축
+11. **lz4-java-1.8.0.jar** - LZ4 압축
+12. **snappy-java-1.1.8.4.jar** - Snappy 압축
+13. **zstd-jni-1.5.2-1.jar** - Zstandard 압축
 
 ## 사용 방법
 
@@ -91,7 +93,7 @@ java -cp "lib/*:build/classes" mwagent.MwAgent
 
 ```
 mwagent/
-├── lib/                    ← 모든 JAR 파일 (12개)
+├── lib/                    ← 모든 JAR 파일 (13개)
 │   ├── httpclient-4.5.13.jar
 │   ├── kafka-clients-3.1.0.jar
 │   └── ...
@@ -107,10 +109,10 @@ mwagent/
 
 ```bash
 # Linux/Mac
-ls -lh lib/*.jar | wc -l   # 12개여야 함
+ls -lh lib/*.jar | wc -l   # 13개여야 함
 
 # Windows
-dir /b lib\*.jar | find /c ".jar"   # 12개여야 함
+dir /b lib\*.jar | find /c ".jar"   # 13개여야 함
 ```
 
 ## 문제 해결
@@ -128,6 +130,7 @@ dir /b lib\*.jar | find /c ".jar"   # 12개여야 함
 
 각 라이브러리는 해당 라이선스를 따릅니다:
 - Apache License 2.0: HttpClient, Kafka, Commons Codec
+- Eclipse Public License 2.0 / EDL 1.0: Eclipse Paho MQTT
 - MIT License: BouncyCastle, JSON Simple, SLF4J
 - BSD License: LZ4, Snappy, Zstandard
 
@@ -136,4 +139,4 @@ dir /b lib\*.jar | find /c ".jar"   # 12개여야 함
 ---
 
 **Last Updated**: 2025-01-23
-**Total JARs**: 12
+**Total JARs**: 13

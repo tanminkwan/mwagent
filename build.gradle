@@ -21,6 +21,9 @@ dependencies {
     // Apache Kafka Client for Kafka communication
     implementation 'org.apache.kafka:kafka-clients:3.1.0'
 
+    // Eclipse Paho MQTT v5 Client (Java 8 compatible)
+    implementation 'org.eclipse.paho:org.eclipse.paho.mqttv5.client:1.2.5'
+
     // BouncyCastle for TLS 1.2 support (especially for AIX)
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 

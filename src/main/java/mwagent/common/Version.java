@@ -5,7 +5,7 @@ package mwagent.common;
  * Update VERSION constant when releasing new version.
  */
 public final class Version {
-    public static final String VERSION = "0000.0009.0031";
+    public static final String VERSION = "0000.0010.0000";
 
     private Version() {}
 }

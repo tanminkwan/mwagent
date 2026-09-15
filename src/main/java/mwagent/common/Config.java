@@ -43,6 +43,9 @@ public final class Config implements ConfigurationProvider {
 	private String access_token = "";
 	private String refresh_token = "";
 	private String kafka_broker_address = "";
+	private boolean mqtt_enabled = false;
+	private String mqtt_broker_address = "";
+	private String mqtt_credential = "";
 	private long command_check_cycle = 60;
 
 	// mTLS Configuration
@@ -72,6 +75,28 @@ public final class Config implements ConfigurationProvider {
 	}
 	public void setKafka_broker_address(String kafka_broker_address) {
 		this.kafka_broker_address = kafka_broker_address;
+	}
+
+	/** MQTT 구독자 사용 여부. false 면 구독자를 아예 기동하지 않는다. */
+	public boolean isMqtt_enabled() {
+		return mqtt_enabled;
+	}
+	public void setMqtt_enabled(boolean mqtt_enabled) {
+		this.mqtt_enabled = mqtt_enabled;
+	}
+
+	public String getMqtt_broker_address() {
+		return mqtt_broker_address;
+	}
+	public void setMqtt_broker_address(String mqtt_broker_address) {
+		this.mqtt_broker_address = mqtt_broker_address;
+	}
+
+	public String getMqtt_credential() {
+		return mqtt_credential;
+	}
+	public void setMqtt_credential(String mqtt_credential) {
+		this.mqtt_credential = mqtt_credential;
 	}
 
 	public Logger getLogger() {
@@ -270,6 +295,11 @@ public final class Config implements ConfigurationProvider {
 			setGet_command_uri(get_command_uri);
 			setPost_agent_uri(post_agent_uri);
 			setKafka_broker_address(prop.getProperty("kafka_broker_address", ""));
+
+			// MQTT Configuration (Kafka 와 병행). 기본 비활성 — 명시적으로 켜야 동작한다
+			setMqtt_enabled(Boolean.parseBoolean(prop.getProperty("mqtt_enabled", "false")));
+			setMqtt_broker_address(prop.getProperty("mqtt_broker_address", ""));
+			setMqtt_credential(prop.getProperty("mqtt_credential", ""));
 
 			// mTLS Configuration
 			setUseMtls(Boolean.parseBoolean(prop.getProperty("use_mtls", "false")));

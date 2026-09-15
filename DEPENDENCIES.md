@@ -55,7 +55,32 @@ MwManger Agent는 JDK 1.8 (Java 8) 이상에서 실행 가능하도록 설계되
 
 **참고**: Kafka 3.1.0은 JDK 1.8과 호환됩니다 (공식 지원 버전)
 
-### 3. BouncyCastle (암호화 및 TLS 지원)
+### 3. Eclipse Paho MQTT v5 Client (MQTT 통신)
+
+**목적**: MQTT를 통한 실시간 명령 수신 (Kafka 와 병행 동작)
+
+```xml
+<dependency>
+    <groupId>org.eclipse.paho</groupId>
+    <artifactId>org.eclipse.paho.mqttv5.client</artifactId>
+    <version>1.2.5</version>
+</dependency>
+```
+
+- **버전**: 1.2.5 (클래스 major version 52 = JDK 1.8 호환)
+- **v3 가 아니라 v5 인 이유**: 명령 자동 만료(Message Expiry Interval)와
+  세션 수명 명시(Session Expiry Interval)가 MQTT 3.1.1 에는 없다
+- **사용 위치**:
+  - `mqtt/MwMqttSubscriber.java` - 명령 구독
+  - `mqtt/MqttService.java` - 수명주기 관리
+- **주요 기능**:
+  - QoS1 구독 및 cmdId 기반 중복 제거
+  - 자동 재접속 및 재구독
+  - 구독 전용 (발행하지 않는다. 결과 전송은 REST API 담당)
+- **비고**: `mqtt_enabled` 기본값은 `false` 이며, `agent.properties` 에서 명시적으로
+  `true` 로 켜지 않으면 구독자를 기동하지 않는다 (Paho 클래스도 로딩되지 않는다)
+
+### 4. BouncyCastle (암호화 및 TLS 지원)
 
 **목적**: AIX 환경에서 TLS 1.2 지원
 
@@ -78,7 +103,7 @@ MwManger Agent는 JDK 1.8 (Java 8) 이상에서 실행 가능하도록 설계되
 
 **중요**: AIX 시스템에서는 반드시 필요합니다. IBM JDK에서 TLS 1.2 지원이 제한적이기 때문입니다.
 
-### 4. JSON Simple (JSON 처리)
+### 5. JSON Simple (JSON 처리)
 
 **목적**: JSON 파싱 및 생성
 
@@ -101,7 +126,7 @@ MwManger Agent는 JDK 1.8 (Java 8) 이상에서 실행 가능하도록 설계되
 
 **대안**: Gson (2.8.9) 또는 Jackson (2.13.x)도 사용 가능하나, 현재 코드는 JSON Simple 기준
 
-### 5. Apache Commons Codec (인코딩 유틸리티)
+### 6. Apache Commons Codec (인코딩 유틸리티)
 
 **목적**: 문자열 인코딩 및 비교
 
@@ -120,7 +145,7 @@ MwManger Agent는 JDK 1.8 (Java 8) 이상에서 실행 가능하도록 설계되
   - Base64 인코딩/디코딩
   - 문자열 유틸리티
 
-### 6. SLF4J (로깅 - Kafka 의존성)
+### 7. SLF4J (로깅 - Kafka 의존성)
 
 **목적**: Kafka 클라이언트의 로깅 요구사항 충족
 
@@ -152,6 +177,7 @@ MwManger Agent는 JDK 1.8 (Java 8) 이상에서 실행 가능하도록 설계되
 |-----------|---------|------------|------|-------------|----------|
 | Apache HttpClient | org.apache.httpcomponents | httpclient | 4.5.13 | ✓ | 필수 |
 | Apache Kafka Client | org.apache.kafka | kafka-clients | 3.1.0 | ✓ | 필수 |
+| Eclipse Paho MQTT v5 | org.eclipse.paho | org.eclipse.paho.mqttv5.client | 1.2.5 | ✓ | MQTT 사용 시 |
 | BouncyCastle | org.bouncycastle | bcprov-jdk15on | 1.70 | ✓ | AIX 필수 |
 | JSON Simple | com.googlecode.json-simple | json-simple | 1.1.1 | ✓ | 필수 |
 | Apache Commons Codec | commons-codec | commons-codec | 1.11 | ✓ | 필수 |

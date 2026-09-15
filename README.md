@@ -31,7 +31,8 @@ MwManger는 분산 환경의 서버 관리를 자동화하기 위한 에이전�
 - **생명주기 관리**: 체계적인 lifecycle 기반 아키텍처 (Bootstrap → Initialization → Runtime → Shutdown)
 - **Graceful Shutdown**: 실행 중인 작업 완료 대기, 자원 정리, 로그 flush
 - **자동 에이전트 등록**: 최초 실행 시 중앙 서버에 자동 등록
-- **다중 통신 채널**: HTTP/HTTPS 및 Apache Kafka를 통한 명령 수신
+- **다중 통신 채널**: HTTP/HTTPS, Apache Kafka, MQTT v5 를 통한 명령 수신
+- **실시간 명령 수신 (MQTT)**: 폴링 주기를 기다리지 않는 즉시 수신. 기본 비활성이며 결과 전송은 REST 유지
 - **비동기 명령 처리**: ThreadPool을 이용한 동시 다발적 명령 처리
 
 ### Security & Reliability
@@ -48,7 +49,7 @@ MwManger는 분산 환경의 서버 관리를 자동화하기 위한 에이전�
 - **확장 가능한 구조**: 플러그인 방식의 Order 및 AgentFunction 추가 가능
 - **의존성 주입 (DI)**: ApplicationContext 기반 DI 컨테이너 (Phase 3)
 - **인터페이스 추상화**: ConfigurationProvider, HttpClient 인터페이스
-- **서비스 분리**: 각 기능이 독립적인 서비스로 분리 (KafkaService, CommandExecutorService)
+- **서비스 분리**: 각 기능이 독립적인 서비스로 분리 (KafkaService, MqttService, CommandExecutorService)
 - **테스트 용이성**: Mock 객체 주입으로 단위 테스트 지원
 - **크로스 플랫폼**: Windows, Linux, AIX, HP-UX 지원
 
@@ -67,6 +68,7 @@ MwManger는 분산 환경의 서버 관리를 자동화하기 위한 에이전�
 |-----------|------|------|
 | Apache HttpClient | 4.5.13 | HTTP/HTTPS 통신 |
 | Apache Kafka Client | 3.1.0 | Kafka 메시징 |
+| Eclipse Paho MQTT v5 | 1.2.5 | MQTT 명령 구독 |
 | BouncyCastle | 1.70 | TLS 1.2 지원 (AIX) |
 | JSON Simple | 1.1.1 | JSON 처리 |
 | Apache Commons Codec | 1.11 | 인코딩 유틸리티 |
@@ -306,6 +308,10 @@ mwagent/
 │   │           │   ├── MwProducer.java          # Kafka Producer
 │   │           │   └── MwHealthCheckThread.java # Kafka 상태 모니터링
 │   │           │
+│   │           ├── mqtt/                        # ★ MQTT 명령 구독 (기본 비활성)
+│   │           │   ├── MqttService.java         # 수명주기 및 연결 감시
+│   │           │   └── MwMqttSubscriber.java    # 명령 구독 (구독 전용)
+│   │           │
 │   │           └── vo/
 │   │               ├── CommandVO.java           # 명령 VO
 │   │               ├── ResultVO.java            # 결과 VO
@@ -326,6 +332,9 @@ mwagent/
 │       │       │   └── registration/
 │       │       │       ├── BootstrapServiceTest.java
 │       │       │       └── RegistrationServiceTest.java
+│       │       ├── mqtt/                        # ★ MQTT 테스트 (32개)
+│       │       │   ├── MqttServiceTest.java
+│       │       │   └── MwMqttSubscriberTest.java
 │       │       ├── agentfunction/
 │       │       │   └── AgentFuncFactoryTest.java
 │       │       ├── common/
@@ -388,6 +397,12 @@ command_check_cycle=60
 # Kafka 브로커 주소 (선택 사항, BOOT 명령으로 동적 설정 가능)
 kafka_broker_address=kafka-broker.example.com:9092
 
+# MQTT 설정 (선택 사항, 기본 비활성)
+# Kafka 와 달리 BOOT 명령으로는 주입되지 않는다. 이 파일이 유일한 설정 소스다.
+mqtt_enabled=false
+mqtt_broker_address=tcp://mqtt-broker.example.com:1883
+mqtt_credential=YOUR_MQTT_PASSWORD
+
 # 호스트 및 사용자 식별 환경 변수
 host_name_var=HOSTNAME
 user_name_var=USER
@@ -414,6 +429,15 @@ security.command_injection_check=false
 - **user_name_var**: 사용자명을 가져올 환경 변수명
 - **log_dir**: 로그 파일 저장 경로
 - **log_level**: 로그 레벨 (SEVERE, WARNING, INFO, FINE, FINEST)
+
+#### MQTT 설정 (선택 사항)
+
+- **mqtt_enabled**: MQTT 구독자 활성화 여부 (`true`/`false`, **기본값: `false`**)
+  - `false` 면 구독자 스레드도, Paho 클라이언트도 만들지 않습니다 (Paho 클래스가 로드되지 않음)
+  - `true`/`false` 이외의 값은 `false` 로 처리됩니다
+- **mqtt_broker_address**: MQTT 브로커 주소. 스킴을 생략하면 `tcp://` 로 간주합니다 (TLS 는 `ssl://host:8883`)
+  - Kafka 와 달리 **BOOT 명령으로 주입되지 않습니다.** `agent.properties` 가 유일한 설정 소스입니다
+- **mqtt_credential**: MQTT 접속 비밀번호. username 은 `agent_id` 가 그대로 쓰입니다
 
 #### mTLS 설정 (선택 사항)
 - **use_mtls**: mTLS 활성화 여부 (`true`/`false`)
@@ -519,6 +543,10 @@ sudo systemctl status mwagent
 │       • Consumer Thread                         │
 │       • HealthCheck Thread                      │
 │       • Producer Initialization                 │
+│     - Start MqttService (if mqtt_enabled=true)  │
+│       • Subscribe cmd/{agent_id}/req (QoS1)     │
+│       • Watch Thread (60s connection check)     │
+│       • Connect failure is not fatal - retries  │
 │     - Start CommandExecutorService              │
 │     - Register services with ShutdownHandler    │
 └─────────────────┬───────────────────────────────┘
@@ -527,6 +555,8 @@ sudo systemctl status mwagent
 ┌─────────────────────────────────────────────────┐
 │  4. Runtime Phase (Main Loop)                   │
 │     - Poll commands from server (HTTP GET)      │
+│       (MQTT commands arrive out-of-band,        │
+│        handled by Paho callback threads)        │
 │     - Handle token expiration (auto-refresh)    │
 │     - Execute commands asynchronously           │
 │       • Submit to CommandExecutorService        │
@@ -542,6 +572,9 @@ sudo systemctl status mwagent
 │     - GracefulShutdownHandler.shutdown()        │
 │       • Stop CommandExecutorService (LIFO)      │
 │         - Wait for running tasks (30s timeout)  │
+│       • Stop MqttService                        │
+│         - Stop Watch Thread                     │
+│         - Disconnect & Close Paho client        │
 │       • Stop KafkaService                       │
 │         - Close Consumer                        │
 │         - Close HealthCheck                     │
@@ -718,13 +751,47 @@ access_token 만료 (401 응답)
 - **Topic**: `t_agent_health`
 - 에이전트 상태 모니터링용
 
+### 3. MQTT 통신 (선택 사항, 기본 비활성)
+
+MQTT 는 **실시간 명령 수령만** 담당합니다. 폴링 주기(`command_check_cycle`)를 기다리지
+않고 명령을 즉시 받기 위한 보조 채널이며, REST API 를 대체하지 않습니다.
+결과 전송·토큰 갱신·명령 폴링은 그대로 HTTP/HTTPS 가 담당합니다.
+
+#### Subscriber (명령 수신)
+
+- **Topic**: `cmd/{agent_id}/req`, `cmd/broadcast/req`
+- **clientId / username**: `agent_id` (브로커 ACL 의 `%u` 치환이 그대로 성립)
+- **QoS**: 1 (at-least-once). 중복 수신은 정상이므로 `cmdId` 기준 LRU 캐시(1000건)로 멱등 처리
+- **세션**: `cleanStart=false`, `sessionExpiryInterval=86400` — 에이전트가 꺼져 있던 동안의
+  명령도 브로커가 큐잉해 둡니다 (브로커에 세션 persistence 설정이 되어 있어야 유효)
+- 메시지 형식: JSON (command 객체). Kafka 경로와 동일한 `command_class` 규약을 따릅니다
+
+#### 발행하지 않습니다
+
+구독 전용입니다. 결과·상태·LWT 를 일절 발행하지 않으므로 브로커 ACL 에는
+`cmd/{agent_id}/req` 와 `cmd/broadcast/req` **구독 권한만** 있으면 됩니다.
+
+#### 연결 감시
+
+- 브로커 접속이 끊기면 **최초 1줄**만 로그에 남기고, 이후 **1시간 간격**으로 1줄씩 보고합니다
+  (재접속 실패마다 찍으면 로그가 폭증하므로 시간 기준으로 억제)
+- 감시 스레드가 **60초 주기**로 연결 상태를 직접 확인합니다
+- 브로커가 죽은 상태에서 에이전트가 기동되어도 포기하지 않고 60초마다 재시도하며,
+  브로커가 살아나면 **에이전트 재기동 없이** 자동으로 접속·재구독합니다
+- 접속이 60초 이상 유지되면 복구로 판정해 `MQTT recovered` 를 남깁니다
+- MQTT 기동 실패는 에이전트 기동을 막지 않습니다 (Kafka 와도 서로 독립)
+
 ### 결과 전송 방식 선택
 
-`result_receiver` 필드로 제어:
+명령의 `result_receiver` 필드로 제어합니다. **명령을 어떤 채널로 받았는지와 무관하게**
+이 필드가 결과 경로를 결정하며, 값이 없으면 `SERVER` 로 간주합니다.
 
-- **SERVER**: HTTP POST로만 전송
+- **SERVER**: HTTP POST `/api/v1/command/result` 로만 전송 (기본값)
 - **KAFKA**: Kafka로만 전송
 - **SERVER_N_KAFKA**: 양쪽 모두 전송
+
+MQTT 로 결과를 보내는 경로는 존재하지 않습니다. 따라서 MQTT 로 받은 명령의 결과도
+기본적으로 REST 로 나갑니다.
 
 ## 지원 운영체제
 
@@ -1008,6 +1075,31 @@ cd test-server && python mock_server.py --ssl
 - [docs/Token-Validation-Architecture.md](docs/Token-Validation-Architecture.md)
 - [biz-service/README.md](biz-service/README.md)
 
+### Phase 7: MQTT Command Subscription (2026-09-15)
+
+**완료 항목:**
+- ✅ MQTT v5 명령 구독 구현 (Eclipse Paho 1.2.5, JDK 1.8 호환)
+  - `MwMqttSubscriber`: `cmd/{agent_id}/req` 구독, QoS1, `cmdId` 기준 멱등 처리
+  - `MqttService`: 수명주기 관리 및 연결 감시
+  - Kafka 와 병행 동작하며 한쪽 실패가 다른 쪽을 막지 않음
+- ✅ 기본 비활성 (`mqtt_enabled=false`). 켜지 않으면 Paho 클래스조차 로드되지 않음
+- ✅ 구독 전용 — 결과·상태·LWT 를 발행하지 않으므로 브로커 publish 권한 불필요
+- ✅ 연결 감시 개선
+  - 60초 주기로 `isConnected()` 직접 확인 (Paho 는 재접속 실패 시 콜백을 호출하지 않음)
+  - 끊김 지속 시 1시간 간격 보고 보장, 끊김 사유를 `reasonString`/`cause`/`rc` 순으로 기록
+  - 브로커가 죽은 상태에서 기동해도 재시도하며, 복구 시 에이전트 재기동 없이 자동 재구독
+- ✅ MQTT 단위 테스트 32개 추가 (브로커 없이 실행 가능)
+
+**설정:**
+```properties
+mqtt_enabled=true
+mqtt_broker_address=tcp://mqtt-broker.example.com:1883
+mqtt_credential=YOUR_MQTT_PASSWORD
+```
+
+**설계 원칙:** MQTT 는 실시간 명령 수령만 담당합니다. 결과 전송·토큰 갱신·명령 폴링은
+계속 REST API 가 담당하므로 API 서버는 항상 필요합니다.
+
 자세한 내용은 [WORK_HISTORY.md](WORK_HISTORY.md) 참조
 
 ## 문의 및 지원
@@ -1016,7 +1108,7 @@ cd test-server && python mock_server.py --ssl
 
 ---
 
-**Last Updated**: 2025-12-05
-**Version**: 0000.0009.0009
-**Architecture**: Phase 6 - Code Quality Improvements
-**Test Coverage**: 215 tests (100% passing)
+**Last Updated**: 2026-09-15
+**Version**: 0000.0010.0000
+**Architecture**: Phase 7 - MQTT Command Subscription
+**Test Coverage**: 284 tests (255 passing, 23 skipped, 3 aborted, 3 known failures in SecurityValidatorTest/ExtractLogTest)

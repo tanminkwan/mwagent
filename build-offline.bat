@@ -44,11 +44,14 @@ del sources.txt
 echo Compilation successful!
 
 REM 4. Manifest 생성
+REM Class-Path 는 lib\*.jar 에서 동적 생성한다 (build-offline.sh 와 동일). 의존성을 추가해도 이 스크립트를 고칠 필요가 없다.
 echo [4/5] Creating manifest...
+set JARLIST=
+for %%f in (lib\*.jar) do set "JARLIST=!JARLIST!%%~nxf "
 (
 echo Manifest-Version: 1.0
 echo Main-Class: %MAIN_CLASS%
-echo Class-Path: bcprov-jdk15on-1.70.jar commons-codec-1.11.jar commons-logging-1.2.jar httpclient-4.5.13.jar httpcore-4.4.13.jar json-simple-1.1.1.jar kafka-clients-3.1.0.jar lz4-java-1.8.0.jar slf4j-api-1.7.30.jar slf4j-simple-1.7.30.jar snappy-java-1.1.8.4.jar zstd-jni-1.5.2-1.jar
+echo Class-Path: !JARLIST!
 ) > build\MANIFEST.MF
 
 REM 5. JAR 패키징

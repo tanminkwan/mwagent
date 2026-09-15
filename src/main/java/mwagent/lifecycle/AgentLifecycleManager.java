@@ -12,6 +12,7 @@ import mwagent.PreWork;
 import mwagent.common.Common;
 import mwagent.service.CommandExecutorService;
 import mwagent.service.KafkaService;
+import mwagent.mqtt.MqttService;
 import mwagent.service.registration.BootstrapService;
 import mwagent.vo.MwResponseVO;
 import mwagent.vo.RawCommandsVO;
@@ -32,6 +33,7 @@ public class AgentLifecycleManager implements AgentLifecycle {
     // Services
     private final BootstrapService bootstrapService;
     private final KafkaService kafkaService;
+    private final MqttService mqttService;
     private final CommandExecutorService commandExecutor;
     private final GracefulShutdownHandler shutdownHandler;
 
@@ -40,7 +42,7 @@ public class AgentLifecycleManager implements AgentLifecycle {
     private volatile boolean running;
 
     public AgentLifecycleManager() {
-        this(new BootstrapService(), new KafkaService(), new CommandExecutorService());
+        this(new BootstrapService(), new KafkaService(), new CommandExecutorService(), new MqttService());
     }
 
     /**
@@ -49,11 +51,22 @@ public class AgentLifecycleManager implements AgentLifecycle {
     public AgentLifecycleManager(BootstrapService bootstrapService,
                                  KafkaService kafkaService,
                                  CommandExecutorService commandExecutor) {
+        this(bootstrapService, kafkaService, commandExecutor, new MqttService());
+    }
+
+    /**
+     * Constructor for dependency injection (MQTT 포함)
+     */
+    public AgentLifecycleManager(BootstrapService bootstrapService,
+                                 KafkaService kafkaService,
+                                 CommandExecutorService commandExecutor,
+                                 MqttService mqttService) {
         this.logger = getConfig().getLogger();
         this.state = LifecycleState.CREATED;
         this.bootstrapService = bootstrapService;
         this.kafkaService = kafkaService;
         this.commandExecutor = commandExecutor;
+        this.mqttService = mqttService;
         this.shutdownHandler = new GracefulShutdownHandler();
         this.running = false;
     }
@@ -88,6 +101,21 @@ public class AgentLifecycleManager implements AgentLifecycle {
                 shutdownHandler.registerService(kafkaService);
             } else {
                 logger.info("Kafka not configured, skipping Kafka service");
+            }
+
+            // Start MQTT Service (Kafka 와 병행. 한쪽 실패가 다른 쪽을 막지 않는다)
+            configureMqttFromProperties();
+            if (mqttService.isConfigured()) {
+                try {
+                    mqttService.start();
+                    shutdownHandler.registerService(mqttService);
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE, "MQTT service failed to start. Continuing without MQTT.", e);
+                }
+            } else if (!getConfig().isMqtt_enabled()) {
+                logger.info("MQTT disabled (mqtt_enabled=false), subscriber not started");
+            } else {
+                logger.info("MQTT broker address not configured, subscriber not started");
             }
 
             // Start Command Executor
@@ -160,6 +188,28 @@ public class AgentLifecycleManager implements AgentLifecycle {
                 logger.info("Main thread interrupted");
                 Thread.currentThread().interrupt();
             }
+        }
+    }
+
+    /**
+     * agent.properties 의 MQTT 설정을 MqttService 에 적용한다.
+     *
+     * MQTT 는 Kafka 와 달리 설정 소스가 agent.properties 하나뿐이다.
+     * BOOT 명령에는 mqtt_broker_address 가 내려오지 않으므로(서버 스펙에 없다)
+     * BOOT 명령 유무와 무관하게 동작해야 하며, mqtt_credential 도 properties
+     * 전용이라 주소와 자격증명을 같은 소스에서 읽는 편이 설정이 갈리지 않는다.
+     * mqtt_enabled=false 면 아무것도 하지 않는다.
+     */
+    private void configureMqttFromProperties() {
+        if (!getConfig().isMqtt_enabled()) {
+            return;
+        }
+
+        String mqttBroker = getConfig().getMqtt_broker_address();
+
+        if (mqttBroker != null && !mqttBroker.isEmpty()) {
+            logger.info("Configuring MQTT broker: " + mqttBroker);
+            mqttService.setBrokerAddress(mqttBroker);
         }
     }
 

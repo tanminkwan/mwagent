@@ -30,6 +30,15 @@ truststore.password=
 # Kafka Configuration
 kafka_broker_address=localhost:9092
 
+# MQTT Configuration (Kafka 와 병행 동작)
+# 기본값은 false 이며, true 로 명시하지 않으면 구독자를 아예 기동하지 않는다
+# (Paho 클래스도 로드되지 않는다). true/false 이외의 값은 false 로 처리된다.
+mqtt_enabled=false
+# MQTT 설정 소스는 이 파일뿐이다. Kafka 와 달리 BOOT 명령으로는 주입되지 않는다.
+# 스킴 생략 시 tcp:// 로 간주. TLS 는 ssl://host:8883
+# mqtt_broker_address=tcp://localhost:1883
+# mqtt_credential=
+
 # Agent Configuration
 command_check_cycle=60
 host_name_var=HOSTNAME
