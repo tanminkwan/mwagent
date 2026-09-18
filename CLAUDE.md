@@ -67,6 +67,25 @@ HTTP_PROXY=http://70.10.15.10:8080 HTTPS_PROXY=http://70.10.15.10:8080 \
 | `agent.properties` | Runtime configuration |
 | `test-server/test-agent.properties` | Test configuration |
 
+## Agent Functions (`AgentFuncFactory`)
+
+| functionType | 클래스 | 용도 |
+|--------------|--------|------|
+| `say_hello` | `HelloFunc` | 헬스 체크 |
+| `get_server_stat` | `JmxStatFunc` | JMX 통계 |
+| `get_ssl_certi` | `SSLCertiFunc` | SSL 인증서 조회 |
+| `get_ssl_certifile` | `SSLCertiFileFunc` | 인증서 파일 읽기 |
+| `download_n_unzip` | `DownloadNUnzipFunc` | 다운로드 + 압축 해제 |
+| `set_properties` | `SetPropertiesFunc` | `agent.properties` 원격 변경/조회 |
+
+### set_properties 규칙 (docs/SetProperties-Requirements.md)
+- `additional_params`: `{"delete":["k1"], "upsert":[{"k2":"v2"}]}`
+- **`token` 은 delete/upsert 불가** (에러) 이고 결과 JSON 에서도 **완전 제외**. 그 외 민감 항목은 모두 대상
+- 검증 실패 시 **전체 거부** (부분 적용 없음), 빈 요청 `{}` 은 **조회** 동작
+- 파일만 갱신하고 **재기동/hot reload 는 하지 않는다**
+- 실패는 예외가 아니라 `isOk=false` ResultVO 로 반환할 것 —
+  `ExeAgentFunc` 는 예외 시 `rtn=-1` 이라 `sendResults()` 가 호출되지 않는다
+
 ## Recent Fixes (2025-12)
 1. OAuth2 token request now uses correct Content-Type (`application/x-www-form-urlencoded`)
 2. Log directory existence check added
@@ -74,3 +93,4 @@ HTTP_PROXY=http://70.10.15.10:8080 HTTPS_PROXY=http://70.10.15.10:8080 \
 4. Version management unified to Version.java (single source of truth)
 5. JAR filename simplified to `mwagent.jar` (no version suffix)
 6. All 215 tests passing
+7. `set_properties` Agent Function 추가 (0000.0010.0001) — `agent.properties` 원격 변경/조회

@@ -109,7 +109,9 @@ public class AgentLifecycleManager implements AgentLifecycle {
                 try {
                     mqttService.start();
                     shutdownHandler.registerService(mqttService);
-                } catch (Exception e) {
+                } catch (Exception | LinkageError e) {
+                    // LinkageError 도 함께 받는다. paho jar 누락 시의 NoClassDefFoundError 는
+                    // Exception 이 아니어서 이 catch 를 통과하면 에이전트 전체가 죽는다.
                     logger.log(Level.SEVERE, "MQTT service failed to start. Continuing without MQTT.", e);
                 }
             } else if (!getConfig().isMqtt_enabled()) {

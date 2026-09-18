@@ -23,6 +23,7 @@ public class AgentFuncFactory {
 			case "get_ssl_certi" : return new SSLCertiFunc();
 			case "get_ssl_certifile" : return new SSLCertiFileFunc();
 			case "download_n_unzip" : return new  DownloadNUnzipFunc();
+			case "set_properties" : return new SetPropertiesFunc();
 			default:
 		    	try {
 		    		Class<?> agentFunc = Class.forName(functionType);
