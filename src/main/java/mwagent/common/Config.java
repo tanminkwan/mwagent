@@ -1,9 +1,11 @@
 package mwagent.common;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
@@ -13,9 +15,12 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -473,11 +478,20 @@ public final class Config implements ConfigurationProvider {
             sb.append(newLine).append(eol);
         }
 
+        writeAtomically(file, sb.toString(), cs);
+    }
+
+    /**
+     * Write content through a temp file in the same directory and move it over the target, so a
+     * crash or a concurrent reader can never observe a truncated / half-written file.
+     */
+    private static void writeAtomically(File file, String content, Charset cs) throws IOException {
+
         File dir = file.getAbsoluteFile().getParentFile();
         File tmp = File.createTempFile(file.getName() + ".", ".tmp", dir);
         try {
             try (Writer w = new OutputStreamWriter(new FileOutputStream(tmp), cs)) {
-                w.write(sb.toString());
+                w.write(content);
                 w.flush();
             }
             try {
@@ -575,6 +589,159 @@ public final class Config implements ConfigurationProvider {
             }
         }
         return sb.toString();
+    }
+
+    /**
+     * Apply a batch of deletes and upserts to agent.properties and return the resulting content
+     * as an ordered key-value map. Backs the "set_properties" agent function.
+     *
+     * When both collections are empty nothing is written at all and the call degenerates into a
+     * plain read, which is how set_properties implements its query mode.
+     *
+     * Filtering out protected keys such as "token" is the caller's responsibility.
+     */
+    public Map<String, String> applyAndReadProperties(List<String> deleteKeys,
+                                                      Map<String, String> upsertPairs) throws IOException {
+        return applyAndReadProperties(new File("agent.properties"), deleteKeys, upsertPairs);
+    }
+
+    /**
+     * File-explicit variant of {@link #applyAndReadProperties(List, Map)}, used by the tests.
+     *
+     * Write and read-back happen under the same lock as the token update, so a concurrent
+     * refresh can neither interleave with the rewrite nor change the file in between.
+     */
+    public static Map<String, String> applyAndReadProperties(File file, List<String> deleteKeys,
+                                                             Map<String, String> upsertPairs) throws IOException {
+
+        boolean hasDeletes = deleteKeys != null && !deleteKeys.isEmpty();
+        boolean hasUpserts = upsertPairs != null && !upsertPairs.isEmpty();
+
+        synchronized (PROPERTY_FILE_LOCK) {
+            if (hasDeletes || hasUpserts) {
+                applyPropertiesInFile(file, deleteKeys, upsertPairs);
+            }
+            return readAllProperties(file);
+        }
+    }
+
+    /**
+     * Line-oriented, atomic rewrite applying several deletes and upserts in a single pass.
+     * Package-private so it can be unit tested against a temp file.
+     *
+     * Deleted keys lose every occurrence (continuation lines included). An upserted key keeps the
+     * position of its first occurrence and any later duplicate is dropped, so the file ends up with
+     * exactly one line per touched key - Properties.load() would otherwise let a stale duplicate
+     * further down the file win. Keys absent from the file are appended at the end. Untouched
+     * lines - comments, blanks and the other entries - are rewritten byte-for-byte, as in
+     * updatePropertyInFile.
+     *
+     * Java 8 compatible (no Files.readString / String.isBlank etc).
+     */
+    static void applyPropertiesInFile(File file, List<String> deleteKeys,
+                                      Map<String, String> upsertPairs) throws IOException {
+
+        Charset cs = StandardCharsets.ISO_8859_1;
+
+        String content = file.exists()
+                ? new String(Files.readAllBytes(file.toPath()), cs)
+                : "";
+
+        String eol = content.contains("\r\n") ? "\r\n" : "\n";
+        String[] lines = content.isEmpty() ? new String[0] : content.split("\r?\n", -1);
+
+        Set<String> deletes = new LinkedHashSet<String>();
+        if (deleteKeys != null) {
+            deletes.addAll(deleteKeys);
+        }
+        Map<String, String> upserts = new LinkedHashMap<String, String>();
+        if (upsertPairs != null) {
+            upserts.putAll(upsertPairs);
+        }
+        Set<String> written = new LinkedHashSet<String>();
+
+        List<String> out = new ArrayList<String>(lines.length + upserts.size() + 1);
+
+        int i = 0;
+        while (i < lines.length) {
+            String key = parsePropertyKey(lines[i]);
+            if (key != null && (deletes.contains(key) || upserts.containsKey(key))) {
+                if (upserts.containsKey(key) && written.add(key)) {
+                    out.add(key + "=" + escapePropertyValue(upserts.get(key)));
+                }
+                // Drop the old entry together with its continuation lines
+                while (hasContinuation(lines[i]) && i + 1 < lines.length) {
+                    i++;
+                }
+                i++;
+                continue;
+            }
+            out.add(lines[i]);
+            i++;
+        }
+
+        if (written.size() < upserts.size()) {
+            // split(..., -1) leaves a trailing "" when the file ends with a line break. Create one
+            // if it is missing so appended entries never land on the last existing line.
+            if (out.isEmpty() || !out.get(out.size() - 1).isEmpty()) {
+                out.add("");
+            }
+            int insertAt = out.size() - 1;
+            for (Map.Entry<String, String> entry : upserts.entrySet()) {
+                if (!written.contains(entry.getKey())) {
+                    out.add(insertAt++, entry.getKey() + "=" + escapePropertyValue(entry.getValue()));
+                }
+            }
+        }
+
+        StringBuilder sb = new StringBuilder(content.length() + 64);
+        for (int n = 0; n < out.size(); n++) {
+            sb.append(out.get(n));
+            if (n < out.size() - 1) {
+                sb.append(eol);
+            }
+        }
+
+        writeAtomically(file, sb.toString(), cs);
+    }
+
+    /**
+     * Read a .properties file into a map that keeps the order the keys appear in the file.
+     * Values are decoded by java.util.Properties, so escapes and continuation lines are resolved.
+     * Package-private so it can be unit tested against a temp file.
+     */
+    static Map<String, String> readAllProperties(File file) throws IOException {
+
+        Map<String, String> ordered = new LinkedHashMap<String, String>();
+
+        if (!file.exists()) {
+            return ordered;
+        }
+
+        Properties prop = new Properties();
+        InputStream in = new FileInputStream(file);
+        try {
+            prop.load(in);
+        } finally {
+            in.close();
+        }
+
+        String content = new String(Files.readAllBytes(file.toPath()), StandardCharsets.ISO_8859_1);
+        for (String line : content.split("\r?\n", -1)) {
+            String key = parsePropertyKey(line);
+            if (key != null && !ordered.containsKey(key) && prop.containsKey(key)) {
+                ordered.put(key, prop.getProperty(key));
+            }
+        }
+
+        // Keys whose name needed unescaping are not matched above; append them so nothing is lost.
+        for (String name : prop.stringPropertyNames()) {
+            if (!ordered.containsKey(name)) {
+                ordered.put(name, prop.getProperty(name));
+            }
+        }
+
+        return ordered;
     }
 
     // ========== ConfigurationProvider Interface Implementation ==========

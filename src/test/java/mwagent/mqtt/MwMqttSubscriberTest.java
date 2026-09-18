@@ -338,6 +338,69 @@ class MwMqttSubscriberTest {
     }
 
     // ------------------------------------------------------------------
+    // SUBACK reason code 해석
+    //
+    // MQTT v5 에서 ACL 거부는 MqttException 이 아니라 SUBACK 의 reason code 로
+    // 온다. 이 판정이 틀리면 "구독 성공 로그는 남았는데 명령이 안 온다" 는
+    // 진단 불가 상태가 된다.
+    // ------------------------------------------------------------------
+
+    @Test
+    void rejectedTopics_WhenAllGranted_ShouldBeNull() {
+        String[] topics = { "cmd/agent-1/req", "cmd/broadcast/req" };
+
+        assertThat(MwMqttSubscriber.rejectedTopics(topics, new int[] { 1, 1 })).isNull();
+    }
+
+    @Test
+    void rejectedTopics_WhenNotAuthorized_ShouldNameTopicAndReason() {
+        String[] topics = { "cmd/agent-1/req", "cmd/broadcast/req" };
+
+        String rejected = MwMqttSubscriber.rejectedTopics(topics, new int[] { 1, 135 });
+
+        // 어느 토픽이 왜 거부됐는지가 로그의 유일한 단서다
+        assertThat(rejected).contains("cmd/broadcast/req")
+                .contains("rc=135")
+                .contains("Not authorized")
+                .doesNotContain("cmd/agent-1/req");
+    }
+
+    @Test
+    void grantedTopics_ShouldExcludeRejectedOnes() {
+        String[] topics = { "cmd/agent-1/req", "cmd/broadcast/req" };
+
+        String granted = MwMqttSubscriber.grantedTopics(topics, new int[] { 1, 135 });
+
+        // 거부된 토픽이 성공 줄에 섞이면 안 된다 (이게 원래의 오진 원인이었다)
+        assertThat(granted).contains("cmd/agent-1/req").doesNotContain("cmd/broadcast/req");
+    }
+
+    @Test
+    void grantedTopics_WithQos0Grant_ShouldStillCountAsGranted() {
+        String[] topics = { "cmd/agent-1/req" };
+
+        assertThat(MwMqttSubscriber.grantedTopics(topics, new int[] { 0 }))
+                .contains("cmd/agent-1/req");
+        assertThat(MwMqttSubscriber.rejectedTopics(topics, new int[] { 0 })).isNull();
+    }
+
+    @Test
+    void reasonCodes_WhenUnavailable_ShouldAssumeAllGranted() {
+        String[] topics = { "cmd/agent-1/req", "cmd/broadcast/req" };
+
+        // 토큰이 reason code 를 주지 않으면 거부라고 단정할 근거가 없다
+        assertThat(MwMqttSubscriber.grantedTopics(topics, null))
+                .contains("cmd/agent-1/req").contains("cmd/broadcast/req");
+        assertThat(MwMqttSubscriber.rejectedTopics(topics, null)).isNull();
+    }
+
+    @Test
+    void reasonCodeName_WithUnknownCode_ShouldNotReturnNull() {
+        assertThat(MwMqttSubscriber.reasonCodeName(200)).isEqualTo("unknown");
+        assertThat(MwMqttSubscriber.reasonCodeName(143)).isEqualTo("Topic filter invalid");
+    }
+
+    // ------------------------------------------------------------------
     // helpers
     //
     // 보고 주기는 1시간이라 실시간으로 기다릴 수 없다. 시계 대신 내부 타임스탬프를

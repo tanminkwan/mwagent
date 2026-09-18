@@ -44,6 +44,7 @@ public enum AgentErrorCode {
     CONFIG_INVALID(5000, "Invalid configuration"),
     CONFIG_MISSING_REQUIRED(5001, "Missing required configuration"),
     CONFIG_PARSE_ERROR(5002, "Configuration parse error"),
+    CONFIG_PROTECTED_KEY(5003, "Protected configuration key"),
 
     // Agent status codes (기존 코드와의 호환성)
     AGENT_NOT_REGISTERED(-1, "Agent not registered"),

@@ -52,6 +52,10 @@ public class MwMqttSubscriber {
     private static final long REPORT_MS = 3_600_000L;
     /** cmdId 멱등성 캐시 크기. QoS1 은 at-least-once 이므로 중복 수신이 정상이다. */
     private static final int SEEN_CACHE_SIZE = 1000;
+    /** 전 에이전트 공통 명령 토픽. agent 별 토픽과 함께 구독한다. */
+    private static final String BROADCAST_TOPIC = "cmd/broadcast/req";
+    /** SUBACK reason code 가 이 값 이상이면 구독 실패다 (MQTT v5 §3.9.3). */
+    private static final int SUBACK_FAILURE_MIN = 0x80;
 
     private final Logger logger = getConfig().getLogger();
 
@@ -184,18 +188,101 @@ public class MwMqttSubscriber {
 
     /** 재접속 시에도 매번 재구독한다. cleanStart=false 라도 안전을 위해. */
     private void subscribeAll(boolean reconnect) {
+        String[] topics = { commandTopic(), BROADCAST_TOPIC };
         try {
-            client.subscribe(commandTopic(), 1);
-            client.subscribe("cmd/broadcast/req", 1);
+            // 두 토픽을 한 SUBSCRIBE 로 보낸다. SUBACK 의 reason code 가 topics
+            // 순서와 1:1 로 대응하므로 어느 토픽이 거부됐는지 특정할 수 있다.
+            IMqttToken token = client.subscribe(topics, new int[] { 1, 1 });
+            int[] codes = token == null ? null : token.getReasonCodes();
 
-            if (reconnect) {
-                logger.info("MQTT resubscribed: " + commandTopic());
-            } else {
-                logger.info("MQTT subscribed: " + commandTopic());
+            String verb = reconnect ? "resubscribed" : "subscribed";
+            String granted = grantedTopics(topics, codes);
+            if (granted != null) {
+                logger.info("MQTT " + verb + ": " + granted);
+            }
+
+            // MQTT v5 에서 ACL 거부는 MqttException 이 아니라 SUBACK 의 reason code
+            // 로 온다. 토큰을 버리면 "구독 로그는 남았는데 명령이 안 온다" 가 된다.
+            String rejected = rejectedTopics(topics, codes);
+            if (rejected != null) {
+                logger.severe("MQTT subscribe rejected by broker (clientId=" + agentId
+                        + "): " + rejected + ". Commands will NOT arrive on those topics."
+                        + " Check broker ACL for this client.");
             }
         } catch (MqttException e) {
-            logger.log(Level.SEVERE, "MQTT subscribe failed. topic=" + commandTopic(), e);
+            logger.log(Level.SEVERE, "MQTT subscribe failed. topics=" + join(topics), e);
         }
+    }
+
+    /**
+     * SUBACK 에서 허가된 토픽만 "topic(qos=n)" 형태로 모은다. 없으면 null.
+     * reason code 를 알 수 없으면(codes == null) 판단 근거가 없으므로 전부 허가로 본다.
+     */
+    static String grantedTopics(String[] topics, int[] codes) {
+        if (topics == null) {
+            return null;
+        }
+        if (codes == null) {
+            return join(topics);
+        }
+        StringBuilder sb = new StringBuilder();
+        int n = Math.min(topics.length, codes.length);
+        for (int i = 0; i < n; i++) {
+            if (codes[i] < SUBACK_FAILURE_MIN) {
+                append(sb, topics[i] + "(qos=" + codes[i] + ")");
+            }
+        }
+        return sb.length() == 0 ? null : sb.toString();
+    }
+
+    /**
+     * SUBACK 에서 거부된(reason code 0x80 이상) 토픽만 "topic(rc=135 Not authorized)"
+     * 형태로 모은다. 전부 허가되었거나 판단할 수 없으면 null.
+     */
+    static String rejectedTopics(String[] topics, int[] codes) {
+        if (topics == null || codes == null) {
+            return null;
+        }
+        StringBuilder sb = new StringBuilder();
+        int n = Math.min(topics.length, codes.length);
+        for (int i = 0; i < n; i++) {
+            if (codes[i] >= SUBACK_FAILURE_MIN) {
+                append(sb, topics[i] + "(rc=" + codes[i] + " " + reasonCodeName(codes[i]) + ")");
+            }
+        }
+        return sb.length() == 0 ? null : sb.toString();
+    }
+
+    /** SUBACK 실패 reason code 를 운영자가 바로 알아볼 이름으로 바꾼다. */
+    static String reasonCodeName(int code) {
+        switch (code) {
+            case 128: return "Unspecified error";
+            case 131: return "Implementation specific error";
+            case 135: return "Not authorized";
+            case 143: return "Topic filter invalid";
+            case 151: return "Quota exceeded";
+            case 158: return "Shared subscriptions not supported";
+            case 161: return "Subscription identifiers not supported";
+            case 162: return "Wildcard subscriptions not supported";
+            default:  return "unknown";
+        }
+    }
+
+    private static String join(String[] topics) {
+        StringBuilder sb = new StringBuilder();
+        if (topics != null) {
+            for (String t : topics) {
+                append(sb, t);
+            }
+        }
+        return sb.toString();
+    }
+
+    private static void append(StringBuilder sb, String item) {
+        if (sb.length() > 0) {
+            sb.append(", ");
+        }
+        sb.append(item);
     }
 
     /**

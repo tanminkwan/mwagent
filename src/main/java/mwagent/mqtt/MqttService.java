@@ -110,6 +110,17 @@ public class MqttService implements AgentLifecycle {
             state = LifecycleState.FAILED;
             logger.log(Level.SEVERE, "Failed to start MQTT service", e);
             throw e;
+
+        } catch (LinkageError e) {
+            // paho jar 이 lib/ 에 없거나 버전이 맞지 않으면 MwMqttSubscriber 로딩 시점에
+            // NoClassDefFoundError 가 난다. Error 는 Exception 이 아니어서 호출자의
+            // catch(Exception) 을 모두 통과해 main 을 그대로 죽이고, 로거가 한 번도
+            // 호출되지 않아 로그 파일에 아무 단서도 남지 않는다. MQTT 는 선택적
+            // 경로이므로 여기서 Exception 으로 감싸 기동이 계속되게 한다.
+            state = LifecycleState.FAILED;
+            logger.log(Level.SEVERE,
+                    "Failed to start MQTT service (MQTT library missing or incompatible)", e);
+            throw new Exception("MQTT service start failed: " + e, e);
         }
     }
 
