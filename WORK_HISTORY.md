@@ -34,7 +34,7 @@
 
 #### 3. mwm-app 연동 확인 (app 세션과 협업)
 - ✅ 헤더 형식(세미콜론 key=value) 확정, broadcast probe 기능은 이번에 하지 않음
-- ✅ 로컬 agent(`hennry-PN40_hennry_J`) + 앱으로 실측 확인
+- ✅ 로컬 개발 agent + 앱으로 실측 확인
   - `connected` 저장, MQTT 명령 수신 후 `last_msg` 반영
   - 브로커 중지(15:33:06) → `unstable;events=1;reason=rc=32109 Connection lost`
   - 브로커 재시작 → `connected`, `events=1` → 60초 뒤 0 으로 리셋
