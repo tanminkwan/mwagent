@@ -94,3 +94,4 @@ HTTP_PROXY=http://70.10.15.10:8080 HTTPS_PROXY=http://70.10.15.10:8080 \
 5. JAR filename simplified to `mwagent.jar` (no version suffix)
 6. All 215 tests passing
 7. `set_properties` Agent Function 추가 (0000.0010.0001) — `agent.properties` 원격 변경/조회
+8. 명령 폴링에 `X-Mqtt-Status` 헤더 추가 (0000.0010.0002) — `mqtt_enabled=true` 일 때만 MQTT 수신 상태 보고
