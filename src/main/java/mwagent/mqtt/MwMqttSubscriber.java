@@ -83,6 +83,8 @@ public class MwMqttSubscriber {
     /** 최초 접속이 한 번이라도 성공했는지. false 면 Paho 자동 재접속이 무장되지 않은 상태다. */
     private volatile boolean everConnected = false;
     private final AtomicInteger events = new AtomicInteger();
+    /** 마지막으로 메시지를 수신한 시각. 연결됨 != 실제 수신 중 이므로 별도로 둔다. */
+    private volatile long lastMessageAt = 0L;
 
     public MwMqttSubscriber(String brokerAddress, String agentId, String credential) {
         this.brokerUri = normalizeUri(brokerAddress);
@@ -147,6 +149,7 @@ public class MwMqttSubscriber {
 
             @Override
             public void messageArrived(String topic, MqttMessage message) {
+                lastMessageAt = System.currentTimeMillis();
                 dispatch(topic, message);
             }
 
@@ -451,6 +454,58 @@ public class MwMqttSubscriber {
 
     public boolean isConnected() {
         return client != null && client.isConnected();
+    }
+
+    /**
+     * X-Mqtt-Status 헤더 값. 명령 폴링 때마다 서버에 수신 상태를 알린다.
+     *
+     *   {state}[;since={epoch s}][;events={n}][;last_msg={epoch s}][;reason={text}]
+     *
+     *  - state: connected / unstable / never_connected
+     *  - since: 현재 state 가 시작된 시각 (모르면 생략)
+     *  - events: 마지막 복구 이후 끊김/에러 횟수 (복구 판정 시 0 으로 리셋)
+     *  - last_msg: 마지막 메시지 수신 시각 (수신 이력 없으면 생략)
+     *  - reason: 끊긴 상태일 때만. 마지막 끊김 사유
+     *
+     * volatile 필드만 읽으므로 폴링 스레드를 막지 않는다.
+     */
+    String statusHeader() {
+        StringBuilder sb = new StringBuilder();
+        boolean connected = isConnected();
+        long since;
+
+        if (connected) {
+            sb.append("connected");
+            since = connectedAt;
+        } else {
+            sb.append(everConnected ? "unstable" : "never_connected");
+            since = unstableSince;
+        }
+
+        if (since > 0L) {
+            sb.append(";since=").append(since / 1000L);
+        }
+        sb.append(";events=").append(events.get());
+        if (lastMessageAt > 0L) {
+            sb.append(";last_msg=").append(lastMessageAt / 1000L);
+        }
+        if (!connected) {
+            sb.append(";reason=").append(headerSafe(lastReason));
+        }
+        return sb.toString();
+    }
+
+    /** 헤더에 실을 수 있게 ';' 와 제어문자·비 ASCII 를 치환하고 길이를 제한한다. */
+    static String headerSafe(String text) {
+        if (text == null || text.isEmpty()) {
+            return "unknown";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < text.length() && sb.length() < 120; i++) {
+            char c = text.charAt(i);
+            sb.append(c < 0x20 || c > 0x7e || c == ';' ? '_' : c);
+        }
+        return sb.toString();
     }
 
     private String commandTopic() {

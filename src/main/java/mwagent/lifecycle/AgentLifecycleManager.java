@@ -2,6 +2,8 @@ package mwagent.lifecycle;
 
 import static mwagent.common.Config.getConfig;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,6 +28,9 @@ import mwagent.vo.RawCommandsVO;
  * Phase 4: Shutdown (Graceful 종료)
  */
 public class AgentLifecycleManager implements AgentLifecycle {
+
+    /** 명령 폴링 시 MQTT 수신 상태를 서버에 알리는 헤더. mqtt_enabled=true 일 때만 보낸다. */
+    static final String MQTT_STATUS_HEADER = "X-Mqtt-Status";
 
     private final Logger logger;
     private LifecycleState state;
@@ -309,7 +314,7 @@ public class AgentLifecycleManager implements AgentLifecycle {
         String path = getConfig().getGet_command_uri() + "/" + getConfig().getAgent_id();
         logger.fine("Polling commands: " + path);
 
-        MwResponseVO mrvo = Common.httpGET(path, getConfig().getAccess_token());
+        MwResponseVO mrvo = Common.httpGET(path, getConfig().getAccess_token(), mqttStatusHeaders());
 
         // Access Token Expired
         if (mrvo.getStatusCode() == 401) {
@@ -332,6 +337,23 @@ public class AgentLifecycleManager implements AgentLifecycle {
         }
 
         return rcv;
+    }
+
+    /**
+     * 폴링 요청에 실을 MQTT 수신 상태 헤더. mqtt_enabled=false 면 null (헤더 없음).
+     * 상태 조회 실패가 폴링 자체를 막아서는 안 되므로 예외는 삼킨다.
+     */
+    Map<String, String> mqttStatusHeaders() {
+        if (!getConfig().isMqtt_enabled()) {
+            return null;
+        }
+        try {
+            String status = mqttService.statusHeader();
+            return status == null ? null : Collections.singletonMap(MQTT_STATUS_HEADER, status);
+        } catch (Exception | LinkageError e) {
+            logger.log(Level.FINE, "Failed to build MQTT status header", e);
+            return null;
+        }
     }
 
     /**

@@ -418,6 +418,62 @@ class MwMqttSubscriberTest {
         shiftLongField(s, "unstableSince", millis);
     }
 
+    // ------------------------------------------------------------------
+    // statusHeader - 폴링에 실어 보내는 X-Mqtt-Status 값
+    // ------------------------------------------------------------------
+
+    @Test
+    void statusHeader_WhenNeverConnected_ShouldReportNeverConnectedWithReason() throws Exception {
+        MwMqttSubscriber s = newSubscriber();
+        setLastReason(s, "connect refused");
+
+        assertThat(s.statusHeader())
+                .startsWith("never_connected;")
+                .contains(";events=0")
+                .endsWith(";reason=connect refused")
+                .doesNotContain("since=")
+                .doesNotContain("last_msg=");
+    }
+
+    @Test
+    void statusHeader_WhenDisconnectedAfterConnect_ShouldReportUnstableSince() throws Exception {
+        MwMqttSubscriber s = newAlreadyConnectedOnce();
+        s.checkConnection();
+
+        String header = s.statusHeader();
+        assertThat(header).startsWith("unstable;since=").contains(";events=1").contains(";reason=");
+    }
+
+    @Test
+    void statusHeader_ShouldIncludeLastMessageTimeInSeconds() throws Exception {
+        MwMqttSubscriber s = newSubscriber();
+        Field f = MwMqttSubscriber.class.getDeclaredField("lastMessageAt");
+        f.setAccessible(true);
+        f.setLong(s, 1759123500123L);
+
+        assertThat(s.statusHeader()).contains(";last_msg=1759123500;");
+    }
+
+    @Test
+    void headerSafe_ShouldReplaceSeparatorsControlAndNonAscii() {
+        assertThat(MwMqttSubscriber.headerSafe("a;b\r\nc 연결")).isEqualTo("a_b__c __");
+    }
+
+    @Test
+    void headerSafe_ShouldLimitLength() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 500; i++) {
+            sb.append('x');
+        }
+        assertThat(MwMqttSubscriber.headerSafe(sb.toString())).hasSize(120);
+    }
+
+    @Test
+    void headerSafe_WithNullOrEmpty_ShouldReturnUnknown() {
+        assertThat(MwMqttSubscriber.headerSafe(null)).isEqualTo("unknown");
+        assertThat(MwMqttSubscriber.headerSafe("")).isEqualTo("unknown");
+    }
+
     private static void shiftLongField(MwMqttSubscriber s, String name, long millis) throws Exception {
         Field f = MwMqttSubscriber.class.getDeclaredField(name);
         f.setAccessible(true);
