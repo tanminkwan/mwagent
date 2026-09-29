@@ -332,7 +332,7 @@ mwagent/
 │       │       │   └── registration/
 │       │       │       ├── BootstrapServiceTest.java
 │       │       │       └── RegistrationServiceTest.java
-│       │       ├── mqtt/                        # ★ MQTT 테스트 (32개)
+│       │       ├── mqtt/                        # ★ MQTT 테스트 (47개)
 │       │       │   ├── MqttServiceTest.java
 │       │       │   └── MwMqttSubscriberTest.java
 │       │       ├── agentfunction/
@@ -718,6 +718,9 @@ access_token 만료 (401 응답)
 | GET | `/api/v1/agent/getRefreshToken/{agent_id}` | Refresh Token 조회 |
 | POST | `/api/v1/command/result` | 명령 실행 결과 전송 |
 
+`mqtt_enabled=true` 이면 명령 조회(폴링) 요청에 `X-Mqtt-Status` 헤더가 붙습니다.
+BOOT 요청과 결과 전송에는 붙지 않습니다. [수신 상태 보고](#수신-상태-보고-x-mqtt-status) 참조.
+
 #### OAuth2 Grant Types
 
 | Grant Type | 용도 | 인증 방식 |
@@ -770,6 +773,7 @@ MQTT 는 **실시간 명령 수령만** 담당합니다. 폴링 주기(`command_
 
 구독 전용입니다. 결과·상태·LWT 를 일절 발행하지 않으므로 브로커 ACL 에는
 `cmd/{agent_id}/req` 와 `cmd/broadcast/req` **구독 권한만** 있으면 됩니다.
+MQTT 수신 상태는 MQTT 로 발행하지 않고 REST 폴링 헤더로 보고합니다 (아래 참조).
 
 #### 연결 감시
 
@@ -780,6 +784,44 @@ MQTT 는 **실시간 명령 수령만** 담당합니다. 폴링 주기(`command_
   브로커가 살아나면 **에이전트 재기동 없이** 자동으로 접속·재구독합니다
 - 접속이 60초 이상 유지되면 복구로 판정해 `MQTT recovered` 를 남깁니다
 - MQTT 기동 실패는 에이전트 기동을 막지 않습니다 (Kafka 와도 서로 독립)
+
+#### 수신 상태 보고 (X-Mqtt-Status)
+
+`mqtt_enabled=true` 이면 주기적인 명령 조회 요청(`GET {get_command_uri}/{agent_id}`)에
+MQTT 수신 상태를 헤더로 실어 보냅니다. 따로 요청을 만들지 않으므로 보고 주기는
+`command_check_cycle` 과 같습니다.
+
+```
+GET /api/v1/command/{agent_id}
+Authorization: Bearer {access_token}
+X-Mqtt-Status: connected;since=1790660594;events=0;last_msg=1790660700
+```
+
+- `mqtt_enabled=false` 이면 헤더를 보내지 않습니다. 서버는 헤더가 없으면 MQTT 비활성
+  (또는 이 기능이 없는 구버전 에이전트)으로 봅니다
+- BOOT 요청과 결과 전송(`POST /api/v1/command/result`)에는 붙지 않습니다
+- 형식: `{state}[;since={epoch 초}][;events={n}][;last_msg={epoch 초}][;reason={text}]` (JSON 아님)
+
+| state | 의미 | 함께 오는 필드 |
+|-------|------|----------------|
+| `connected` | 브로커에 연결됨 | since(연결 시각), events, last_msg |
+| `unstable` | 한 번 붙은 뒤 끊김. Paho 가 자동 재접속 중 | since(끊김 시작 시각), events, last_msg, reason |
+| `never_connected` | 기동 후 한 번도 붙지 못함. 60초마다 직접 재시도 | events, reason, since |
+| `not_started` | `mqtt_enabled=true` 인데 구독자가 떠 있지 않음 | reason: `mqtt_broker_address not set` / `start_failed` / `not_running` |
+
+| 필드 | 설명 |
+|------|------|
+| `since` | 현재 state 가 시작된 시각. 끊김은 60초 감시 주기에 기록되므로 그 전에는 빠질 수 있음 |
+| `events` | 마지막 복구 판정(재연결 후 60초 유지) 이후의 끊김·에러 횟수. 복구되면 0 으로 리셋 |
+| `last_msg` | MQTT 메시지를 마지막으로 받은 시각. 수신 이력이 없으면 생략. "연결됨"과 "실제 수신 중"을 구분하는 용도 |
+| `reason` | 연결되지 않은 상태일 때만. 마지막 끊김 사유 (예: `rc=32109 Connection lost`) |
+
+파싱 규칙:
+- 모든 필드는 선택값입니다. 값을 모르면 생략됩니다
+- `;` 로 나눈 첫 토큰이 state 이고, 나머지는 **첫 `=` 기준**으로 key/value 를 나눕니다 (`reason` 값 안에 `=` 가 있을 수 있음)
+- `reason` 은 `;`·제어문자·비 ASCII 를 `_` 로 치환하고 최대 120자로 자릅니다
+- 모르는 state 는 무시하지 말고 원문을 보존해 주세요 (향후 확장 대비)
+- 상태 값을 만들다 실패해도 폴링은 계속되고 헤더만 빠집니다
 
 ### 결과 전송 방식 선택
 
@@ -1100,6 +1142,17 @@ mqtt_credential=YOUR_MQTT_PASSWORD
 **설계 원칙:** MQTT 는 실시간 명령 수령만 담당합니다. 결과 전송·토큰 갱신·명령 폴링은
 계속 REST API 가 담당하므로 API 서버는 항상 필요합니다.
 
+### Phase 8: MQTT 수신 상태 보고 (2026-09-29)
+
+**완료 항목:**
+- ✅ 명령 폴링 요청에 `X-Mqtt-Status` 헤더 추가 (`mqtt_enabled=true` 일 때만)
+  - MQTT 는 구독 전용 유지 — 상태도 발행하지 않고 기존 REST 폴링에 싣는다
+  - state: `connected` / `unstable` / `never_connected` / `not_started`
+  - 필드: `since`, `events`, `last_msg`(마지막 수신 시각), `reason`
+- ✅ mwm-app 과 연동 확인: 연결, 수신(`last_msg`), 브로커 중지·복구, `mqtt_enabled` 토글
+- ✅ 단위 테스트 12개 추가
+- ✅ 버전 `0000.0010.0002`
+
 자세한 내용은 [WORK_HISTORY.md](WORK_HISTORY.md) 참조
 
 ## 문의 및 지원
@@ -1108,7 +1161,7 @@ mqtt_credential=YOUR_MQTT_PASSWORD
 
 ---
 
-**Last Updated**: 2026-09-15
-**Version**: 0000.0010.0000
-**Architecture**: Phase 7 - MQTT Command Subscription
+**Last Updated**: 2026-09-29
+**Version**: 0000.0010.0002
+**Architecture**: Phase 8 - MQTT Receive Status Reporting
 **Test Coverage**: 284 tests (255 passing, 23 skipped, 3 aborted, 3 known failures in SecurityValidatorTest/ExtractLogTest)
