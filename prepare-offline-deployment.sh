@@ -23,15 +23,17 @@ mkdir -p "$DEPLOY_DIR/src"
 echo "[2/5] Copying source code..."
 cp -r src/* "$DEPLOY_DIR/src/"
 
-# 3. 라이브러리 복사
-echo "[3/5] Copying library files (12 JARs)..."
+# 3. 라이브러리 검증 후 복사 (lib/*.jar 는 git 에 없다. 먼저 ./download-dependencies.sh 실행)
+echo "[3/5] Verifying and copying library files..."
+bash ./verify-lib.sh || { echo "ERROR: lib verification failed. Run ./download-dependencies.sh first."; exit 1; }
 cp lib/*.jar "$DEPLOY_DIR/lib/"
+cp lib/SHA256SUMS "$DEPLOY_DIR/lib/"
 
 # 4. 빌드 스크립트 복사
 echo "[4/5] Copying build scripts..."
 cp build-offline.sh "$DEPLOY_DIR/"
 cp build-offline.bat "$DEPLOY_DIR/"
-cp build.gradle "$DEPLOY_DIR/"
+cp verify-lib.sh verify-lib.ps1 "$DEPLOY_DIR/"
 chmod +x "$DEPLOY_DIR/build-offline.sh"
 
 # 5. 문서 복사

@@ -58,6 +58,14 @@ curl -L -o zstd-jni-1.5.2-1.jar \
 
 cd ..
 
+# 무결성 검증 (lib/SHA256SUMS 와 비교. 하나라도 다르면 중단)
+echo ""
+echo "Verifying checksums (lib/SHA256SUMS)..."
+if ! bash ./verify-lib.sh; then
+    echo "ERROR: Checksum mismatch. Do not use these files."
+    exit 1
+fi
+
 echo ""
 echo "========================================="
 echo "  다운로드 완료!"

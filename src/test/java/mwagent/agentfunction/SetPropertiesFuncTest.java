@@ -33,7 +33,7 @@ class SetPropertiesFuncTest {
             "token=secret-refresh-token\n" +
             "log_level=FINE\n" +
             "command_check_cycle=60\n" +
-            "mqtt_credential=BGL7DzZjt0GU1OcCMtZthtnY\n" +
+            "mqtt_credential=dummy-mqtt-credential\n" +
             "client.keystore.password=keystorePass\n";
 
     @TempDir
@@ -247,7 +247,7 @@ class SetPropertiesFuncTest {
         JSONObject json = resultJson(run("{}"));
 
         assertThat(json.get("client.keystore.password")).isEqualTo("keystorePass");
-        assertThat(json.get("mqtt_credential")).isEqualTo("BGL7DzZjt0GU1OcCMtZthtnY");
+        assertThat(json.get("mqtt_credential")).isEqualTo("dummy-mqtt-credential");
     }
 
     // ---------- validation failures ----------

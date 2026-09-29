@@ -80,6 +80,10 @@ MwManger는 분산 환경의 서버 관리를 자동화하기 위한 에이전�
 
 ### 오프라인 빌드 (인터넷 차단 환경)
 
+의존성 JAR 는 **git 에 들어 있지 않습니다.** 인터넷이 되는 PC 에서 받아 `lib/SHA256SUMS` 로
+검증한 뒤 반입합니다. 검증은 다운로드·반입 묶음 생성·오프라인 빌드 때마다 자동으로 수행됩니다
+(`verify-lib.sh` / `verify-lib.ps1`). 해시가 하나라도 다르면 중단합니다.
+
 **1단계: 의존성 다운로드 (인터넷 연결된 환경에서)**
 
 ```bash
@@ -90,12 +94,23 @@ MwManger는 분산 환경의 서버 관리를 자동화하기 위한 에이전�
 download-dependencies.bat
 ```
 
-**2단계: 오프라인 환경으로 전체 프로젝트 복사**
+**2단계: 반입 묶음 생성 후 오프라인 환경으로 복사**
 
-다음 디렉토리/파일들을 복사:
+```bash
+# Linux/Mac
+./prepare-offline-deployment.sh
+
+# Windows
+prepare-offline-deployment.bat
+```
+
+`mwagent-offline-deployment/` 에 다음이 들어갑니다:
 - `src/` - 소스 코드
-- `lib/` - 다운로드된 JAR 파일들 (12개)
-- `build-offline.sh` 또는 `build-offline.bat`
+- `lib/` - JAR 파일과 `SHA256SUMS`
+- `build-offline.sh`, `build-offline.bat`, `verify-lib.sh`, `verify-lib.ps1`
+
+SHA-256 도구(`sha256sum`/`shasum`/`openssl`, Windows 는 PowerShell 4.0+)가 없는 환경에서는
+경고를 남기고 검증을 건너뜁니다.
 
 **3단계: 오프라인 빌드 실행**
 
@@ -107,7 +122,7 @@ download-dependencies.bat
 build-offline.bat
 
 # 생성된 파일
-build/jar/mwagent-0000.0009.0006.jar
+build/mwagent.jar
 ```
 
 자세한 내용은 [lib/README.md](lib/README.md) 참조
@@ -123,19 +138,6 @@ mvn test
 
 # 생성된 파일
 target/mwagent-0000.0009.0006-jar-with-dependencies.jar
-```
-
-### Gradle 사용 (온라인 환경)
-
-```bash
-# Fat JAR 생성
-gradle fatJar
-
-# 테스트 실행
-gradle test
-
-# 생성된 파일
-build/libs/mwagent-all-0000.0009.0006.jar
 ```
 
 ## 버전 관리
@@ -247,7 +249,7 @@ CREATED → STARTING → RUNNING → STOPPING → STOPPED
 
 ## 프로젝트 구조
 
-표준 Maven/Gradle 프로젝트 구조를 따릅니다:
+표준 Maven 프로젝트 구조를 따릅니다:
 
 ```
 mwagent/
@@ -354,11 +356,11 @@ mwagent/
 │       └── resources/
 │           └── test-agent.properties           # 테스트용 설정
 │
-├── tools/                                       # ★ 빌드 도구
-│   └── apache-maven-3.9.6/                     # 오프라인 Maven
+├── lib/                                         # 의존성 JAR (git 미포함, download-dependencies 로 받음)
+│   └── SHA256SUMS                               # JAR 무결성 해시 (git 포함)
 │
 ├── pom.xml                                      # Maven 빌드 파일
-├── build.gradle                                 # Gradle 빌드 파일
+├── verify-lib.sh / verify-lib.ps1               # lib/ 무결성 검증
 ├── README.md                                    # 프로젝트 문서
 ├── TESTING.md                                   # 테스트 가이드
 ├── DEPENDENCIES.md                              # 의존성 정보
@@ -459,20 +461,16 @@ security.command_injection_check=false
 
 ### Fat JAR 실행 (권장)
 
-Maven 또는 Gradle로 빌드한 경우:
+Maven 으로 빌드한 경우:
 
 ```bash
-# Maven으로 빌드한 경우
 java -jar target/mwagent-0000.0009.0001-jar-with-dependencies.jar
-
-# Gradle로 빌드한 경우
-java -jar build/libs/mwagent-all-0000.0009.0001.jar
 ```
 
 ### Classpath 직접 지정
 
 ```bash
-java -cp "build/jar/mwagent-0000.0009.0001.jar:lib/*" mwagent.MwAgent
+java -cp "build/mwagent.jar:lib/*" mwagent.MwAgent
 ```
 
 ### 백그라운드 실행
@@ -874,12 +872,6 @@ mwagent.0.1.log
 ```bash
 # Maven으로 테스트 실행
 mvn test
-
-# Gradle로 테스트 실행
-gradle test
-
-# 오프라인 환경에서 Maven 테스트
-./tools/apache-maven-3.9.6/bin/mvn test
 ```
 
 ### 테스트 결과 (Phase 1)

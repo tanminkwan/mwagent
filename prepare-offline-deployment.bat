@@ -22,15 +22,22 @@ REM 2. 소스 코드 복사
 echo [2/5] Copying source code...
 xcopy /E /I /Q src %DEPLOY_DIR%\src
 
-REM 3. 라이브러리 복사
-echo [3/5] Copying library files (12 JARs)...
+REM 3. 라이브러리 검증 후 복사 (lib\*.jar 는 git 에 없다. 먼저 download-dependencies.bat 실행)
+echo [3/5] Verifying and copying library files...
+powershell -NoProfile -ExecutionPolicy Bypass -File verify-lib.ps1
+if errorlevel 1 (
+    echo ERROR: lib verification failed. Run download-dependencies.bat first.
+    exit /b 1
+)
 copy lib\*.jar %DEPLOY_DIR%\lib\ >nul
+copy lib\SHA256SUMS %DEPLOY_DIR%\lib\ >nul
 
 REM 4. 빌드 스크립트 복사
 echo [4/5] Copying build scripts...
 copy build-offline.sh %DEPLOY_DIR%\ >nul
 copy build-offline.bat %DEPLOY_DIR%\ >nul
-copy build.gradle %DEPLOY_DIR%\ >nul
+copy verify-lib.sh %DEPLOY_DIR%\ >nul
+copy verify-lib.ps1 %DEPLOY_DIR%\ >nul
 
 REM 5. 문서 복사
 echo [5/5] Copying documentation...

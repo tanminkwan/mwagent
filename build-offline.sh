@@ -19,8 +19,16 @@ echo "[1/5] Cleaning build directory..."
 rm -rf build/classes
 mkdir -p build/classes
 
-# 2. Classpath 설정
-echo "[2/5] Setting up classpath..."
+# 2. 라이브러리 검증 + Classpath 설정
+# lib/*.jar 는 git 에 없다. 온라인 PC 에서 download-dependencies.sh 로 받아 함께 반입한다.
+echo "[2/5] Verifying libraries and setting up classpath..."
+if ! ls lib/*.jar >/dev/null 2>&1; then
+    echo "ERROR: lib/*.jar not found. Run ./download-dependencies.sh on an online machine"
+    echo "       (or use the offline deployment package) and copy lib/ here."
+    exit 1
+fi
+bash ./verify-lib.sh || exit 1
+
 CLASSPATH=""
 for jar in lib/*.jar; do
     if [ -f "$jar" ]; then

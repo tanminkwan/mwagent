@@ -128,7 +128,7 @@ task 기록은 `docs/PLAN-001/TASK_<WS>-<n>_<주제>.md` 에 남기고, 목록�
 | Task | 내용 |
 |------|------|
 | 3-1 | CodeQL(java-kotlin, actions, `security-extended`)을 Advanced setup 으로 켠다. SpotBugs+FindSecBugs 를 Maven 에 붙인다 |
-| 3-2 | **C-1/C-2 TLS 검증 복구**. 기본값은 검증함으로 두고, 사설 CA 는 truststore 설정으로 지원한다. 이미 설치된 agent 가 자체 서명 인증서로 끊기지 않도록 설정 키·마이그레이션 안내·버전 공지를 함께 낸다 (호환성 영향이 가장 큰 항목). **착수할 때 app 세션에 연락한다** — app 의 nginx 인증서·CA 배포 방식(`certs/`, `init_certs.sh`)에 맞춘다 |
+| 3-2 | **C-1/C-2 TLS 검증 복구**. **방침(2026-09-29 사용자 결정): 기본은 JVM 기본 cacerts 로 검증하고, truststore 를 지정하면 그것으로 검증한다. 호스트명 검증을 켠다.** 기존 `truststore.path` / `truststore.password` 설정을 일반 HTTPS 에도 쓰는 방안을 우선 검토한다. 기본값은 검증함으로 두고, 사설 CA 는 truststore 설정으로 지원한다. 이미 설치된 agent 가 자체 서명 인증서로 끊기지 않도록 설정 키·마이그레이션 안내·버전 공지를 함께 낸다 (호환성 영향이 가장 큰 항목). **착수할 때 app 세션에 연락한다** — app 의 nginx 인증서·CA 배포 방식(`certs/`, `init_certs.sh`)에 맞춘다 |
 | 3-3 | **C-3 Zip Slip**. 정규화한 경로가 대상 디렉터리 안인지 검사하고, 벗어나면 거부한다. 두 unzip 구현을 하나로 합친다 |
 | 3-4 | **C-4/C-5 로그 정리**. token·비밀번호·명령 결과 원문을 로그에 남기지 않는다. 마스킹 도우미(app 의 `log_safe` 대응)를 만든다 |
 | 3-5 | C-6/C-7 은 위협 모델 문서(`docs/SPEC_0xx_threat_model.md`)에 근거를 적고, 도구 결과에서 사유와 함께 dismiss 한다 |
