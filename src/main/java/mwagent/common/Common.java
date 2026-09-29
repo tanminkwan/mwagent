@@ -10,6 +10,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.logging.Level;
 
 import javax.net.ssl.SSLContext;
@@ -270,6 +271,13 @@ public class Common {
     }
 
     public static MwResponseVO httpGET(String path, String token) {
+    	return httpGET(path, token, null);
+    }
+
+    /**
+     * extraHeaders 는 추가로 실을 요청 헤더. null 이거나 값이 null 인 항목은 보내지 않는다.
+     */
+    public static MwResponseVO httpGET(String path, String token, Map<String, String> extraHeaders) {
     	
     	MwResponseVO mrvo = new MwResponseVO();
     	
@@ -282,6 +290,13 @@ public class Common {
         	HttpGet request = new HttpGet(url);
             request.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
 			request.addHeader(HttpHeaders.AUTHORIZATION, "Bearer "+token);
+			if (extraHeaders != null) {
+				for (Map.Entry<String, String> h : extraHeaders.entrySet()) {
+					if (h.getValue() != null) {
+						request.addHeader(h.getKey(), h.getValue());
+					}
+				}
+			}
 
 			HttpResponse response = httpClient.execute(request);
             HttpEntity entity = response.getEntity();

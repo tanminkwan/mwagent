@@ -126,4 +126,31 @@ class MqttServiceTest {
 
         assertThat(service.getState()).isEqualTo(LifecycleState.STOPPED);
     }
+
+    @Test
+    void statusHeader_WhenDisabled_ShouldBeNull() {
+        Config.getConfig().setMqtt_enabled(false);
+        MqttService service = new MqttService();
+        service.setBrokerAddress("tcp://127.0.0.1:1");
+
+        assertThat(service.statusHeader()).isNull();
+    }
+
+    @Test
+    void statusHeader_WhenEnabledWithoutBroker_ShouldReportNotStarted() {
+        Config.getConfig().setMqtt_enabled(true);
+        MqttService service = new MqttService();
+
+        assertThat(service.statusHeader())
+                .isEqualTo("not_started;reason=mqtt_broker_address not set");
+    }
+
+    @Test
+    void statusHeader_WhenEnabledButNotStarted_ShouldReportNotRunning() {
+        Config.getConfig().setMqtt_enabled(true);
+        MqttService service = new MqttService();
+        service.setBrokerAddress("tcp://127.0.0.1:1");
+
+        assertThat(service.statusHeader()).isEqualTo("not_started;reason=not_running");
+    }
 }

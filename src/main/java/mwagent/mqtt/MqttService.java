@@ -190,6 +190,28 @@ public class MqttService implements AgentLifecycle {
         return disabledReason() == null;
     }
 
+    /**
+     * 명령 폴링에 실을 X-Mqtt-Status 헤더 값. mqtt_enabled=false 면 null (헤더를 보내지 않는다).
+     *
+     * 구독자가 없으면(브로커 주소 미설정, 기동 실패) not_started 로 알린다.
+     * 형식은 MwMqttSubscriber.statusHeader() 참조.
+     */
+    public String statusHeader() {
+        if (!getConfig().isMqtt_enabled()) {
+            return null;
+        }
+        String disabled = disabledReason();
+        if (disabled != null) {
+            // disabledReason() 는 고정 ASCII 문구라 치환이 필요 없다. 여기서 MwMqttSubscriber 를
+            // 건드리지 않아야 paho jar 누락 시에도 LinkageError 없이 값을 만들 수 있다.
+            return "not_started;reason=" + disabled;
+        }
+        if (subscriber == null) {
+            return "not_started;reason=" + (state == LifecycleState.FAILED ? "start_failed" : "not_running");
+        }
+        return subscriber.statusHeader();
+    }
+
     /** 구독자 반환 (테스트용) */
     MwMqttSubscriber getSubscriber() {
         return subscriber;
