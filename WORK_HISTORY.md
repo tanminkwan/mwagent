@@ -1,5 +1,54 @@
 # Work History - MwManger Agent
 
+## 2026-09-29 - MQTT 수신 상태 보고 (X-Mqtt-Status) (v0.10.2)
+
+### 작업 브랜치
+- `main` 브랜치에서 작업 (커밋 `c28bae7`, `5fc797b`, push 완료)
+
+### 완료된 작업
+
+#### 1. 명령 폴링에 `X-Mqtt-Status` 헤더 추가
+- ✅ 주기적 명령 조회 `GET {get_command_uri}/{agent_id}` 에만 헤더를 싣는다
+  - `mqtt_enabled=true` 일 때만 전송, `false` 면 헤더 자체가 없음
+  - BOOT 조회와 `POST /api/v1/command/result` 에는 붙이지 않음 (BOOT 시점엔 MQTT 기동 전)
+  - MQTT 는 구독 전용 유지 — 상태 보고도 기존 REST 폴링으로만 한다 (publish/LWT 없음)
+- ✅ 형식: `{state}[;since={epoch s}][;events={n}][;last_msg={epoch s}][;reason={text}]`
+
+| state | 의미 | 필드 |
+|-------|------|------|
+| `connected` | 브로커 연결됨 | since, events, last_msg(수신 이력 있을 때) |
+| `unstable` | 한 번 붙은 뒤 끊김, Paho 자동 재접속 중 | since, events, last_msg, reason |
+| `never_connected` | 기동 후 한 번도 못 붙음, 60초마다 재시도 | events, reason, since(첫 감시 주기 후) |
+| `not_started` | 구독자 미기동 | reason = `mqtt_broker_address not set` / `start_failed` / `not_running` |
+
+- ✅ `events` 는 마지막 복구 판정(연결 60초 유지) 이후 끊김·에러 횟수 — 복구 시 0 으로 리셋
+- ✅ `reason` 은 `;`·제어문자·비 ASCII 를 `_` 로 치환, 최대 120자
+
+#### 2. 변경 파일
+- ✅ `MwMqttSubscriber.java` - `lastMessageAt` 기록(`messageArrived`), `statusHeader()`, `headerSafe()`
+- ✅ `MqttService.java` - `statusHeader()` (paho jar 누락 시에도 `LinkageError` 없이 동작)
+- ✅ `Common.java` - `httpGET(path, token, extraHeaders)` 오버로드 (기존 2인자 시그니처 유지)
+- ✅ `AgentLifecycleManager.java` - `pollCommands()` 에 헤더 연결, 상태 생성 실패 시 헤더만 생략하고 폴링 계속
+- ✅ `Version.java` - `0000.0010.0001` → `0000.0010.0002`
+- ✅ `CLAUDE.md` - Recent Fixes 8번 항목 추가
+
+#### 3. mwm-app 연동 확인 (app 세션과 협업)
+- ✅ 헤더 형식(세미콜론 key=value) 확정, broadcast probe 기능은 이번에 하지 않음
+- ✅ 로컬 agent(`hennry-PN40_hennry_J`) + 앱으로 실측 확인
+  - `connected` 저장, MQTT 명령 수신 후 `last_msg` 반영
+  - 브로커 중지(15:33:06) → `unstable;events=1;reason=rc=32109 Connection lost`
+  - 브로커 재시작 → `connected`, `events=1` → 60초 뒤 0 으로 리셋
+  - `mqtt_enabled=false` 재기동(16:53:28) → 헤더 없음 → 앱 MQTT 집계·필터에서 제외
+  - `mqtt_enabled=true` 복구(16:56:05) → 다시 `connected` 로 복귀
+- 앱 쪽 결과 기록: mwm-app 저장소 `docs/HOWTO_019` §9.3
+
+### 테스트 결과
+- 12개 테스트 추가 (`MwMqttSubscriberTest`, `MqttServiceTest`, 신규 `AgentLifecycleManagerMqttStatusTest`)
+- temp_jdk 로 main/test 컴파일 확인, 리플렉션 러너로 MQTT 관련 3개 클래스 49개 통과
+- 전체 `mvn test` 는 이 환경(리눅스, Maven 깨짐)에서 미실행 — Windows 에서 확인 필요
+
+---
+
 ## 2025-12-05 - Phase 6: Code Quality Improvements (v0.9.9)
 
 ### 작업 브랜치
