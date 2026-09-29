@@ -43,6 +43,15 @@ curl -L -o zstd-jni-1.5.2-1.jar "https://repo1.maven.org/maven2/com/github/luben
 
 cd ..
 
+REM 무결성 검증 (lib\SHA256SUMS 와 비교. 하나라도 다르면 중단)
+echo.
+echo Verifying checksums (lib\SHA256SUMS)...
+powershell -NoProfile -ExecutionPolicy Bypass -File verify-lib.ps1
+if errorlevel 1 (
+    echo ERROR: Checksum mismatch. Do not use these files.
+    exit /b 1
+)
+
 echo.
 echo =========================================
 echo   다운로드 완료!

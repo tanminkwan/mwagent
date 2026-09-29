@@ -19,8 +19,19 @@ echo [1/5] Cleaning build directory...
 if exist build\classes rmdir /s /q build\classes
 mkdir build\classes
 
-REM 2. Classpath 설정
-echo [2/5] Setting up classpath...
+REM 2. 라이브러리 검증 + Classpath 설정
+REM lib\*.jar 는 git 에 없다. 온라인 PC 에서 download-dependencies.bat 로 받아 함께 반입한다.
+echo [2/5] Verifying libraries and setting up classpath...
+if not exist lib\*.jar (
+    echo ERROR: lib\*.jar not found. Run download-dependencies.bat on an online machine
+    echo        or use the offline deployment package, and copy lib\ here.
+    exit /b 1
+)
+powershell -NoProfile -ExecutionPolicy Bypass -File verify-lib.ps1
+if errorlevel 1 (
+    echo ERROR: lib verification failed.
+    exit /b 1
+)
 set CLASSPATH=.
 for %%f in (lib\*.jar) do (
     set CLASSPATH=!CLASSPATH!;%%f

@@ -208,7 +208,7 @@ Agent 는 `ResultVO` 한 건을 생성하여 기존 결과 전송 경로로 회�
   "security.allowed_read_paths": "/home/hennry/projects",
   "mqtt_enabled": "true",
   "mqtt_broker_address": "tcp://localhost:1883",
-  "mqtt_credential": "***REMOVED-MQTT-PASSWORD***"
+  "mqtt_credential": "dummy-mqtt-credential"
 }
 ```
 

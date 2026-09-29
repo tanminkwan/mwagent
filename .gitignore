@@ -15,7 +15,6 @@ nohup.out
 # Package Files #
 *.jar
 /mwagent.jar
-!lib/*.jar
 !release/mwagent-*.jar
 *.war
 *.nar
@@ -87,3 +86,17 @@ mwagent-offline-deployment/
 
 # Local temporary directory
 tmp/
+
+# --- PLAN-001 TASK 1-0: 저장소 수록 범위 (docs/PLAN-001/TASK_1-0_publish_scope.md) ---
+# 의존성 jar 는 git 에 두지 않는다. download-dependencies.* 로 받고 lib/SHA256SUMS 로 검증한다
+lib/*.jar
+# 타사 바이너리 (로컬에만 둔다)
+temp_jdk/
+tools/
+# 개발 PC 전용 파일
+/run.agent.sh
+test/demos/
+# 실행 중 생기는 파일
+.mqtt-persist/
+bin_test/
+mwagent-offline-deployment/

@@ -16,3 +16,9 @@
 
 # Markdown and documentation
 *.md text eol=lf
+
+# Checksum list must keep LF (sha256sum -c fails on CRLF)
+lib/SHA256SUMS text eol=lf
+
+# PowerShell scripts
+*.ps1 text eol=crlf

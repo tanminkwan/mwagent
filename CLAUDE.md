@@ -7,7 +7,7 @@
    - mTLS mode (`use_mtls=true`): Uses `/oauth2/token` endpoint with client certificate
    - Legacy mode (`use_mtls=false`): Uses `/api/v1/security/refresh` endpoint with refresh token
 3. **Version managed in ONE place only**: `Version.java` (`VERSION` constant)
-4. **Gradle doesn't work** in this environment (proxy/SSL issues) - Use Maven instead
+4. **Build is Maven only** — `build.gradle` was removed (2026-09-29). Offline build (`build-offline.*`) must keep working
 5. **All logs go to file, not System.err** - This is a daemon process
 6. **Git Push Protocol**: Always use **HTTPS** (`https://github.com/...`) for Git remote operations. SSH is not configured on this environment.
 
@@ -26,8 +26,14 @@ HTTP_PROXY=http://70.10.15.10:8080 HTTPS_PROXY=http://70.10.15.10:8080 ./tools/a
 ```
 
 ### DO NOT DELETE
-- `pom.xml` - Maven build file (required because Gradle doesn't work)
-- `tools/apache-maven-3.9.6/` - Maven installation
+- `pom.xml` - Maven build file
+- `tools/apache-maven-3.9.6/`, `temp_jdk/` - local Maven/JDK. **Not tracked by git** (2026-09-29) — keep the local copy, never re-add to git
+
+### Dependencies (`lib/`)
+- `lib/*.jar` is **not tracked by git**. Get them with `download-dependencies.sh/.bat`
+- `lib/SHA256SUMS` is tracked and is checked by `verify-lib.sh` / `verify-lib.ps1` on download, packaging and offline build
+- When changing a jar version, update `download-dependencies.*`, `pom.xml` and `lib/SHA256SUMS` together
+- Repo scope (what to track / publish): `docs/PLAN-001/TASK_1-0_publish_scope.md`
 
 ## Test Execution
 
