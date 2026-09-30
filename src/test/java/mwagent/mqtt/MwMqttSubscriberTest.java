@@ -91,7 +91,7 @@ class MwMqttSubscriberTest {
     }
 
     // ------------------------------------------------------------------
-    // normalizeUri - Kafka 식 host:port 설정을 MQTT URI 로 보정한다
+    // normalizeUri - host:port 설정을 MQTT URI 로 보정한다
     // ------------------------------------------------------------------
 
     @Test

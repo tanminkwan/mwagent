@@ -172,6 +172,18 @@ class OrderTest {
     }
 
     @Test
+    void isDefaultReceiver_OnlyServerIsDefault() {
+        // SERVER 가 아닌 값도 결과는 REST 로 보낸다. 이 함수는 경고 로그 여부만 정한다
+        assertThat(Order.isDefaultReceiver("SERVER")).isTrue();
+        assertThat(Order.isDefaultReceiver(null)).isTrue();
+
+        assertThat(Order.isDefaultReceiver("MQTT")).isFalse();
+        assertThat(Order.isDefaultReceiver("KAFKA")).isFalse();
+        assertThat(Order.isDefaultReceiver("SERVER_N_KAFKA")).isFalse();
+        assertThat(Order.isDefaultReceiver("NONE")).isFalse();
+    }
+
+    @Test
     void testConvertCommandWithNullValues() {
         // Given
         JSONObject command = new JSONObject();

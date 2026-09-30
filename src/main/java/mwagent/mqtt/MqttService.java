@@ -11,11 +11,10 @@ import mwagent.lifecycle.LifecycleState;
 /**
  * MQTT 통신을 관리하는 서비스.
  *
- * KafkaService 와 병행 동작한다. 둘 다 설정되어 있으면 두 경로 모두로
- * 명령을 수신하며, 어느 쪽으로 들어오든 동일하게 command_class 규약에 따라
- * mwagent.order.* 로 위임된다.
+ * REST 명령 폴링과 병행 동작한다. 어느 쪽으로 들어오든 동일하게 command_class
+ * 규약에 따라 mwagent.order.* 로 위임된다.
  *
- * Kafka 와 달리 구독 스레드를 두지 않는다. Paho 가 자체 네트워크 스레드로
+ * 구독 스레드를 따로 두지 않는다. Paho 가 자체 네트워크 스레드로
  * 콜백을 돌리므로, 여기서는 연결 수명주기와 안정성 감시만 담당한다.
  *
  * MQTT 는 실시간 command 수령만 담당한다. 결과 전송·토큰 갱신·명령 폴링은

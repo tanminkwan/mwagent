@@ -139,7 +139,6 @@ void executeShell_WithMaliciousInput_ShouldFail() {
 - **목표: 60% 커버리지**
 
 ### Month 2-3
-- [ ] Kafka 테스트
 - [ ] 엣지 케이스 테스트
 - **목표: 70% 커버리지**
 

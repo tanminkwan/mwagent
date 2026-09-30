@@ -137,23 +137,6 @@ public interface ConfigurationProvider {
      */
     void setRefreshToken(String token);
 
-    // ========== Kafka Configuration ==========
-
-    /**
-     * Check if Kafka is enabled.
-     */
-    boolean isKafkaEnabled();
-
-    /**
-     * Get the Kafka broker address.
-     */
-    String getKafkaBrokerAddress();
-
-    /**
-     * Set the Kafka broker address.
-     */
-    void setKafkaBrokerAddress(String address);
-
     // ========== mTLS Configuration ==========
 
     /**

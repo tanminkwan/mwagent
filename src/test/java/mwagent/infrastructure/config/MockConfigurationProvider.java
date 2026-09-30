@@ -30,7 +30,6 @@ public class MockConfigurationProvider implements ConfigurationProvider {
     private String accessToken = "";
     private String refreshToken = "";
 
-    private String kafkaBrokerAddress = "";
     private boolean mtlsEnabled = false;
     private String keystorePath = "";
     private String keystorePassword = "";
@@ -56,11 +55,6 @@ public class MockConfigurationProvider implements ConfigurationProvider {
 
     public MockConfigurationProvider withMtlsEnabled(boolean enabled) {
         this.mtlsEnabled = enabled;
-        return this;
-    }
-
-    public MockConfigurationProvider withKafkaBrokerAddress(String address) {
-        this.kafkaBrokerAddress = address;
         return this;
     }
 
@@ -213,21 +207,6 @@ public class MockConfigurationProvider implements ConfigurationProvider {
     @Override
     public void setRefreshToken(String token) {
         this.refreshToken = token;
-    }
-
-    @Override
-    public boolean isKafkaEnabled() {
-        return kafkaBrokerAddress != null && !kafkaBrokerAddress.isEmpty();
-    }
-
-    @Override
-    public String getKafkaBrokerAddress() {
-        return kafkaBrokerAddress;
-    }
-
-    @Override
-    public void setKafkaBrokerAddress(String address) {
-        this.kafkaBrokerAddress = address;
     }
 
     @Override

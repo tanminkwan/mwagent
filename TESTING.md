@@ -336,7 +336,7 @@ class IsolatedTest {
 
 - [ ] **PreWork** - 에이전트 등록 및 초기화 로직
 - [ ] **MainWork** - 메인 루프 및 명령 처리
-- [ ] **FirstWork** - Kafka 초기화 로직
+- [ ] **FirstWork** - BOOT 명령 처리 (Legacy)
 - [ ] **OrderCaller** - 동적 클래스 로딩
 - [ ] **개별 Order 구현체**:
   - [ ] ExeShell
@@ -348,10 +348,6 @@ class IsolatedTest {
   - [ ] JmxStatFunc
   - [ ] SSLCertiFunc
   - [ ] DownloadNUnzipFunc
-- [ ] **Kafka 컴포넌트** (통합 테스트):
-  - [ ] MwConsumerThread
-  - [ ] MwProducer
-  - [ ] MwHealthCheckThread
 - [ ] **HTTP 통신** (통합 테스트):
   - [ ] httpPOST
   - [ ] httpGET

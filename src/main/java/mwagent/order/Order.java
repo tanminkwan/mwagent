@@ -14,15 +14,15 @@ import org.json.simple.JSONObject;
 
 import mwagent.common.LogSafe;
 import mwagent.common.Common;
-import mwagent.kafka.MwProducer;
 import mwagent.vo.CommandVO;
 import mwagent.vo.MwResponseVO;
 import mwagent.vo.ResultVO;
 
 public abstract class Order {
 
-	public static String KAFKA = "KAFKA";
 	public static String SERVER = "SERVER";
+	// 예전 값. Kafka 기능은 제거됐고, 이 값이 와도 결과는 REST 로 보낸다
+	public static String KAFKA = "KAFKA";
 	public static String SERVER_N_KAFKA = "SERVER_N_KAFKA";
 
 	CommandVO commandVo = new CommandVO();	
@@ -156,32 +156,27 @@ public abstract class Order {
 
 		int rtn = 0;
 		getConfig().getLogger().fine("sendResult commandVo : " + LogSafe.safe(commandVo.toString(), 1000));
-		if (commandVo.getResultReceiver().equals(SERVER) || commandVo.getResultReceiver().equals(SERVER_N_KAFKA)) {
-			rtn = send2Server(rv);
-		}
+		String receiver = commandVo.getResultReceiver();
 
-		if (commandVo.getResultReceiver().equals(KAFKA) || commandVo.getResultReceiver().equals(SERVER_N_KAFKA)) {
-			rtn = send2Kafka(commandVo.getTargetObject(), rv);
+		// REST is the only result path. Any other value (MQTT, legacy KAFKA, unknown) still goes to the
+		// server so the result is never dropped
+		if (!isDefaultReceiver(receiver)) {
+			getConfig().getLogger().warning("result_receiver " + receiver + " is not supported. Sending the result to the server (REST).");
 		}
+		rtn = send2Server(rv);
 
 		return rtn;
 
 	}
 
-	private int send2Kafka(String topic, ResultVO rv) throws IOException {
-
-		String js = getJsonResult(true, rv);
-
-		MwProducer.sendMessage(topic, getConfig().getAgent_id(), js);
-
-		return 1;
-
+	static boolean isDefaultReceiver(String receiver) {
+		return receiver == null || SERVER.equals(receiver);
 	}
 
 	private int send2Server(ResultVO rv) {
 
 		String path = "/api/v1/command/result";
-		String data = getJsonResult(false, rv);
+		String data = getJsonResult(rv);
 		
 		MwResponseVO mwrv = Common.httpPOST(path, getConfig().getAccess_token(), data);
 
@@ -196,7 +191,7 @@ public abstract class Order {
 	}
 
 	@SuppressWarnings("unchecked")
-	private String getJsonResult(boolean is4Kafka, ResultVO rv) {
+	private String getJsonResult(ResultVO rv) {
 
 		JSONObject jsonObj = new JSONObject();
 		
@@ -213,30 +208,7 @@ public abstract class Order {
 		jsonObj.put("result_hash", rv.getResultHash());
 		jsonObj.put("aggregation_key", rv.getObjectAggregationKey());
 		
-		return jsonObj.toString();
-		/*
-		StringBuilder js = new StringBuilder();
-		System.out.println("Agent_id : " + getConfig().getAgent_id());
-
-		js.append("{");
-		js.append("\"agent_id\":\"" + getConfig().getAgent_id() + "\",");
-		js.append("\"command_id\":\"" + commandVo.getCommandId() + "\",");
-		js.append("\"repetition_seq\":" + Long.toString(commandVo.getRepetitionSeq()) + ",");
-		js.append("\"key_value1\":\"" + Common.escape(rv.getTargetFileName()) + "\",");
-		js.append("\"host_id\":\"" + rv.getHostName() + "\",");
-		js.append("\"is_normal\":\"" + rv.isOk() + "\",");
-		js.append("\"key_value2\":\"" + Common.escape(rv.getTargetFilePath()) + "\",");
-		if (rv.isOk() || !is4Kafka) {
-			js.append("\"result_text\":\"" + Common.escape(rv.getResult()) + "\",");
-		} else {
-			js.append("\"result_text\":" + rv.getResult() + ",");
-		}
-		js.append("\"result_hash\":\"" + rv.getResultHash() + "\",");
-		js.append("\"aggregation_key\":\"" + rv.getObjectAggregationKey() + "\"");
-		js.append("}");
-
-		return js.toString();
-		*/		
+		return jsonObj.toString();		
 	}
 
 }

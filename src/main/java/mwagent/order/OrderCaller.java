@@ -24,7 +24,7 @@ public final class OrderCaller {
     		//Execute command & Make Results
     		int rtn = orderObj.execute();
     		
-    		//Send results to Server(MW Server or KAFKA)
+    		//Send results to the server (REST)
     		if(rtn>0){
     			orderObj.sendResults();
     		}else{

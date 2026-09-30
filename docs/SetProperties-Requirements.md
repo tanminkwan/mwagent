@@ -124,7 +124,7 @@ mw-app 이 내려주는 명령 JSON 의 관련 필드는 다음과 같다.
 | `target_file_name` | `"set_properties"` | Y | Agent Function 이름 |
 | `additional_params` | JSON Object (아래 3.2) | Y | 변경 요청 내용 |
 | `target_file_path` | (사용 안 함) | N | 결과의 `key_value2` 로 그대로 회신됨 |
-| `result_receiver` | `SERVER` / `KAFKA` / `SERVER_N_KAFKA` | N | 기본값 `SERVER` |
+| `result_receiver` | `SERVER` | N | 기본값 `SERVER`. 다른 값이 와도 결과는 REST 로 회신된다 (경고 로그) |
 
 > **주의**: `Order.convertCommand()` 는 `additional_params` 문자열에 `<<KEY>>` / `{{KEY}}`
 > 패턴이 있으면 Agent 의 환경변수 값으로 치환한다. 설정값에 해당 패턴이 들어가면 의도치 않게
@@ -151,7 +151,7 @@ mw-app 이 내려주는 명령 JSON 의 관련 필드는 다음과 같다.
 
 ```json
 {
-  "delete": ["kafka_broker_address", "log_dir"],
+  "delete": ["security.allowed_read_paths", "log_dir"],
   "upsert": [
     {"log_level": "INFO"},
     {"command_check_cycle": "30"},
@@ -382,7 +382,7 @@ Error:TOKEN_NOT_ALLOWED - 'token' cannot be deleted or upserted.
 
 - 사유 1: `Config.setConfig()` 는 설정 로드와 동시에 로거 재구성 및 `Common.updateToken()` 을 수행하며,
   실패 시 `System.exit(0)` 을 호출한다. 명령 처리 중 재호출하면 Agent 가 종료될 수 있다.
-- 사유 2: `mqtt_*`, `kafka_broker_address`, `use_mtls` 등은 기동 시점에 스레드·커넥션을 구성하므로
+- 사유 2: `mqtt_*`, `use_mtls` 등은 기동 시점에 스레드·커넥션을 구성하므로
   값만 바꿔도 실제 동작은 바뀌지 않는다. 부분 반영은 파일과 메모리가 불일치하는 혼란을 만든다.
 - 결론: mw-app 은 설정 변경 후 필요 시 **별도 재기동 명령**을 내리는 것을 전제로 한다(결정 5).
   이 사실을 운영자에게 명시해야 한다.

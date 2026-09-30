@@ -48,7 +48,7 @@ mwagent 도 같은 수준을 갖춰야 한다.
 | 라이브러리 | 현재 | 알려진 문제 (추정) | Java 8 상한 목표 |
 |------------|------|--------------------|------------------|
 | bcprov-jdk15on | 1.70 | CVE-2023-33201, CVE-2024-29857/30171/30172. jdk15on 계열은 1.70 에서 종료 | `bcprov-jdk18on` 최신 (Java 8 지원) |
-| kafka-clients | 3.1.0 | CVE-2023-25194, CVE-2024-31141, CVE-2025-27817 등 | **3.9.x** (4.x 는 Java 11 이상이라 불가) |
+| kafka-clients | 3.1.0 | CVE-2023-25194, CVE-2024-31141, CVE-2025-27817 등 | **제거 (2026-09-30 사용자 결정: Kafka 는 없어진 기능).** 압축 lib 3종·slf4j 도 함께 빠진다 |
 | snappy-java | 1.1.8.4 | CVE-2023-34453/34454/34455/43642 | 1.1.10.x |
 | lz4-java | 1.8.0 | 최근 CVE 확인 필요 (배포 좌표 변경 여부 포함) | 스캔 결과로 결정 |
 | zstd-jni | 1.5.2-1 | 확인 필요 | 스캔 결과로 결정 |
@@ -117,7 +117,7 @@ task 기록은 `docs/PLAN-001/TASK_<WS>-<n>_<주제>.md` 에 남기고, 목록�
 | Task | 내용 |
 |------|------|
 | 2-1 | **기준선 스캔**: OWASP Dependency-Check(`pom.xml`)와 Trivy fs(`lib/*.jar`)를 둘 다 돌린다. 3.2 표의 추정 CVE 를 확정한다 |
-| 2-2 | 3.2 표의 **Java 8 상한** 안에서 업그레이드한다. 업그레이드마다 JDK 8·17 에서 전체 테스트를 돌린다 |
+| 2-2 | 3.2 표의 **Java 8 상한** 안에서 업그레이드한다. 업그레이드마다 JDK 8·17 에서 전체 테스트를 돌린다. **2026-09-30: Kafka 기능 제거(kafka-clients·slf4j·lz4·snappy·zstd 삭제), bcprov-jdk15on 1.70 → bcprov-jdk18on 1.86, json-simple 의 junit exclusion. 런타임 jar 13개 → 7개** |
 | 2-3 | 버전을 한곳에 맞춘다: `pom.xml` 을 기준으로 하고 `build.gradle` 과 `lib/` 를 맞춘다. `download-dependencies.sh` 가 그 버전을 받게 한다 |
 | 2-4 | `lib/SHA256SUMS` 를 만들고, 오프라인 빌드 스크립트가 빌드 전에 검증한다 |
 | 2-5 | Dependabot(maven, github-actions)을 켠다. **Java 11 이상이 필요한 major**(kafka-clients 4, mockito 5, JUnit 6 등)는 `ignore` 에 사유와 함께 적는다 |
