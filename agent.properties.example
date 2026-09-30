@@ -1,5 +1,4 @@
 # MwManger Agent Configuration
-# Version: 0000.0009.0003
 # Copy this file to agent.properties and configure for your environment
 
 # Server Configuration
@@ -26,6 +25,14 @@ truststore.password=
 # client.keystore.password=agent-password
 # truststore.path=./test-server/certs/truststore.jks
 # truststore.password=changeit
+
+# HTTPS server certificate verification (default: false)
+# false : trust any certificate, no hostname check (legacy behavior)
+# true  : verify the certificate chain and hostname. Uses truststore.path above if set,
+#         otherwise the JVM default cacerts. The certificate SAN must contain the server_url host.
+#         If the truststore can't be read, https requests fail (no fallback to trust-all).
+# Also turns on hostname verification for the mTLS client.
+ssl_verify=false
 
 # Kafka Configuration
 kafka_broker_address=localhost:9092

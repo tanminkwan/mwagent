@@ -739,8 +739,9 @@ BOOT 요청과 결과 전송에는 붙지 않습니다. [수신 상태 보고](#
 #### TLS 설정
 
 - TLS 1.2 프로토콜 사용
-- 모든 인증서 신뢰 (Self-signed 포함)
-- 호스트명 검증 비활성화
+- 서버 인증서 검증은 `ssl_verify` 로 정합니다 ([HTTPS 인증서 검증](#https-인증서-검증-선택-사항) 참고)
+  - `ssl_verify=false` (기본): 모든 인증서 신뢰 (Self-signed 포함), 호스트명 검증 비활성화
+  - `ssl_verify=true`: `truststore.path` (없으면 JVM 기본 cacerts) 로 인증서 체인을 검증하고 호스트명도 검증
 - AIX에서는 BouncyCastle Security Provider 사용
 
 ### 2. Kafka 통신
