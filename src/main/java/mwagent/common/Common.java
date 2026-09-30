@@ -50,6 +50,62 @@ public class Common {
 		return token.substring(token.length() - 10);
 	}
 	
+	/**
+	 * Absolute path of cmd.exe (%SystemRoot%\System32\cmd.exe), so a cmd.exe in the
+	 * working directory or PATH is never picked up. Falls back to "cmd.exe" if SystemRoot is unset.
+	 */
+	public static String windowsCmd() {
+		return windowsCmd(System.getenv("SystemRoot"));
+	}
+
+	static String windowsCmd(String systemRoot) {
+		if (systemRoot == null || systemRoot.trim().isEmpty()) {
+			return "cmd.exe";
+		}
+		String root = systemRoot.trim();
+		if (root.endsWith("\\") || root.endsWith("/")) {
+			root = root.substring(0, root.length() - 1);
+		}
+		return root + "\\System32\\cmd.exe";
+	}
+
+	/**
+	 * Percent-encodes one URL path segment (RFC 3986). Unreserved characters (A-Z a-z 0-9 - . _ ~)
+	 * are kept, so ordinary agent_id / file names are sent unchanged; "/", "?", "#", spaces etc. are encoded.
+	 */
+	public static String encodePathSegment(String segment) {
+		if (segment == null) {
+			return "";
+		}
+		StringBuilder sb = new StringBuilder();
+		for (byte b : segment.getBytes(java.nio.charset.StandardCharsets.UTF_8)) {
+			char c = (char) (b & 0xFF);
+			if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')
+					|| c == '-' || c == '.' || c == '_' || c == '~') {
+				sb.append(c);
+			} else {
+				sb.append('%').append(String.format("%02X", b & 0xFF));
+			}
+		}
+		return sb.toString();
+	}
+
+	/** Encodes each "/"-separated segment with {@link #encodePathSegment(String)}, keeping the "/". */
+	public static String encodePath(String path) {
+		if (path == null) {
+			return "";
+		}
+		String[] parts = path.split("/", -1);
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < parts.length; i++) {
+			if (i > 0) {
+				sb.append('/');
+			}
+			sb.append(encodePathSegment(parts[i]));
+		}
+		return sb.toString();
+	}
+
 	public static ArrayList<ResultVO> makeOneResultArray(ResultVO rv, CommandVO command){
 		ArrayList<ResultVO> rvs = new ArrayList<ResultVO>();
 		rvs.add(fillResult(rv, command));
@@ -411,7 +467,7 @@ public class Common {
 
         int rtn = 0;
         
-		String path = "/api/v1/agent/getRefreshToken/" + config.getAgent_id();
+		String path = "/api/v1/agent/getRefreshToken/" + encodePathSegment(config.getAgent_id());
 			
 		config.getLogger().fine("updateRefreshToken path : "+path);
 

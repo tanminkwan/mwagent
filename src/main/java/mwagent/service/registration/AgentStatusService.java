@@ -37,9 +37,9 @@ public class AgentStatusService {
 
         // API 경로 구성
         String path = getConfig().getGet_command_uri()
-                + "/" + getConfig().getAgent_id()
-                + "/" + getConfig().getAgent_version()
-                + "/" + getConfig().getAgent_type()
+                + "/" + Common.encodePathSegment(getConfig().getAgent_id())
+                + "/" + Common.encodePathSegment(getConfig().getAgent_version())
+                + "/" + Common.encodePathSegment(getConfig().getAgent_type())
                 + "/BOOT";
 
         logger.fine("Noticing start: " + path);

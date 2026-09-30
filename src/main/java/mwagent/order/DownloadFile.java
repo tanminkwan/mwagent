@@ -195,8 +195,8 @@ public class DownloadFile extends Order {
 			getConfig().getLogger().info("Downloading from external URL: " + url);
 		} else {
 			url = getConfig().getServer_url()
-					+ "/api/v1/agent/download/" + getConfig().getAgent_type()
-					+ "/" + targetFileName;
+					+ "/api/v1/agent/download/" + Common.encodePathSegment(getConfig().getAgent_type())
+					+ "/" + Common.encodePath(targetFileName);
 			token = getConfig().getAccess_token();
 		}
 
@@ -272,9 +272,9 @@ public class DownloadFile extends Order {
 						if (getConfig().getOs().equals("WIN")) {
 							// Windows: use "cmd /c start" to detach
 							if (exeParams != null && !exeParams.isEmpty()) {
-								pb = new ProcessBuilder("cmd", "/c", "start", "", exeFullPath, exeParams);
+								pb = new ProcessBuilder(Common.windowsCmd(), "/c", "start", "", exeFullPath, exeParams);
 							} else {
-								pb = new ProcessBuilder("cmd", "/c", "start", "", exeFullPath);
+								pb = new ProcessBuilder(Common.windowsCmd(), "/c", "start", "", exeFullPath);
 							}
 						} else {
 							// Linux/Unix: use shell to fully detach from parent

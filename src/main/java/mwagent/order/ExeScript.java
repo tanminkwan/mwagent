@@ -36,7 +36,6 @@ public class ExeScript extends Order {
 			resultVo = runScript();
 
 		}catch (Exception e) {
-			e.printStackTrace();
 			getConfig().getLogger().log(Level.SEVERE, e.getMessage(), e);
 		}
 		return 1;

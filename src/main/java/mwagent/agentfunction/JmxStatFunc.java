@@ -74,9 +74,16 @@ public class JmxStatFunc implements AgentFunc {
             jmx_domain = (String) jsonObj.get("jmx_domain");
 
         } catch (Exception e) {
-            e.printStackTrace();
             getConfig().getLogger().severe(e.getMessage());
             rv.setResult("params parsing error");
+            return Common.makeOneResultArray(rv, command);
+        }
+
+        // jmx_target goes into a JNDI name and, with jmx_domain, into an ObjectName; allow plain names only
+        if (!isValidJmxName(jmx_target) || !isValidJmxName(jmx_domain)) {
+            getConfig().getLogger().severe("Security: Invalid jmx_target or jmx_domain");
+            rv.setResult("Error:SecurityException - Invalid jmx_target or jmx_domain");
+            return Common.makeOneResultArray(rv, command);
         }
 
         try {
@@ -90,7 +97,9 @@ public class JmxStatFunc implements AgentFunc {
             InitialContext ctx = new InitialContext(env);
 
             for (Entry<?, ?> a : ctx.getEnvironment().entrySet()) {
-            	getConfig().getLogger().fine("ctx 2 : " + a.getKey() + ":" + a.getValue());
+            	// never log the JMX password
+            	Object value = Context.SECURITY_CREDENTIALS.equals(a.getKey()) ? "***" : a.getValue();
+            	getConfig().getLogger().fine("ctx 2 : " + a.getKey() + ":" + value);
             }
 
             connector = (JMXConnector) ctx.lookup("mgmt/rmbs/" + jmx_target);
@@ -158,5 +167,10 @@ public class JmxStatFunc implements AgentFunc {
         }
 
         return Common.makeOneResultArray(rv, command);
+    }
+
+    // JEUS server / domain names: letters, digits, "_", "-", "."
+    static boolean isValidJmxName(String name) {
+        return name != null && name.matches("[A-Za-z0-9_.-]+");
     }
 }

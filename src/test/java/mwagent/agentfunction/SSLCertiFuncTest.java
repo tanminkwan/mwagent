@@ -91,6 +91,43 @@ class SSLCertiFuncTest {
     }
 
     @Test
+    @Order(3)
+    @DisplayName("getDomainNPort: null or padded param does not throw")
+    void testGetDomainNPort_NullOrPadded() {
+        String[] nullResult = func.getDomainNPort(null);
+        assertThat(nullResult[0]).isEmpty();
+        assertThat(nullResult[1]).isEqualTo("443");
+
+        String[] padded = func.getDomainNPort(" example.com:8443 ");
+        assertThat(padded[0]).isEqualTo("example.com");
+        assertThat(padded[1]).isEqualTo("8443");
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("matchesDomain: wildcard matches exactly one label")
+    void testMatchesDomain_Wildcard() {
+        assertThat(SSLCertiFunc.matchesDomain("*.example.com", "a.example.com")).isTrue();
+        assertThat(SSLCertiFunc.matchesDomain("*.example.com", "A.Example.COM")).isTrue();
+
+        // split(".") 결함 시절에는 아래가 모두 true 였다
+        assertThat(SSLCertiFunc.matchesDomain("*.example.com", "a.b.example.com")).isFalse();
+        assertThat(SSLCertiFunc.matchesDomain("*.example.com", "example.com")).isFalse();
+        assertThat(SSLCertiFunc.matchesDomain("*.example.com", "evilexample.com")).isFalse();
+        assertThat(SSLCertiFunc.matchesDomain("*.example.com", "a.evilexample.com")).isFalse();
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("matchesDomain: exact match and null handling")
+    void testMatchesDomain_ExactAndNull() {
+        assertThat(SSLCertiFunc.matchesDomain("localhost", "LOCALHOST")).isTrue();
+        assertThat(SSLCertiFunc.matchesDomain("localhost", "google.com")).isFalse();
+        assertThat(SSLCertiFunc.matchesDomain(null, "localhost")).isFalse();
+        assertThat(SSLCertiFunc.matchesDomain("localhost", null)).isFalse();
+    }
+
+    @Test
     @Order(4)
     @DisplayName("printValidCerts: Format empty certificate array as JSON")
     void testPrintValidCerts_EmptyArray() throws Exception {

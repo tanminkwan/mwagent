@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 
 import org.json.simple.JSONObject;
+import mwagent.common.Common;
 import mwagent.common.SecurityValidator;
 import mwagent.vo.ResultVO;
 
@@ -132,6 +133,7 @@ public class ExeShell extends Order {
         	}
 
         	command = command_s.split("\\s+");
+        	command[0] = Common.windowsCmd(); // absolute path; kept as one element even if it has spaces
 
     	}else{
 

@@ -145,6 +145,11 @@ public class SSLCertiFunc implements AgentFunc {
 		String domain;
 		String port;
 		
+		if(param == null){
+			param = "";
+		}
+		param = param.trim();
+
 		if(param.contains(":")){
 			String[] parts = param.split(":");
 
@@ -173,8 +178,7 @@ public class SSLCertiFunc implements AgentFunc {
 			}catch(ClassNotFoundException e){
 				getConfig().getLogger().log(Level.SEVERE, "ClassNotFoundException : BouncyCastleProvider", e);
 			}catch(Exception e){
-				e.printStackTrace();
-				getConfig().getLogger().log(Level.SEVERE, e.getMessage(), e);
+					getConfig().getLogger().log(Level.SEVERE, e.getMessage(), e);
 			}
 			
 		}
@@ -245,7 +249,6 @@ public class SSLCertiFunc implements AgentFunc {
 			}
 			
 		} catch (Exception e){
-			e.printStackTrace();
 			getConfig().getLogger().log(Level.SEVERE, "Failed to check SSL certificate: " + e.getMessage(), e);
 			return new X509Certificate[0];
 		}
@@ -265,7 +268,7 @@ public class SSLCertiFunc implements AgentFunc {
                 for (List<?> sanEntry : sanEntries) {
                     if (sanEntry != null && sanEntry.size() >= 2) {
                         Object sanValue = sanEntry.get(1);
-                        if (sanValue instanceof String && domain.equalsIgnoreCase((String) sanValue)) {
+                        if (sanValue instanceof String && matchesDomain((String) sanValue, domain)) {
                             return true;
                         }
                     }
@@ -277,7 +280,6 @@ public class SSLCertiFunc implements AgentFunc {
             String cn = getCommonName(subjectDN);
 			return matchesDomain(cn, domain);
         } catch (Exception e) {
-            e.printStackTrace();
 			getConfig().getLogger().log(Level.SEVERE, "isCertificateValidForDomain: " + e.getMessage(), e);
         }
         return false;
@@ -294,10 +296,16 @@ public class SSLCertiFunc implements AgentFunc {
         return null;
     }
 
-	private boolean matchesDomain(String certDomain, String domain) {
+	// "*.example.com" matches exactly one extra label: a.example.com (not example.com, not a.b.example.com)
+	static boolean matchesDomain(String certDomain, String domain) {
+		if(certDomain == null || domain == null){
+			return false;
+		}
 		if(certDomain.startsWith("*.")){
-			String wildCardBase = certDomain.substring(2);
-			return domain.endsWith(wildCardBase) && domain.split(".").length==certDomain.split(".").length;
+			String wildCardBase = certDomain.substring(1).toLowerCase(); // ".example.com"
+			String d = domain.toLowerCase();
+			return d.endsWith(wildCardBase)
+					&& d.split("\\.").length == certDomain.split("\\.").length;
 		}
 		return certDomain.equalsIgnoreCase(domain);
 	}

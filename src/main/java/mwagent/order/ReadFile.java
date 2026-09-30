@@ -29,7 +29,6 @@ public abstract class ReadFile extends Order {
 			resultVo = getContent(getFileFullName());
 			
 		}catch (Exception e) {
-			e.printStackTrace();
 			getConfig().getLogger().log(Level.WARNING, e.getMessage(), e);    		
 		}
 		return 1;

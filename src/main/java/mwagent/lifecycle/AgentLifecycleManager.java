@@ -311,7 +311,7 @@ public class AgentLifecycleManager implements AgentLifecycle {
         RawCommandsVO rcv = new RawCommandsVO();
         rcv.setReturnCode(1);
 
-        String path = getConfig().getGet_command_uri() + "/" + getConfig().getAgent_id();
+        String path = getConfig().getGet_command_uri() + "/" + Common.encodePathSegment(getConfig().getAgent_id());
         logger.fine("Polling commands: " + path);
 
         MwResponseVO mrvo = Common.httpGET(path, getConfig().getAccess_token(), mqttStatusHeaders());

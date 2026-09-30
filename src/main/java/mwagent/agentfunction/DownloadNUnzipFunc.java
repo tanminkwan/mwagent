@@ -119,7 +119,6 @@ public class DownloadNUnzipFunc implements AgentFunc {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
             getConfig().getLogger().severe(e.getMessage());
             return -1;
         }
@@ -162,7 +161,7 @@ public class DownloadNUnzipFunc implements AgentFunc {
             File dir = new File(targetDirectory);
             if (!dir.exists()) {
                 if (!dir.mkdirs()) {
-                    System.err.println("[WARN] Failed to create directories: " + dir.getAbsolutePath());
+                    getConfig().getLogger().warning("Failed to create directories: " + dir.getAbsolutePath());
                 }
             }
 
@@ -187,9 +186,9 @@ public class DownloadNUnzipFunc implements AgentFunc {
 
                 boolean renamed = outFile.renameTo(backupFile);
                 if (renamed) {
-                    System.out.println("[INFO] Existing file backed up as " + backupFile.getAbsolutePath());
+                    getConfig().getLogger().info("Existing file backed up as " + backupFile.getAbsolutePath());
                 } else {
-                    System.err.println("[WARN] Failed to back up the existing file. Overwriting directly...");
+                    getConfig().getLogger().warning("Failed to back up the existing file. Overwriting directly...");
                 }
             }
 
