@@ -6,6 +6,7 @@ import java.util.logging.Level;
 
 import org.json.simple.JSONObject;
 
+import mwagent.common.LogSafe;
 import mwagent.agentfunction.AgentFunc;
 import mwagent.agentfunction.AgentFuncFactory;
 
@@ -19,7 +20,7 @@ public class ExeAgentFunc extends Order {
 
 		int rtn = 1;
 		
-		getConfig().getLogger().info("commandVo : "+commandVo.toString());
+		getConfig().getLogger().info("commandVo : "+LogSafe.safe(commandVo.toString(), 1000));
 		AgentFunc func = AgentFuncFactory.getAgentFunc(commandVo.getTargetFileName());
 		
 		try{

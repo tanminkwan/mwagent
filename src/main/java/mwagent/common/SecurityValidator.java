@@ -100,7 +100,7 @@ public class SecurityValidator {
             File targetFile = new File(basePath, normalizedUserPath).getCanonicalFile();
 
             // Ensure the target is within the base directory
-            return targetFile.getPath().startsWith(baseDir.getPath());
+            return isWithin(baseDir, targetFile);
         } catch (IOException e) {
             return false;
         }
@@ -129,7 +129,7 @@ public class SecurityValidator {
 
             for (String basePath : allowedBasePaths) {
                 File baseDir = new File(basePath).getCanonicalFile();
-                if (targetFile.getPath().startsWith(baseDir.getPath())) {
+                if (isWithin(baseDir, targetFile)) {
                     return true;
                 }
             }
@@ -185,5 +185,31 @@ public class SecurityValidator {
         }
 
         return true;
+    }
+
+    /**
+     * Checks that a canonical target is the base directory itself or below it.
+     * Compares path components, so "/base2" is not treated as inside "/base".
+     */
+    private static boolean isWithin(File canonicalBase, File canonicalTarget) {
+        return canonicalTarget.toPath().startsWith(canonicalBase.toPath());
+    }
+
+    /**
+     * Resolves a zip entry name against the extraction directory (Zip Slip guard).
+     *
+     * @param destDir   The extraction directory
+     * @param entryName The entry name taken from the archive
+     * @return The file the entry should be written to
+     * @throws IOException if the entry would be written outside destDir
+     */
+    public static File resolveZipEntry(File destDir, String entryName) throws IOException {
+        String normalized = entryName.replace('/', File.separatorChar).replace('\\', File.separatorChar);
+        File canonicalDest = destDir.getCanonicalFile();
+        File target = new File(canonicalDest, normalized).getCanonicalFile();
+        if (!isWithin(canonicalDest, target)) {
+            throw new IOException("Zip entry is outside of the target dir: " + entryName);
+        }
+        return target;
     }
 }

@@ -393,6 +393,9 @@ client.keystore.password=your-keystore-password
 truststore.path=/path/to/truststore.jks
 truststore.password=your-truststore-password
 
+# HTTPS 서버 인증서 검증 (선택 사항, 기본값 false = 검증 안 함)
+ssl_verify=false
+
 # 명령 확인 주기 (초 단위)
 command_check_cycle=60
 
@@ -447,6 +450,13 @@ security.command_injection_check=false
 - **client.keystore.password**: keystore 비밀번호
 - **truststore.path**: 서버 CA 인증서 truststore 경로 (JKS)
 - **truststore.password**: truststore 비밀번호
+
+#### HTTPS 인증서 검증 (선택 사항)
+- **ssl_verify**: `server_url` 이 `https://` 일 때 서버 인증서를 검증할지 정합니다 (`true`/`false`, 기본값: `false`)
+  - `false` (기본): 기존과 같이 모든 인증서를 신뢰하고 호스트명도 검사하지 않습니다
+  - `true`: 인증서 체인과 호스트명을 검증합니다. `truststore.path` 가 있으면 그 truststore(JKS)로, 없으면 JVM 기본 cacerts 로 검증합니다. 사설 CA 는 truststore 에 CA 인증서를 넣어 지정하세요
+  - `true` 에서 truststore 를 읽지 못하면 https 요청은 실패합니다 (검증 없이 접속하지 않음)
+  - mTLS client(`use_mtls=true`)도 `ssl_verify=true` 이면 호스트명을 검증합니다. 인증서 SAN 에 `server_url` 의 호스트명(또는 IP)이 있어야 합니다
 
 #### 보안 설정 (선택 사항)
 - **security.path_traversal_check**: 경로 탐색 공격 방어 (`true`/`false`, 기본값: `true`)

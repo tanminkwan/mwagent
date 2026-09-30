@@ -36,6 +36,7 @@ public class MockConfigurationProvider implements ConfigurationProvider {
     private String keystorePassword = "";
     private String truststorePath = "";
     private String truststorePassword = "";
+    private boolean sslVerify = false;
 
     private boolean commandInjectionCheckEnabled = false;
     private boolean pathTraversalCheckEnabled = true;
@@ -252,6 +253,15 @@ public class MockConfigurationProvider implements ConfigurationProvider {
     @Override
     public String getTruststorePassword() {
         return truststorePassword;
+    }
+
+    @Override
+    public boolean isSslVerify() {
+        return sslVerify;
+    }
+
+    public void setSslVerify(boolean sslVerify) {
+        this.sslVerify = sslVerify;
     }
 
     @Override

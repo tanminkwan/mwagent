@@ -10,3 +10,4 @@
 | [1-1](TASK_1-1_baseline_secret_scan.md) | 비밀·식별 정보 기준선 스캔 | 완료 | 2026-09-29 | 히스토리 27건 중 **실제 비밀 2건**(MQTT 브로커 비밀번호), 로그 파일에 JWT 다수, denylist 대상 8종 |
 | [2-1](TASK_2-1_baseline_dependency_scan.md) | 의존성 CVE 기준선 스캔 | 완료 | 2026-09-29 | HIGH 5 / MEDIUM 11. kafka 3.9.2, bcprov-jdk18on 으로 Java 8 안에서 대부분 해결 가능 |
 | [3-1](TASK_3-1_baseline_sast.md) | SAST 기준선 스캔 | 완료 | 2026-09-29 | CodeQL critical 1 / high 7, SpotBugs 327. TLS 전체 신뢰는 **도구가 못 잡아** 수동 진단으로 보완 |
+| 3-2~3-4, Q-1 | 2단계 Critical/High 수정 | 완료 (Windows `mvn test` 대기) | 2026-09-30 | TLS 는 `ssl_verify` 옵션화(기본 no-verify 유지, true 면 truststore/cacerts + 호스트명 검증). Zip Slip 차단(`SecurityValidator.resolveZipEntry`), 서버 응답 파일명 검증, 응답·결과 원문 로그 제거(`LogSafe`), `applyChmod` 인자 배열화 + 8진수만 허용 |

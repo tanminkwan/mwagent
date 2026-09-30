@@ -20,18 +20,17 @@ import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
-import org.apache.http.ssl.TrustStrategy;
 import org.apache.http.util.EntityUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
+import mwagent.common.SecurityValidator;
+import mwagent.common.TlsSupport;
 import mwagent.infrastructure.config.ConfigurationProvider;
 
 /**
@@ -61,6 +60,7 @@ public class ApacheHttpClientAdapter implements HttpClient {
         try {
             httpsClient = createHttpsClient();
         } catch (Exception e) {
+            // Falls back to the default client, which verifies against JVM cacerts (never trust-all)
             logger.log(Level.WARNING, "Failed to create HTTPS client", e);
             httpsClient = httpClient;
         }
@@ -82,16 +82,10 @@ public class ApacheHttpClientAdapter implements HttpClient {
             Security.addProvider(new BouncyCastleProvider());
         }
 
-        TrustStrategy acceptAll = (chain, authType) -> true;
-
-        SSLContext sslContext = SSLContextBuilder.create()
-                .setProtocol("TLSv1.2")
-                .loadTrustMaterial(null, acceptAll)
-                .build();
-
-        SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(
-                sslContext,
-                NoopHostnameVerifier.INSTANCE);
+        // ssl_verify=false (default): trust any certificate. true: truststore.path or JVM cacerts + hostname check
+        SSLConnectionSocketFactory sslSocketFactory = TlsSupport.httpsSocketFactory(
+                config.isSslVerify(), config.getTruststorePath(), config.getTruststorePassword());
+        logger.info(TlsSupport.describe(config.isSslVerify(), config.getTruststorePath()));
 
         return HttpClients.custom()
                 .setSSLSocketFactory(sslSocketFactory)
@@ -111,10 +105,7 @@ public class ApacheHttpClientAdapter implements HttpClient {
         }
 
         // Load truststore (JKS)
-        KeyStore trustStore = KeyStore.getInstance("JKS");
-        try (InputStream trustStoreStream = new java.io.FileInputStream(config.getTruststorePath())) {
-            trustStore.load(trustStoreStream, config.getTruststorePassword().toCharArray());
-        }
+        KeyStore trustStore = TlsSupport.loadTruststore(config.getTruststorePath(), config.getTruststorePassword());
 
         SSLContext sslContext = SSLContexts.custom()
                 .setProtocol("TLSv1.2")
@@ -124,7 +115,7 @@ public class ApacheHttpClientAdapter implements HttpClient {
 
         SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(
                 sslContext,
-                NoopHostnameVerifier.INSTANCE);
+                TlsSupport.hostnameVerifier(config.isSslVerify()));
 
         return HttpClients.custom()
                 .setSSLSocketFactory(sslSocketFactory)
@@ -256,6 +247,10 @@ public class ApacheHttpClientAdapter implements HttpClient {
             String fileName = extractFileName(response);
             if (fileName == null || fileName.isEmpty()) {
                 fileName = "downloaded_file";
+            }
+            // The name comes from the server response; never let it leave destinationPath
+            if (!SecurityValidator.isValidFilename(fileName)) {
+                throw new HttpClientException("Invalid file name in Content-Disposition: " + fileName, statusCode);
             }
 
             // Save file

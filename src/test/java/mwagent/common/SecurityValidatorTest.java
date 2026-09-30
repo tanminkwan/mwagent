@@ -188,4 +188,44 @@ class SecurityValidatorTest {
         assertThat(SecurityValidator.isValidFilename(null)).isFalse();
         assertThat(SecurityValidator.isValidFilename("")).isFalse();
     }
+
+    // ==================== Sibling prefix / Zip Slip Tests ====================
+
+    @Test
+    void isValidAbsolutePath_WithSiblingPrefixDir_ShouldReturnFalse() throws IOException {
+        File base = tempDir.resolve("base").toFile();
+        File sibling = tempDir.resolve("base2").toFile();
+        base.mkdirs();
+        sibling.mkdirs();
+
+        // "/tmp/x/base2/f" starts with the string "/tmp/x/base" but is not inside it
+        assertThat(SecurityValidator.isValidAbsolutePath(
+            new File(sibling, "f.txt").getPath(), base.getPath())).isFalse();
+        assertThat(SecurityValidator.isValidAbsolutePath(
+            new File(base, "f.txt").getPath(), base.getPath())).isTrue();
+    }
+
+    @Test
+    void resolveZipEntry_WithNormalEntry_ShouldResolveInsideDest() throws IOException {
+        File dest = tempDir.toFile();
+
+        File f = SecurityValidator.resolveZipEntry(dest, "dir/file.txt");
+        assertThat(f.getPath()).isEqualTo(new File(dest.getCanonicalFile(), "dir" + File.separator + "file.txt").getPath());
+    }
+
+    @Test
+    void resolveZipEntry_WithTraversal_ShouldThrow() {
+        File dest = tempDir.resolve("dest").toFile();
+
+        assertThatThrownBy(() -> SecurityValidator.resolveZipEntry(dest, "../evil.sh"))
+            .isInstanceOf(IOException.class)
+            .hasMessageContaining("outside of the target dir");
+        assertThatThrownBy(() -> SecurityValidator.resolveZipEntry(dest, "a/../../evil.sh"))
+            .isInstanceOf(IOException.class);
+        assertThatThrownBy(() -> SecurityValidator.resolveZipEntry(dest, "..\\evil.bat"))
+            .isInstanceOf(IOException.class);
+        // sibling directory sharing the name prefix
+        assertThatThrownBy(() -> SecurityValidator.resolveZipEntry(dest, "../dest2/evil.sh"))
+            .isInstanceOf(IOException.class);
+    }
 }
