@@ -1,5 +1,10 @@
 # MWM Agent
 
+[![CI](https://github.com/tanminkwan/mwagent/actions/workflows/ci.yml/badge.svg)](https://github.com/tanminkwan/mwagent/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/tanminkwan/mwagent/actions/workflows/codeql.yml/badge.svg)](https://github.com/tanminkwan/mwagent/actions/workflows/codeql.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Java 8 | 17](https://img.shields.io/badge/java-8%20%7C%2017-blue.svg)](CONTRIBUTING.md#java-8--17-호환-규칙)
+
 **MWM Agent**(저장소 `mwagent`, 옛 이름 MwManger)는 [미들웨어관리소(MWM)](https://github.com/tanminkwan/mwm-app)의 에이전트 프로그램으로, 각 서버에서 데몬으로 실행되면서 중앙 미들웨어관리소(MWM) 서버로부터 명령을 전달받아 수행하는 Java 기반 원격 관리 에이전트입니다.
 
 ## 목차

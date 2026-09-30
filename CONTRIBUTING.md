@@ -30,7 +30,7 @@ bash download-dependencies.sh && bash build-offline.sh   # 오프라인 빌드 �
   3. `pom.xml`, `download-dependencies.sh/.bat`, `lib/SHA256SUMS` 를 **함께** 바꿉니다 (CI `lib-integrity` 가 확인합니다).
   4. `sbom/generate.sh` 로 SBOM 을 다시 만듭니다.
 - 대소문자 변환은 `toLowerCase(Locale.ROOT)` 처럼 로케일을 지정합니다.
-- TLS 프로토콜은 `TLSv1.2` 로 고정되어 있습니다 (AIX IBM JDK 호환). 바꾸려면 AIX 에서 먼저 확인해야 합니다.
+- TLS 프로토콜은 `TLSv1.2` 로 고정되어 있습니다. 특정 사용 환경의 요구이므로 유지합니다 (TLS 1.3 허용 등 변경하지 않음).
 
 ## 코드 규칙
 
