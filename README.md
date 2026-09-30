@@ -66,11 +66,11 @@ MwManger는 분산 환경의 서버 관리를 자동화하기 위한 에이전�
 
 | 라이브러리 | 버전 | 용도 |
 |-----------|------|------|
-| Apache HttpClient | 4.5.13 | HTTP/HTTPS 통신 |
+| Apache HttpClient | 4.5.14 | HTTP/HTTPS 통신 |
 | Eclipse Paho MQTT v5 | 1.2.5 | MQTT 명령 구독 |
 | BouncyCastle (bcprov-jdk18on) | 1.86 | TLS 1.2 지원 (AIX) |
 | JSON Simple | 1.1.1 | JSON 처리 |
-| Apache Commons Codec | 1.11 | 인코딩 유틸리티 |
+| Apache Commons Codec | 1.22.1 | 인코딩 유틸리티 |
 
 자세한 의존성 정보는 [DEPENDENCIES.md](DEPENDENCIES.md), 라이선스는 [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md) · [NOTICE](NOTICE), SBOM 은 [sbom/mwagent.cdx.json](sbom/mwagent.cdx.json) (CycloneDX 1.6) 참조
 
@@ -167,7 +167,7 @@ public static final String VERSION = "0000.0010.0000";  // 여기만 수정!
 
 ```bash
 # Windows (Git Bash)
-/c/Windows/System32/cmd.exe //c "cd /d C:\GitHub\mwmanger && build-offline.bat"
+/c/Windows/System32/cmd.exe //c "cd /d <repo-path> && build-offline.bat"
 
 # Linux/Mac
 ./build-offline.sh

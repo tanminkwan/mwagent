@@ -11,9 +11,9 @@ REM lib 디렉토리 생성
 if not exist lib mkdir lib
 cd lib
 
-echo [1/5] Downloading Apache HttpClient 4.5.13...
-curl -L -o httpclient-4.5.13.jar "https://repo1.maven.org/maven2/org/apache/httpcomponents/httpclient/4.5.13/httpclient-4.5.13.jar"
-curl -L -o httpcore-4.4.13.jar "https://repo1.maven.org/maven2/org/apache/httpcomponents/httpcore/4.4.13/httpcore-4.4.13.jar"
+echo [1/5] Downloading Apache HttpClient 4.5.14...
+curl -L -o httpclient-4.5.14.jar "https://repo1.maven.org/maven2/org/apache/httpcomponents/httpclient/4.5.14/httpclient-4.5.14.jar"
+curl -L -o httpcore-4.4.16.jar "https://repo1.maven.org/maven2/org/apache/httpcomponents/httpcore/4.4.16/httpcore-4.4.16.jar"
 curl -L -o commons-logging-1.2.jar "https://repo1.maven.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar"
 
 echo [2/5] Downloading BouncyCastle 1.86...
@@ -22,8 +22,8 @@ curl -L -o bcprov-jdk18on-1.86.jar "https://repo1.maven.org/maven2/org/bouncycas
 echo [3/5] Downloading JSON Simple 1.1.1...
 curl -L -o json-simple-1.1.1.jar "https://repo1.maven.org/maven2/com/googlecode/json-simple/json-simple/1.1.1/json-simple-1.1.1.jar"
 
-echo [4/5] Downloading Apache Commons Codec 1.11...
-curl -L -o commons-codec-1.11.jar "https://repo1.maven.org/maven2/commons-codec/commons-codec/1.11/commons-codec-1.11.jar"
+echo [4/5] Downloading Apache Commons Codec 1.22.1...
+curl -L -o commons-codec-1.22.1.jar "https://repo1.maven.org/maven2/commons-codec/commons-codec/1.22.1/commons-codec-1.22.1.jar"
 
 echo [5/5] Downloading Eclipse Paho MQTT v5 Client 1.2.5...
 curl -L -o org.eclipse.paho.mqttv5.client-1.2.5.jar "https://repo1.maven.org/maven2/org/eclipse/paho/org.eclipse.paho.mqttv5.client/1.2.5/org.eclipse.paho.mqttv5.client-1.2.5.jar"

@@ -1,7 +1,7 @@
 2af190b300cbb0b35e248ccf5f4a06b6072030aeb3da7a98ec73abe5b4cb371f  bcprov-jdk18on-1.86.jar
-e599d5318e97aa48f42136a2927e6dfa4e8881dff0e6c8e3109ddbbff51d7b7d  commons-codec-1.11.jar
+78a5d732fbd715e2d10bd7150d2f8030bae57267f8aacc5c88f642cb6c2e5d3f  commons-codec-1.22.1.jar
 daddea1ea0be0f56978ab3006b8ac92834afeefbd9b7e4e6316fca57df0fa636  commons-logging-1.2.jar
-6fe9026a566c6a5001608cf3fc32196641f6c1e5e1986d1037ccdbd5f31ef743  httpclient-4.5.13.jar
-e06e89d40943245fcfa39ec537cdbfce3762aecde8f9c597780d2b00c2b43424  httpcore-4.4.13.jar
+c8bc7e1c51a6d4ce72f40d2ebbabf1c4b68bfe76e732104b04381b493478e9d6  httpclient-4.5.14.jar
+6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f  httpcore-4.4.16.jar
 4e69696892b88b41c55d49ab2fdcc21eead92bf54acc588c0050596c3b75199c  json-simple-1.1.1.jar
 d71fe7fcd63dbeb5241b415c25af621acc55fc5e6ec65c036115d16a8e790188  org.eclipse.paho.mqttv5.client-1.2.5.jar

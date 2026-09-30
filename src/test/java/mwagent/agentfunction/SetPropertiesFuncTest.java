@@ -29,7 +29,7 @@ class SetPropertiesFuncTest {
 
     private static final String ORIGINAL =
             "# MwManger agent configuration\n" +
-            "server_url=https://app.mwm.local:20443/\n" +
+            "server_url=https://mwm.example.com/\n" +
             "token=secret-refresh-token\n" +
             "log_level=FINE\n" +
             "command_check_cycle=60\n" +

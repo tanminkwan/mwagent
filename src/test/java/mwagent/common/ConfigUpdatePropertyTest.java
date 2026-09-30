@@ -27,7 +27,7 @@ class ConfigUpdatePropertyTest {
 
     private static final String ORIGINAL =
             "# MwManger agent configuration\n" +
-            "server_url=https://app.mwm.local:20443/\n" +
+            "server_url=https://mwm.example.com/\n" +
             "\n" +
             "token=old-token\n" +
             "get_command_uri=/api/v1/command\n" +
@@ -69,7 +69,7 @@ class ConfigUpdatePropertyTest {
 
         Properties p = load(f);
         assertThat(p.getProperty("token")).isEqualTo("new-token-123");
-        assertThat(p.getProperty("server_url")).isEqualTo("https://app.mwm.local:20443/");
+        assertThat(p.getProperty("server_url")).isEqualTo("https://mwm.example.com/");
         assertThat(p.size()).isEqualTo(8);
     }
 
@@ -236,7 +236,7 @@ class ConfigUpdatePropertyTest {
         assertThat(errors).isEmpty();
         Properties p = load(f);
         assertThat(p.size()).as("all 8 keys must survive concurrent token updates").isEqualTo(8);
-        assertThat(p.getProperty("server_url")).isEqualTo("https://app.mwm.local:20443/");
+        assertThat(p.getProperty("server_url")).isEqualTo("https://mwm.example.com/");
         assertThat(p.getProperty("token")).startsWith("tok-");
         assertThat(read(f)).startsWith("# MwManger agent configuration\n");
     }

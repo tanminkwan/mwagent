@@ -18,7 +18,7 @@
 
 | 판정 | 건수 | 내용 |
 |------|------|------|
-| **실제 비밀** | **2** | 로컬 개발 MQTT 브로커 비밀번호. 로컬 `agent.properties` 의 `mqtt_credential` 과 **값이 일치**한다. `docs/SetProperties-Requirements.md` 와 `SetPropertiesFuncTest.java` 의 예시값으로 들어갔다. 커밋 2be4134 (2026-09-18), **현재 파일에도 남아 있다** |
+| **실제 비밀** | **2** | 로컬 개발 MQTT 브로커 비밀번호. 로컬 `agent.properties` 의 `mqtt_credential` 과 **값이 일치**한다. `docs/SetProperties-Requirements.md` 와 `SetPropertiesFuncTest.java` 의 예시값으로 들어갔다. 커밋 d1f3bb7 (2026-09-18), **현재 파일에도 남아 있다** |
 | 문서 예시 | 22 | `docs/*`, `test-server/*.md` 의 `bootstrap_token`, `access_token`, `refresh_token`, `curl -H Authorization`. JWT 는 모두 잘려 있거나(`...`) 디코드되지 않는 샘플이다 |
 | 테스트 상수 | 1 | `BizServiceIntegrationTest` 의 만료 토큰 상수. 테스트 전용 |
 | 오탐 | 1 | `temp_jdk/.../java.security` 의 `jdk.tls.keyLimits` 설정 |
@@ -41,7 +41,7 @@
 | 사내 프록시 IP | 2 | 6 | `CLAUDE.md`, `docs/PROJECT_REPORT.md` |
 | 개발 PC 사용자명 | 3 | 6 | `run.agent.sh`, `test/demos/TestExtractLog.java`, `docs/SetProperties-Requirements.md` |
 | 개발 PC 홈 경로 | 4 | 5 | 위 + `ExeShell.java` 주석(`/home/user` 예시 — 문제없음) |
-| 개발 PC 호스트명 (agent_id) | 0 | 2 | 현재 파일에서는 제거됨(0f5c41c). 히스토리에 남음 |
+| 개발 PC 호스트명 (agent_id) | 0 | 2 | 현재 파일에서는 제거됨(3fb0adb). 히스토리에 남음 |
 | 개발용 서버 호스트명 | 4 | 2 | 테스트 3개, `docs/SetProperties-Requirements.md` |
 | 사설 IP (10.x, 192.168.x) | 4 | 5 | 문서·mock 서버의 예시값. 실제 주소가 아님을 확인해야 한다 |
 | 이메일 | 2 | 4 | 제품 도메인 예시 주소(문서), GitHub noreply. 개인 이메일 없음 |
@@ -59,3 +59,13 @@
 4. 개인키 블록·키 파일은 현재 파일과 히스토리 모두 **0건**이다.
 5. 공개 방식은 WS-1-5 대로 새 저장소에 커밋 1개로 올린다. 히스토리의 작성자 이메일, agent_id, 사내 IP 가 함께 해소된다.
 6. 이 스캔의 denylist 패턴은 `.publish/export.sh`(WS-1-6)의 denylist 검사에 그대로 옮긴다. 패턴 원문에 비밀이 들어가지 않도록 export 도구는 로컬 파일에서 패턴을 읽게 한다.
+
+## 6. 2026-09-30 공개 전환과 히스토리 재작성
+
+- 사용자가 원본 저장소를 직접 public 으로 바꿨다 (WS-1-5 의 "새 저장소" 방식 대신).
+- 로컬 MQTT 브로커 비밀번호가 들어간 커밋(2026-09-18)부터 끝까지 17개 커밋을 `git filter-repo --replace-text` 로 다시 써서
+  값을 자리표시자로 바꾸고 force-push 했다. 그 이전 커밋 99개는 해시·서명 그대로다. 최종 트리는 바뀌지 않았다.
+- **사용자 결정: 비밀번호는 바꾸지 않는다** (로컬 개발 브로커, 유출돼도 영향이 작다고 판단).
+- 공개되어 있던 동안의 사본(clone, 캐시)과 GitHub 의 PR ref(`refs/pull/*`)에는 옛 커밋이 남을 수 있다. PR ref 와 옛 커밋 캐시는 GitHub 지원 요청으로만 지울 수 있다.
+- 현재 파일의 사내 프록시 IP, 개발 PC 사용자·경로, 개발 서버 주소는 자리표시자로 바꿨다. 히스토리의 작성자 이메일과 사내 IP 는 남아 있다.
+

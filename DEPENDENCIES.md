@@ -18,11 +18,11 @@ MwManger Agent는 JDK 1.8 (Java 8) 이상에서 실행 가능하도록 설계되
 <dependency>
     <groupId>org.apache.httpcomponents</groupId>
     <artifactId>httpclient</artifactId>
-    <version>4.5.13</version>
+    <version>4.5.14</version>
 </dependency>
 ```
 
-- **버전**: 4.5.13 (JDK 1.8 호환)
+- **버전**: 4.5.14 (JDK 1.8 호환, httpcore 4.4.16)
 - **사용 위치**:
   - `Common.java` - HTTP GET/POST 요청
   - `Common.java` - 파일 다운로드
@@ -117,11 +117,11 @@ MwManger Agent는 JDK 1.8 (Java 8) 이상에서 실행 가능하도록 설계되
 <dependency>
     <groupId>commons-codec</groupId>
     <artifactId>commons-codec</artifactId>
-    <version>1.11</version>
+    <version>1.22.1</version>
 </dependency>
 ```
 
-- **버전**: 1.11 (JDK 1.8 호환)
+- **버전**: 1.22.1 (JDK 1.8 호환)
 - **사용 위치**:
   - `MwConsumerThread.java` - 문자열 비교 (StringUtils)
 - **주요 기능**:
@@ -134,11 +134,11 @@ MwManger Agent는 JDK 1.8 (Java 8) 이상에서 실행 가능하도록 설계되
 
 | 라이브러리 | GroupId | ArtifactId | 버전 | JDK 1.8 호환 | 필수 여부 |
 |-----------|---------|------------|------|-------------|----------|
-| Apache HttpClient | org.apache.httpcomponents | httpclient | 4.5.13 | ✓ | 필수 |
+| Apache HttpClient | org.apache.httpcomponents | httpclient | 4.5.14 | ✓ | 필수 |
 | Eclipse Paho MQTT v5 | org.eclipse.paho | org.eclipse.paho.mqttv5.client | 1.2.5 | ✓ | MQTT 사용 시 |
 | BouncyCastle | org.bouncycastle | bcprov-jdk18on | 1.86 | ✓ | AIX 필수 |
 | JSON Simple | com.googlecode.json-simple | json-simple | 1.1.1 | ✓ | 필수 |
-| Apache Commons Codec | commons-codec | commons-codec | 1.11 | ✓ | 필수 |
+| Apache Commons Codec | commons-codec | commons-codec | 1.22.1 | ✓ | 필수 |
 
 ### 테스트 의존성
 

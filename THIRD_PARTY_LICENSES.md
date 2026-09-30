@@ -10,10 +10,10 @@ Maven 플러그인)는 배포물에 들어가지 않으므로 목록에 없습�
 
 | 라이브러리 | 버전 | 라이선스 (SPDX) | 라이선스 전문 | 용도 |
 |------------|------|-----------------|---------------|------|
-| Apache HttpClient (`org.apache.httpcomponents:httpclient`) | 4.5.13 | Apache-2.0 | [Apache-2.0.txt](licenses/Apache-2.0.txt) | HTTP/HTTPS 통신 |
-| Apache HttpCore (`org.apache.httpcomponents:httpcore`) | 4.4.13 | Apache-2.0 | [Apache-2.0.txt](licenses/Apache-2.0.txt) | HttpClient 코어 |
+| Apache HttpClient (`org.apache.httpcomponents:httpclient`) | 4.5.14 | Apache-2.0 | [Apache-2.0.txt](licenses/Apache-2.0.txt) | HTTP/HTTPS 통신 |
+| Apache HttpCore (`org.apache.httpcomponents:httpcore`) | 4.4.16 | Apache-2.0 | [Apache-2.0.txt](licenses/Apache-2.0.txt) | HttpClient 코어 |
 | Apache Commons Logging (`commons-logging:commons-logging`) | 1.2 | Apache-2.0 | [Apache-2.0.txt](licenses/Apache-2.0.txt) | HttpClient 로깅 |
-| Apache Commons Codec (`commons-codec:commons-codec`) | 1.11 | Apache-2.0 | [Apache-2.0.txt](licenses/Apache-2.0.txt) | 인코딩 유틸리티 |
+| Apache Commons Codec (`commons-codec:commons-codec`) | 1.22.1 | Apache-2.0 | [Apache-2.0.txt](licenses/Apache-2.0.txt) | 인코딩 유틸리티 |
 | JSON.simple (`com.googlecode.json-simple:json-simple`) | 1.1.1 | Apache-2.0 | [Apache-2.0.txt](licenses/Apache-2.0.txt) | JSON 처리 |
 | Eclipse Paho MQTT v5 (`org.eclipse.paho:org.eclipse.paho.mqttv5.client`) | 1.2.5 | EPL-2.0 OR BSD-3-Clause (EDL-1.0) | [EPL-2.0.txt](licenses/EPL-2.0.txt), [EDL-1.0.txt](licenses/EDL-1.0.txt) | MQTT 명령 구독 |
 | Bouncy Castle (`org.bouncycastle:bcprov-jdk18on`) | 1.86 | MIT (Bouncy Castle Licence) | [BouncyCastle-MIT.txt](licenses/BouncyCastle-MIT.txt) | TLS 1.2 provider (AIX) |

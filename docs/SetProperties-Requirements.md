@@ -197,7 +197,7 @@ Agent 는 `ResultVO` 한 건을 생성하여 기존 결과 전송 경로로 회�
 
 ```json
 {
-  "server_url": "https://app.mwm.local:20443/",
+  "server_url": "https://mwm.example.com/",
   "get_command_uri": "/api/v1/command",
   "post_agent_uri": "/api/v1/agent/agent",
   "log_level": "INFO",
@@ -205,7 +205,7 @@ Agent 는 `ResultVO` 한 건을 생성하여 기존 결과 전송 경로로 회�
   "user_name_var": "USER",
   "command_check_cycle": "30",
   "security.path_traversal_check": "true",
-  "security.allowed_read_paths": "/home/hennry/projects",
+  "security.allowed_read_paths": "/opt/apps",
   "mqtt_enabled": "true",
   "mqtt_broker_address": "tcp://localhost:1883",
   "mqtt_credential": "dummy-mqtt-credential"

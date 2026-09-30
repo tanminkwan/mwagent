@@ -15,14 +15,15 @@
 
 ### Maven (Primary - Use This)
 ```bash
-# With proxy
-HTTP_PROXY=http://70.10.15.10:8080 HTTPS_PROXY=http://70.10.15.10:8080 ./tools/apache-maven-3.9.6/bin/mvn clean test
+# 프록시가 필요한 환경이면 사내 프록시 주소를 환경 변수로 준다 (주소는 저장소에 적지 않는다)
+HTTP_PROXY=$MWM_PROXY HTTPS_PROXY=$MWM_PROXY ./tools/apache-maven-3.9.6/bin/mvn clean test
+# 직접 인터넷이 되는 환경(리눅스 개발 PC 등)은 프록시 변수를 빼고 JAVA_HOME=temp_jdk/... 로 실행
 ```
 
 ### Offline Build (For deployment)
 ```bash
 # From Git Bash on Windows - Output: build/mwagent.jar
-/c/Windows/System32/cmd.exe //c "cd /d C:\GitHub\mwmanger && C:\GitHub\mwmanger\build-offline.bat"
+/c/Windows/System32/cmd.exe //c "cd /d <repo-path> && build-offline.bat"
 ```
 
 ### DO NOT DELETE
@@ -42,7 +43,7 @@ HTTP_PROXY=http://70.10.15.10:8080 HTTPS_PROXY=http://70.10.15.10:8080 ./tools/a
 ### Run all tests (no skips)
 ```bash
 MTLS_INTEGRATION_TEST=true BIZ_SERVICE_INTEGRATION_TEST=true SSL_CERT_INTEGRATION_TEST=true \
-HTTP_PROXY=http://70.10.15.10:8080 HTTPS_PROXY=http://70.10.15.10:8080 \
+HTTP_PROXY=$MWM_PROXY HTTPS_PROXY=$MWM_PROXY \
 ./tools/apache-maven-3.9.6/bin/mvn test
 ```
 

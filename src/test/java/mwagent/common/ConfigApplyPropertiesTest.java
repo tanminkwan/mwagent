@@ -29,7 +29,7 @@ class ConfigApplyPropertiesTest {
 
     private static final String ORIGINAL =
             "# MwManger agent configuration\n" +
-            "server_url=https://app.mwm.local:20443/\n" +
+            "server_url=https://mwm.example.com/\n" +
             "\n" +
             "token=secret-refresh-token\n" +
             "get_command_uri=/api/v1/command\n" +
@@ -117,7 +117,7 @@ class ConfigApplyPropertiesTest {
         assertThat(p.getProperty("mqtt_enabled")).isEqualTo("true");
         // comments, blank lines and untouched entries keep their exact position
         assertThat(read(f)).startsWith("# MwManger agent configuration\n"
-                + "server_url=https://app.mwm.local:20443/\n"
+                + "server_url=https://mwm.example.com/\n"
                 + "\n"
                 + "token=secret-refresh-token\n");
     }

@@ -2,7 +2,7 @@
 
 > 수행: 2026-09-29
 > 상위 계획: [PLAN_001](../PLAN_001_opensource_readiness.md) WS-3-1
-> 대상: `src/main/java` (커밋 0f5c41c 기준)
+> 대상: `src/main/java` (커밋 3fb0adb 기준)
 
 ## 1. 도구와 범위
 

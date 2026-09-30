@@ -31,23 +31,23 @@ download-dependencies.bat
 
 | 파일명 | 버전 | 다운로드 URL |
 |--------|------|-------------|
-| httpclient-4.5.13.jar | 4.5.13 | https://repo1.maven.org/maven2/org/apache/httpcomponents/httpclient/4.5.13/httpclient-4.5.13.jar |
-| httpcore-4.4.13.jar | 4.4.13 | https://repo1.maven.org/maven2/org/apache/httpcomponents/httpcore/4.4.13/httpcore-4.4.13.jar |
+| httpclient-4.5.14.jar | 4.5.14 | https://repo1.maven.org/maven2/org/apache/httpcomponents/httpclient/4.5.14/httpclient-4.5.14.jar |
+| httpcore-4.4.16.jar | 4.4.16 | https://repo1.maven.org/maven2/org/apache/httpcomponents/httpcore/4.4.16/httpcore-4.4.16.jar |
 | commons-logging-1.2.jar | 1.2 | https://repo1.maven.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar |
 | org.eclipse.paho.mqttv5.client-1.2.5.jar | 1.2.5 | https://repo1.maven.org/maven2/org/eclipse/paho/org.eclipse.paho.mqttv5.client/1.2.5/org.eclipse.paho.mqttv5.client-1.2.5.jar |
 | bcprov-jdk18on-1.86.jar | 1.86 | https://repo1.maven.org/maven2/org/bouncycastle/bcprov-jdk18on/1.86/bcprov-jdk18on-1.86.jar |
 | json-simple-1.1.1.jar | 1.1.1 | https://repo1.maven.org/maven2/com/googlecode/json-simple/json-simple/1.1.1/json-simple-1.1.1.jar |
-| commons-codec-1.11.jar | 1.11 | https://repo1.maven.org/maven2/commons-codec/commons-codec/1.11/commons-codec-1.11.jar |
+| commons-codec-1.22.1.jar | 1.22.1 | https://repo1.maven.org/maven2/commons-codec/commons-codec/1.22.1/commons-codec-1.22.1.jar |
 
 ## 필요한 JAR 파일 (총 7개)
 
-1. **httpclient-4.5.13.jar** - HTTP/HTTPS 통신
-2. **httpcore-4.4.13.jar** - HttpClient 코어
+1. **httpclient-4.5.14.jar** - HTTP/HTTPS 통신
+2. **httpcore-4.4.16.jar** - HttpClient 코어
 3. **commons-logging-1.2.jar** - HttpClient 로깅
 4. **org.eclipse.paho.mqttv5.client-1.2.5.jar** - MQTT v5 클라이언트 (명령 구독)
 5. **bcprov-jdk18on-1.86.jar** - BouncyCastle (TLS 1.2 지원, AIX)
 6. **json-simple-1.1.1.jar** - JSON 처리
-7. **commons-codec-1.11.jar** - 인코딩 유틸리티
+7. **commons-codec-1.22.1.jar** - 인코딩 유틸리티
 
 `lib/SHA256SUMS` 에 없는 jar(옛 버전 등)가 남아 있으면 `verify-lib.*` 가 실패합니다.
 빌드·배포 스크립트가 `lib/*.jar` 를 모두 classpath 에 넣기 때문입니다. `download-dependencies.*` 는 목록에 없는 jar 를 지웁니다.
@@ -85,7 +85,7 @@ java -cp "lib/*:build/classes" mwagent.MwAgent
 ```
 mwagent/
 ├── lib/                    ← 모든 JAR 파일 (7개)
-│   ├── httpclient-4.5.13.jar
+│   ├── httpclient-4.5.14.jar
 │   ├── bcprov-jdk18on-1.86.jar
 │   └── ...
 ├── build-offline.sh        ← 오프라인 빌드 스크립트

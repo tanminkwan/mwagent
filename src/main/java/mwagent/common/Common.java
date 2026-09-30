@@ -44,13 +44,6 @@ public class Common {
 	/**
 	 * Mask token for secure logging - shows only last 10 characters
 	 */
-	private static String maskToken(String token) {
-		if (token == null || token.length() <= 10) {
-			return "**********";
-		}
-		return token.substring(token.length() - 10);
-	}
-	
 	/**
 	 * Absolute path of cmd.exe (%SystemRoot%\System32\cmd.exe), so a cmd.exe in the
 	 * working directory or PATH is never picked up. Falls back to "cmd.exe" if SystemRoot is unset.
@@ -491,7 +484,7 @@ public class Common {
         }else if(mrvo.getResponse() != null) {
             	
             String refresh_token = (String)mrvo.getResponse().get("refresh_token");
-            config.getLogger().fine("refresh_token :***" + maskToken(refresh_token));
+            config.getLogger().fine("refresh_token received (" + (refresh_token == null ? 0 : refresh_token.length()) + " chars)");
             config.setRefresh_token(refresh_token);
             rtn = 1;
             

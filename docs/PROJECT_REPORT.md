@@ -722,12 +722,12 @@ sequenceDiagram
 MTLS_INTEGRATION_TEST=true \
 BIZ_SERVICE_INTEGRATION_TEST=true \
 SSL_CERT_INTEGRATION_TEST=true \
-HTTP_PROXY=http://70.10.15.10:8080 \
-HTTPS_PROXY=http://70.10.15.10:8080 \
+HTTP_PROXY=$MWM_PROXY \
+HTTPS_PROXY=$MWM_PROXY \
 ./tools/apache-maven-3.9.6/bin/mvn test
 
 # 오프라인 빌드 (Windows)
-/c/Windows/System32/cmd.exe //c "cd /d C:\GitHub\mwmanger && build-offline.bat"
+/c/Windows/System32/cmd.exe //c "cd /d <repo-path> && build-offline.bat"
 
 # 결과물: build/mwagent.jar
 ```

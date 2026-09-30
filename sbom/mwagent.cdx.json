@@ -16,28 +16,28 @@
           "author": "OWASP Foundation",
           "group": "org.cyclonedx",
           "name": "cyclonedx-maven-plugin",
-          "version": "2.9.1",
+          "version": "2.9.3",
           "description": "CycloneDX Maven plugin",
           "hashes": [
             {
               "alg": "MD5",
-              "content": "9c7a565cf28cce58557d0c621c5ea4b1"
+              "content": "e7c87ab327b65b23c681fc9dc8bb620b"
             },
             {
               "alg": "SHA-1",
-              "content": "be882d5a22050bfa9d19090b1420c188617d0e1c"
+              "content": "fa3f0f04f4d5077b5e085d4d09aa2e68aeba5260"
             },
             {
               "alg": "SHA-256",
-              "content": "698e0f37184a5b28c245c4065fd036dfce253b52f82fbb7113d81d36326cc249"
+              "content": "c452d5eebe28bc86bef2e7c72d129f04f60877bef843eac8120f01fb655be293"
             },
             {
               "alg": "SHA-512",
-              "content": "c0f0b11026858166f872a2eb54719492e5cecaa0bc9cd6b30b3ecb4a174eed220f4a1b5829d18d6734128e778d3cb3db7ffed177c92866133129cb29081814a0"
+              "content": "ec0344ed2ffe62d565aaf936a37140d04c7fffa8669a666be0366cd44eec3195232d79841cdec47030b79068216ac7e1a8c805255758e3d418dae32a4b9b9beb"
             },
             {
               "alg": "SHA-384",
-              "content": "d80964707dfe5caca8c70521d5066f57589304c0a657e6fbc7c0614ea0fc7b3b3dbe7778361eee0f54ba111e9cb0ffcb"
+              "content": "3df26b2a00d87fe090851975ebcc30217f98634e7c47d07128e148f325ebfe3bc0790b2f52ad4591734b7b0de738f003"
             }
           ]
         }
@@ -66,33 +66,33 @@
   "components": [
     {
       "type": "library",
-      "bom-ref": "pkg:maven/org.apache.httpcomponents/httpclient@4.5.13?type=jar",
+      "bom-ref": "pkg:maven/org.apache.httpcomponents/httpclient@4.5.14?type=jar",
       "publisher": "The Apache Software Foundation",
       "group": "org.apache.httpcomponents",
       "name": "httpclient",
-      "version": "4.5.13",
+      "version": "4.5.14",
       "description": "Apache HttpComponents Client",
       "scope": "required",
       "hashes": [
         {
           "alg": "MD5",
-          "content": "40d6b9075fbd28fa10292a45a0db9457"
+          "content": "2cb357c4b763f47e58af6cad47df6ba3"
         },
         {
           "alg": "SHA-1",
-          "content": "e5f6cae5ca7ecaac1ec2827a9e2d65ae2869cada"
+          "content": "1194890e6f56ec29177673f2f12d0b8e627dec98"
         },
         {
           "alg": "SHA-256",
-          "content": "6fe9026a566c6a5001608cf3fc32196641f6c1e5e1986d1037ccdbd5f31ef743"
+          "content": "c8bc7e1c51a6d4ce72f40d2ebbabf1c4b68bfe76e732104b04381b493478e9d6"
         },
         {
           "alg": "SHA-512",
-          "content": "3567739186e551f84cad3e4b6b270c5b8b19aba297675a96bcdff3663ff7d20d188611d21f675fe5ff1bfd7d8ca31362070910d7b92ab1b699872a120aa6f089"
+          "content": "a084ef30fb0a2a25397d8fab439fe68f67e294bf53153e2e1355b8df92886d40fe6abe35dc84f014245f7158e92641bcbd98019b4fbbd9e5a0db495b160b4ced"
         },
         {
           "alg": "SHA-384",
-          "content": "093ac3e2dde58e34aa70309c7305eb3c9b5be2509a9293f1672494da55479a86bd112e83326746dc7a32855472952b99"
+          "content": "c8ccaa1fa8ba7c421413e3c30375bd9c31284e837c476fd831e18043ad4187e92166f49554123108891241bed674b95d"
         }
       ],
       "licenses": [
@@ -102,11 +102,11 @@
           }
         }
       ],
-      "purl": "pkg:maven/org.apache.httpcomponents/httpclient@4.5.13?type=jar",
+      "purl": "pkg:maven/org.apache.httpcomponents/httpclient@4.5.14?type=jar",
       "externalReferences": [
         {
           "type": "website",
-          "url": "http://hc.apache.org/httpcomponents-client"
+          "url": "http://hc.apache.org/httpcomponents-client-ga"
         },
         {
           "type": "distribution-intake",
@@ -122,39 +122,39 @@
         },
         {
           "type": "vcs",
-          "url": "https://github.com/apache/httpcomponents-client/tree/4.5.13/httpclient"
+          "url": "https://github.com/apache/httpcomponents-client/tree/4.5.14/httpclient"
         }
       ]
     },
     {
       "type": "library",
-      "bom-ref": "pkg:maven/org.apache.httpcomponents/httpcore@4.4.13?type=jar",
+      "bom-ref": "pkg:maven/org.apache.httpcomponents/httpcore@4.4.16?type=jar",
       "publisher": "The Apache Software Foundation",
       "group": "org.apache.httpcomponents",
       "name": "httpcore",
-      "version": "4.4.13",
+      "version": "4.4.16",
       "description": "Apache HttpComponents Core (blocking I/O)",
       "scope": "required",
       "hashes": [
         {
           "alg": "MD5",
-          "content": "e07a248f61c52776a2366c075dcd4963"
+          "content": "28d2cd9bf8789fd2ec774fb88436ebd1"
         },
         {
           "alg": "SHA-1",
-          "content": "853b96d3afbb7bf8cc303fe27ee96836a10c1834"
+          "content": "51cf043c87253c9f58b539c9f7e44c8894223850"
         },
         {
           "alg": "SHA-256",
-          "content": "e06e89d40943245fcfa39ec537cdbfce3762aecde8f9c597780d2b00c2b43424"
+          "content": "6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f"
         },
         {
           "alg": "SHA-512",
-          "content": "23430cde8b9bed33c91474ba49f1143284135df1b25fdcbc37bc3bb7e9549e77b3918eb40250093db652ae200367e87316129b23b4f6987e94939d60f467498d"
+          "content": "168026436a6bcf5e96c0c59606638abbdc30de4b405ae55afde70fdf2895e267a3d48bba6bdadc5a89f38e31da3d9a9dc91e1cab7ea76f5e04322cf1ec63b838"
         },
         {
           "alg": "SHA-384",
-          "content": "b776d57492478c162d428bdd3139be0fa6c3cf4503355c3a04710ca7bc3ee74d66627f49eb42814fd8f8364dbd17aa91"
+          "content": "ba9ceaee1a37ca3201d6a1315ecb0327b495489efd0baa155c219c475df8d3eb69fe77ab0026563db406497626da6562"
         }
       ],
       "licenses": [
@@ -164,7 +164,7 @@
           }
         }
       ],
-      "purl": "pkg:maven/org.apache.httpcomponents/httpcore@4.4.13?type=jar",
+      "purl": "pkg:maven/org.apache.httpcomponents/httpcore@4.4.16?type=jar",
       "externalReferences": [
         {
           "type": "website",
@@ -184,7 +184,7 @@
         },
         {
           "type": "vcs",
-          "url": "https://github.com/apache/httpcomponents-core/tree/4.4.13/httpcore"
+          "url": "https://github.com/apache/httpcomponents-core/tree/4.4.16/httpcore"
         }
       ]
     },
@@ -411,51 +411,52 @@
     },
     {
       "type": "library",
-      "bom-ref": "pkg:maven/commons-codec/commons-codec@1.11?type=jar",
+      "bom-ref": "pkg:maven/commons-codec/commons-codec@1.22.1?type=jar",
       "publisher": "The Apache Software Foundation",
       "group": "commons-codec",
       "name": "commons-codec",
-      "version": "1.11",
-      "description": "The Apache Commons Codec package contains simple encoder and decoders for various formats such as Base64 and Hexadecimal. In addition to these widely used encoders and decoders, the codec package also maintains a collection of phonetic encoding utilities.",
+      "version": "1.22.1",
+      "description": "The Apache Commons Codec component contains encoders and decoders for formats such as Base16, Base32, Base64, digest, and Hexadecimal. In addition to these widely used encoders and decoders, the codec package also maintains a collection of phonetic encoding utilities.",
       "scope": "required",
       "hashes": [
         {
           "alg": "MD5",
-          "content": "567159b1ae257a43e1391a8f59d24cfe"
+          "content": "7bfd10447817907ffd7f14fbc6493940"
         },
         {
           "alg": "SHA-1",
-          "content": "3acb4705652e16236558f0f4f2192cc33c3bd189"
+          "content": "da09bcdb330deef7cfee70f30c6889fda70d5ebf"
         },
         {
           "alg": "SHA-256",
-          "content": "e599d5318e97aa48f42136a2927e6dfa4e8881dff0e6c8e3109ddbbff51d7b7d"
+          "content": "78a5d732fbd715e2d10bd7150d2f8030bae57267f8aacc5c88f642cb6c2e5d3f"
         },
         {
           "alg": "SHA-512",
-          "content": "d9586162b257386b5871e7e9ae255a38014a9efaeef5148de5e40a3b0200364dad8516bddd554352aa2e5337bec2cc11df88c76c4fdde96a40f3421aa60650d7"
+          "content": "1e2023b6e7715339a309226c94635db77fd3d8d7f6fc1048e0138dc4b4ff27540e1e1ff2238a41b94029a9497b2935af6e8b05eeeed69b76600c2f4eed3e36ed"
         },
         {
           "alg": "SHA-384",
-          "content": "9ae3d8fd4c38f3af52c76c5f98039109901cb0f70700e6d9999b27cc4b30b188e2688aa4adcf6b846376bc3ca125907a"
+          "content": "29f01c913caa51660ff4a8623255f819961ee63b20b125a1c3e5f061b4a75864c1a349420f6d314009b4cf12524aecfb"
         }
       ],
       "licenses": [
         {
           "license": {
-            "id": "Apache-2.0"
+            "id": "Apache-2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0"
           }
         }
       ],
-      "purl": "pkg:maven/commons-codec/commons-codec@1.11?type=jar",
+      "purl": "pkg:maven/commons-codec/commons-codec@1.22.1?type=jar",
       "externalReferences": [
         {
           "type": "website",
-          "url": "http://commons.apache.org/proper/commons-codec/"
+          "url": "https://commons.apache.org/proper/commons-codec/"
         },
         {
           "type": "build-system",
-          "url": "https://builds.apache.org/"
+          "url": "https://github.com/apache/commons-codec/actions"
         },
         {
           "type": "distribution-intake",
@@ -463,15 +464,15 @@
         },
         {
           "type": "issue-tracker",
-          "url": "http://issues.apache.org/jira/browse/CODEC"
+          "url": "https://issues.apache.org/jira/browse/CODEC"
         },
         {
           "type": "mailing-list",
-          "url": "http://mail-archives.apache.org/mod_mbox/commons-user/"
+          "url": "https://mail-archives.apache.org/mod_mbox/commons-user/"
         },
         {
           "type": "vcs",
-          "url": "http://svn.apache.org/viewvc/commons/proper/codec/trunk"
+          "url": "https://github.com/apache/commons-codec"
         }
       ]
     }
@@ -480,23 +481,23 @@
     {
       "ref": "pkg:maven/com.leebalso/mwagent@0000.0011.0000?type=jar",
       "dependsOn": [
-        "pkg:maven/org.apache.httpcomponents/httpclient@4.5.13?type=jar",
+        "pkg:maven/org.apache.httpcomponents/httpclient@4.5.14?type=jar",
         "pkg:maven/org.eclipse.paho/org.eclipse.paho.mqttv5.client@1.2.5?type=jar",
         "pkg:maven/org.bouncycastle/bcprov-jdk18on@1.86?type=jar",
         "pkg:maven/com.googlecode.json-simple/json-simple@1.1.1?type=jar",
-        "pkg:maven/commons-codec/commons-codec@1.11?type=jar"
+        "pkg:maven/commons-codec/commons-codec@1.22.1?type=jar"
       ]
     },
     {
-      "ref": "pkg:maven/org.apache.httpcomponents/httpclient@4.5.13?type=jar",
+      "ref": "pkg:maven/org.apache.httpcomponents/httpclient@4.5.14?type=jar",
       "dependsOn": [
-        "pkg:maven/org.apache.httpcomponents/httpcore@4.4.13?type=jar",
+        "pkg:maven/org.apache.httpcomponents/httpcore@4.4.16?type=jar",
         "pkg:maven/commons-logging/commons-logging@1.2?type=jar",
-        "pkg:maven/commons-codec/commons-codec@1.11?type=jar"
+        "pkg:maven/commons-codec/commons-codec@1.22.1?type=jar"
       ]
     },
     {
-      "ref": "pkg:maven/org.apache.httpcomponents/httpcore@4.4.13?type=jar",
+      "ref": "pkg:maven/org.apache.httpcomponents/httpcore@4.4.16?type=jar",
       "dependsOn": []
     },
     {
@@ -504,7 +505,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:maven/commons-codec/commons-codec@1.11?type=jar",
+      "ref": "pkg:maven/commons-codec/commons-codec@1.22.1?type=jar",
       "dependsOn": []
     },
     {

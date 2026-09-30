@@ -11,8 +11,8 @@ CodeQL 은 이번에 다시 돌리지 않았다 (CI 도입 시 WS-7 에서 돌�
 
 | 시점 | 전체 | 보안 분류 | 품질 분류 |
 |------|------|-----------|-----------|
-| 기준선 (2026-09-29, 0f5c41c) | 327 | 243 | 84 |
-| 2단계 수정 후 (c1673d2) | 291 | — | — |
+| 기준선 (2026-09-29, 3fb0adb) | 327 | 243 | 84 |
+| 2단계 수정 후 (1d0aa1f) | 291 | — | — |
 | 이번 작업 후 | 285 | 221 | 64 |
 
 보안 분류 숫자가 크게 줄지 않은 것은 도구가 **중앙 처리(포매터)와 입력 검증을 추적하지 못하기** 때문이다.
@@ -28,7 +28,7 @@ CodeQL 은 이번에 다시 돌리지 않았다 (CI 도입 시 WS-7 에서 돌�
 | `URLCONNECTION_SSRF_FD` | `download_n_unzip` 은 http/https 만 허용. `java.net.URL` 은 `file:` 도 열어 로컬 파일을 target_directory 로 복사할 수 있었다 | `DownloadNUnzipFuncTest` |
 | `IMPROPER_UNICODE` (실제 결함 부분) | `toLowerCase()`/`toUpperCase()` 9곳을 `Locale.ROOT` 로. 터키어 로케일 JVM 에서 `".ZIP"` → `".zıp"` 가 되어 압축 해제가 건너뛰어지고 와일드카드 인증서 비교가 틀렸다 | `SSLCertiFuncTest` (tr 로케일) |
 
-E2E(로컬 mwm-app, 2026-09-30)에서 찾아 먼저 고친 것: HTTP 실패 원인 로그, 명령 원문 로그 마스킹 (c1673d2).
+E2E(로컬 mwm-app, 2026-09-30)에서 찾아 먼저 고친 것: HTTP 실패 원인 로그, 명령 원문 로그 마스킹 (1d0aa1f).
 
 ## 3. 남은 보안 분류 항목의 처리
 
@@ -38,11 +38,11 @@ E2E(로컬 mwm-app, 2026-09-30)에서 찾아 먼저 고친 것: HTTP 실패 원�
 | `PATH_TRAVERSAL_IN` | 28 | **설계상 허용 / 검증됨 → suppress** | ① 서버가 지정한 경로 읽기(`ReadPlainFile`, `ExtractLog`, `SSLCertiFileFunc`, `ExeShell`): 서버 완전 신뢰, SPEC-001 §4.3. ② 설정 파일 경로(`agent.properties`, keystore, truststore, log_dir): 운영자가 정한 값. ③ `SecurityValidator` 내부: 검사 함수 자체. ④ 다운로드 저장 경로: `SecurityValidator` 로 검사 후 사용 |
 | `COMMAND_INJECTION` | 7 | **설계상 허용 → suppress** | 명령 실행 기능 (SPEC-001 §4.1, PLAN C-7). `applyChmod` 는 인자 배열 + 8진수 검증 |
 | `IMPROPER_UNICODE` | 9 | **오탐 → suppress** | `equalsIgnoreCase` 는 ASCII 상수(`"AIX"`, `"token"`) 비교이고, `toLowerCase` 는 `Locale.ROOT` 로 고쳤다. 도구는 호출 자체를 보고한다 |
-| `HTTP_PARAMETER_POLLUTION` | 4 | **검증됨 → suppress** | URL 을 만드는 쪽에서 `Common.encodePathSegment` 로 인코딩한다 (SAST 7순위, 3e789ff). 보고 지점은 완성된 URL 을 받는 HTTP 함수다 |
+| `HTTP_PARAMETER_POLLUTION` | 4 | **검증됨 → suppress** | URL 을 만드는 쪽에서 `Common.encodePathSegment` 로 인코딩한다 (SAST 7순위, b0965c3). 보고 지점은 완성된 URL 을 받는 HTTP 함수다 |
 | `WEAK_TRUST_MANAGER` | 3 | **설계상 허용 → suppress** | `SSLCertiFunc` 인증서 조회 (SPEC-001 §4.2, PLAN C-6) |
 | `HARD_CODE_PASSWORD` | 2 | **오탐 → suppress** | 설정 기본값이 빈 문자열 |
-| `LDAP_INJECTION` | 1 | **검증됨 → suppress** | `JmxStatFunc.isValidJmxName` 으로 `[A-Za-z0-9_.-]+` 만 허용한 뒤 lookup (3e789ff) |
-| `PATH_TRAVERSAL_OUT` | 1 | **검증됨 → suppress** | `Common.httpFileDownload` 는 `SecurityValidator.isValidFilename` 통과 후에만 쓴다 (0945c9e) |
+| `LDAP_INJECTION` | 1 | **검증됨 → suppress** | `JmxStatFunc.isValidJmxName` 으로 `[A-Za-z0-9_.-]+` 만 허용한 뒤 lookup (b0965c3) |
+| `PATH_TRAVERSAL_OUT` | 1 | **검증됨 → suppress** | `Common.httpFileDownload` 는 `SecurityValidator.isValidFilename` 통과 후에만 쓴다 (fdfb489) |
 | `URLCONNECTION_SSRF_FD` | 1 | **검증됨 → suppress** | 스킴 제한(§2). 대상 호스트는 서버가 지정하는 기능이다 |
 | `MODIFICATION_AFTER_VALIDATION` | 1 | **오탐 → suppress** | `LogSafe.safe` 는 검증이 아니라 출력용 변환이다 |
 
@@ -62,3 +62,16 @@ E2E(로컬 mwm-app, 2026-09-30)에서 찾아 먼저 고친 것: HTTP 실패 원�
 
 - `Hennry` 로거가 부모(root) ConsoleHandler 로도 출력한다 (stderr). CLAUDE.md "로그는 파일로" 규칙과 어긋나지만,
   포그라운드 실행·서비스 관리자 로그에 기대는 운영이 있을 수 있어 사용자 판단으로 남긴다.
+
+## 7. CodeQL (2026-09-30, 저장소 public 전환 후 첫 업로드)
+
+비공개 개인 저장소에서는 code scanning 업로드가 안 되어(`Code scanning is not enabled`) 공개 전환 뒤 처음 결과가 올라왔다.
+기준선(TASK 3-1, CodeQL 10건) 중 `concatenated-command-line`(applyChmod), `sensitive-log`(Order 결과), `relative-path-command` 2건은 사라졌다.
+
+| 경고 | 위치 | 처리 |
+|------|------|------|
+| `java/zipslip` 2건 | `DownloadFile.unzipFile`, `DownloadNUnzipFunc.unzipFile` | **오탐 → dismiss (false positive)**. 검사는 `SecurityValidator.resolveZipEntry` 안에 있고 CodeQL 이 메서드 경계를 넘는 가드를 인식하지 못한다. `DownloadNUnzipFuncTest`, `SecurityValidatorTest` 로 확인 |
+| `java/insecure-trustmanager` | `SSLCertiFunc.checkSSLCertificate` | **설계상 허용 → dismiss (won't fix)**. SPEC-001 §4.2 |
+| `java/sensitive-log` 2건 | `Common.updateToken`, `Common.renewAccessTokenWithMtls` | **오탐 → dismiss (false positive)**. token_type·expires_in·scope 만 남긴다 |
+| `java/sensitive-log` | `Common.updateRefreshToken` | **수정**: refresh token 끝 10자리를 FINE 로그에 남기던 것을 길이만 남기도록 바꿨다. `maskToken()` 삭제 |
+
