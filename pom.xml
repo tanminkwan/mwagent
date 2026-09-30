@@ -21,7 +21,7 @@
         <paho.version>1.2.5</paho.version>
         <bouncycastle.version>1.86</bouncycastle.version>
         <json-simple.version>1.1.1</json-simple.version>
-        <commons-codec.version>1.11</commons-codec.version>
+        <commons-codec.version>1.22.1</commons-codec.version>
         <junit.version>5.14.4</junit.version>
         <mockito.version>4.11.0</mockito.version>
     </properties>
