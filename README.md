@@ -128,15 +128,14 @@ build/mwagent.jar
 ### Maven 사용 (온라인 환경)
 
 ```bash
-# 의존성 포함 실행 가능 JAR 생성
-mvn clean package
+# 빌드 + 단위 테스트 + 커버리지 기준 (JDK 8 / 17. JDK 9+ 는 자동으로 --release 8)
+mvn -B verify
 
-# 테스트 실행
-mvn test
-
-# 생성된 파일
-target/mwagent-0000.0009.0006-jar-with-dependencies.jar
+# 생성된 파일 (의존성은 jar 에 넣지 않는다. 실행 시 lib/ 를 classpath 에 둔다)
+build/mwagent.jar
 ```
+
+기여 방법, SAST·SBOM 명령은 [CONTRIBUTING.md](CONTRIBUTING.md) 참조
 
 ## 버전 관리
 
@@ -1135,7 +1134,7 @@ mqtt_credential=YOUR_MQTT_PASSWORD
 
 ## 문의 및 지원
 
-프로젝트 관련 문의사항이나 이슈는 프로젝트 관리자에게 연락하시기 바랍니다.
+버그·기능 제안은 [GitHub Issues](https://github.com/tanminkwan/mwagent/issues) 에, 보안 취약점은 [SECURITY.md](SECURITY.md) 의 비공개 경로로 알려 주세요.
 
 ---
 
