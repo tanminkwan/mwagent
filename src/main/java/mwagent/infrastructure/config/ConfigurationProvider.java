@@ -181,6 +181,12 @@ public interface ConfigurationProvider {
      */
     String getTruststorePassword();
 
+    /**
+     * Check if HTTPS server certificates are verified (chain + hostname).
+     * false (default) trusts any certificate.
+     */
+    boolean isSslVerify();
+
     // ========== Security Configuration ==========
 
     /**

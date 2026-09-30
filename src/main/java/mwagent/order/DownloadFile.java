@@ -4,7 +4,10 @@ import static mwagent.common.Config.getConfig;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import java.io.FileInputStream;
@@ -316,9 +319,8 @@ public class DownloadFile extends Order {
 		try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile))) {
 			ZipEntry entry;
 			while ((entry = zis.getNextEntry()) != null) {
-				// Normalize path for Windows compatibility
-				String entryName = entry.getName().replace('/', File.separatorChar);
-				File outFile = new File(destDir, entryName);
+				// Rejects entries that escape destDir (Zip Slip)
+				File outFile = SecurityValidator.resolveZipEntry(destDir, entry.getName());
 				if (entry.isDirectory()) {
 					if (!outFile.exists()) {
 						outFile.mkdirs();
@@ -346,13 +348,40 @@ public class DownloadFile extends Order {
 	}
 
 	private void applyChmod(String path, String mode, boolean recursive) {
+		// Octal mode only; anything else could be read by chmod as an option or extra path
+		if (!isValidChmodMode(mode)) {
+			getConfig().getLogger().warning("Invalid chmod mode, skipped: " + mode);
+			return;
+		}
+		// Argument array (no string splitting): paths with spaces stay one argument
+		List<String> cmd = new ArrayList<String>();
+		cmd.add("chmod");
+		if (recursive) {
+			cmd.add("-R");
+		}
+		cmd.add(mode);
+		cmd.add(path);
 		try {
-			String cmd = "chmod " + (recursive ? "-R " : "") + mode + " " + path;
-			Runtime.getRuntime().exec(cmd);
-			getConfig().getLogger().info("Applied permission: " + cmd);
+			Process proc = new ProcessBuilder(cmd)
+					.redirectErrorStream(true)
+					.redirectOutput(ProcessBuilder.Redirect.appendTo(new File("/dev/null"))) // non-Windows only
+					.start();
+			if (!proc.waitFor(60, TimeUnit.SECONDS)) {
+				proc.destroy();
+				getConfig().getLogger().warning("chmod timed out: " + cmd);
+				return;
+			}
+			getConfig().getLogger().info("Applied permission: " + cmd + " (exit " + proc.exitValue() + ")");
 		} catch (IOException e) {
 			getConfig().getLogger().warning("Failed to apply chmod: " + e.getMessage());
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			getConfig().getLogger().warning("Interrupted while applying chmod: " + path);
 		}
+	}
+
+	static boolean isValidChmodMode(String mode) {
+		return mode != null && mode.matches("[0-7]{3,4}");
 	}
 
 }

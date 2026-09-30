@@ -4,10 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.security.KeyManagementException;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.Map;
@@ -21,7 +18,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.ssl.SSLContexts;
 import org.apache.http.entity.StringEntity;
@@ -69,11 +65,11 @@ public class Common {
 
 	private static CloseableHttpClient getHttpClient(String url){
 		
-		if(httpsClient==null || httpClient==null)createHttpsClient();
-		
 		if (url.toLowerCase().startsWith("https")) {
+			if(httpsClient==null)createHttpsClient();
 			return httpsClient;
 		}else{
+			if(httpClient==null)httpClient = HttpClients.createDefault();
 			return httpClient;
 		}		    	
 	}
@@ -85,23 +81,19 @@ public class Common {
     		Security.addProvider(new BouncyCastleProvider());
     	}
     		
-	    // 1. SSLContext 생성 : 모든 인증서를 신뢰하도록 설정    		
-	    SSLContext sslContext = null;
+	    // 1~2. SSL socket factory 생성
+	    //   ssl_verify=false (기본) : 모든 인증서 신뢰, 호스트네임 검증 안 함
+	    //   ssl_verify=true         : truststore.path (없으면 JVM cacerts) 로 검증 + 호스트네임 검증
+	    SSLConnectionSocketFactory sslScoketFactory;
 		try {
-			sslContext = SSLContexts.custom()
-						.setProtocol("TLSv1.2")
-						.loadTrustMaterial(null, (certificate, authType) -> true)
-						.build();
-		} catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
-			config.getLogger().log(Level.SEVERE, e.getMessage(), e);
-			e.printStackTrace();
+			sslScoketFactory = TlsSupport.httpsSocketFactory(
+					config.isSslVerify(), config.getTruststorePath(), config.getTruststorePassword());
+			config.getLogger().info(TlsSupport.describe(config.isSslVerify(), config.getTruststorePath()));
+		} catch (Exception e) {
+			// 검증 모드에서 truststore 를 못 읽으면 trust-all 로 물러서지 않는다
+			config.getLogger().log(Level.SEVERE, "Failed to create HTTPS client: " + e.getMessage(), e);
+			throw new IllegalStateException("HTTPS client creation failed", e);
 		}
-	    	
-	    // 2. SSLConnectionScoketFactory 생성 : 호스트네임 검증 비활설화
-	    SSLConnectionSocketFactory sslScoketFactory = new SSLConnectionSocketFactory(
-	    				sslContext,
-	    				NoopHostnameVerifier.INSTANCE // 호스트네임 검증 비활성화
-	    			);
 	    	
 	    // 3. CloseableHttpClient 생성: 커스텀 SSL socket factory 사용
 	    httpsClient = HttpClients.custom()
@@ -109,7 +101,7 @@ public class Common {
 	                .build();
 	    
 	    // 4. http
-	    httpClient = HttpClients.createDefault();
+	    if(httpClient==null)httpClient = HttpClients.createDefault();
 
     }
 
@@ -130,10 +122,7 @@ public class Common {
     		keystoreStream.close();
 
     		// 2. Load truststore (contains server CA certificate)
-    		KeyStore trustStore = KeyStore.getInstance("JKS");
-    		FileInputStream truststoreStream = new FileInputStream(config.getTruststorePath());
-    		trustStore.load(truststoreStream, config.getTruststorePassword().toCharArray());
-    		truststoreStream.close();
+    		KeyStore trustStore = TlsSupport.loadTruststore(config.getTruststorePath(), config.getTruststorePassword());
 
     		// 3. Create SSLContext with client key material (mTLS)
     		SSLContext sslContext = SSLContexts.custom()
@@ -145,7 +134,7 @@ public class Common {
     		// 4. Create mTLS HttpClient
     		SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(
     				sslContext,
-    				NoopHostnameVerifier.INSTANCE
+    				TlsSupport.hostnameVerifier(config.isSslVerify())
     		);
 
     		mtlsHttpClient = HttpClients.custom()
@@ -193,9 +182,9 @@ public class Common {
                 
                 try {
                 	jsonObj = (JSONObject) jsonPar.parse(value);
-                    config.getLogger().info("HTTP POST response from " + url + ": " + value);
+                    config.getLogger().fine("HTTP POST response from " + url + " (" + value.length() + " chars)");
                 }catch(ParseException e){
-                	config.getLogger().warning("JSON Parsing Error  data : "+value);
+                	config.getLogger().warning("JSON Parsing Error  data : "+LogSafe.safe(value));
                 } 
                 
                 mrvo.setResponse(jsonObj);
@@ -249,9 +238,9 @@ public class Common {
 
                 try {
                 	jsonObj = (JSONObject) jsonPar.parse(value);
-                    config.getLogger().info("HTTP POST Form response from " + url + ": " + value);
+                    config.getLogger().fine("HTTP POST Form response from " + url + " (" + value.length() + " chars)");
                 }catch(ParseException e){
-                	config.getLogger().warning("JSON Parsing Error  data : "+value);
+                	config.getLogger().warning("JSON Parsing Error  data : "+LogSafe.safe(value));
                 }
 
                 mrvo.setResponse(jsonObj);
@@ -316,9 +305,9 @@ public class Common {
                 
                 try {
                 	jsonObj = (JSONObject) jsonPar.parse(value);
-                    config.getLogger().info("HTTP GET response from " + url + ": " + value);
+                    config.getLogger().fine("HTTP GET response from " + url + " (" + value.length() + " chars)");
                 }catch(ParseException e){
-                	config.getLogger().warning("JSON Parsing Error  data : "+value);
+                	config.getLogger().warning("JSON Parsing Error  data : "+LogSafe.safe(value));
                 } 
                 
                 mrvo.setResponse(jsonObj);
@@ -383,6 +372,14 @@ public class Common {
 						// Fallback to default
 					}
 					config.getLogger().info("Filename from URL/Fallback: " + filename);
+				}
+
+				// The name comes from the server response (header or URL); never let it leave file_location
+				if (!SecurityValidator.isValidFilename(filename)) {
+					config.getLogger().severe("Security: Invalid download file name: " + filename);
+					EntityUtils.consumeQuietly(entity);
+					mrvo.setStatusCode(-103);
+					return mrvo;
 				}
 
 				fullname = file_location + filename;
@@ -624,7 +621,7 @@ public class Common {
 				try {
 					jsonObj = (JSONObject) jsonPar.parse(value);
 				} catch (ParseException e) {
-					config.getLogger().warning("JSON Parsing Error data: " + value);
+					config.getLogger().warning("JSON Parsing Error data: " + LogSafe.safe(value));
 					return -3;
 				}
 

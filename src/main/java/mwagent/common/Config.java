@@ -60,6 +60,9 @@ public final class Config implements ConfigurationProvider {
 	private String truststore_path = "";
 	private String truststore_password = "";
 
+	// HTTPS server certificate verification (default OFF = legacy trust-all)
+	private boolean ssl_verify = false;
+
 	// Security Configuration
 	private boolean security_command_injection_check = false;
 	private boolean security_path_traversal_check = true;
@@ -219,6 +222,13 @@ public final class Config implements ConfigurationProvider {
 	public void setTruststorePassword(String truststore_password) {
 		this.truststore_password = truststore_password;
 	}
+	@Override
+	public boolean isSslVerify() {
+		return ssl_verify;
+	}
+	public void setSslVerify(boolean ssl_verify) {
+		this.ssl_verify = ssl_verify;
+	}
 
 	// Security Configuration getters/setters
 	public boolean isSecurityCommandInjectionCheck() {
@@ -312,6 +322,9 @@ public final class Config implements ConfigurationProvider {
 			setClientKeystorePassword(prop.getProperty("client.keystore.password", ""));
 			setTruststorePath(prop.getProperty("truststore.path", ""));
 			setTruststorePassword(prop.getProperty("truststore.password", ""));
+
+			// HTTPS verification: false = trust any certificate (default), true = verify chain + hostname
+			setSslVerify(Boolean.parseBoolean(prop.getProperty("ssl_verify", "false")));
 
 			// Security Configuration (default: command injection check OFF, path traversal check ON)
 			setSecurityCommandInjectionCheck(Boolean.parseBoolean(prop.getProperty("security.command_injection_check", "false")));

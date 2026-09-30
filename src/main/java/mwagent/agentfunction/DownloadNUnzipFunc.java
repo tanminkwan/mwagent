@@ -20,6 +20,7 @@ import static mwagent.common.Config.getConfig;
 
 
 import mwagent.common.Common;
+import mwagent.common.LogSafe;
 import mwagent.common.SecurityValidator;
 import mwagent.vo.CommandVO;
 import mwagent.vo.ResultVO;
@@ -51,7 +52,7 @@ public class DownloadNUnzipFunc implements AgentFunc {
 	@Override
 	public ArrayList<ResultVO> exeCommand(CommandVO command) {
 
-		getConfig().getLogger().info("AdditionalParams : " + command.getAdditionalParams());
+		getConfig().getLogger().info("AdditionalParams : " + LogSafe.safe(command.getAdditionalParams()));
 
 		ResultVO rv = new ResultVO();
 		rv.setOk(false);
@@ -92,8 +93,9 @@ public class DownloadNUnzipFunc implements AgentFunc {
             }
 			
         } catch (IOException e) {
-            e.printStackTrace();
             getConfig().getLogger().severe(e.getMessage());
+            rv.setResult("Error:" + e.getMessage());
+            return Common.makeOneResultArray(rv, command);
         }
         
 		rv.setOk(true);
@@ -170,6 +172,10 @@ public class DownloadNUnzipFunc implements AgentFunc {
             
 				fileName = "downloaded_file";
             }
+            // The name comes from the server response; never let it leave targetDirectory
+            if (!SecurityValidator.isValidFilename(fileName)) {
+                throw new IOException("Invalid file name in Content-Disposition: " + fileName);
+            }
             // Final file object
             File outFile = new File(dir, fileName);
 
@@ -238,8 +244,8 @@ public class DownloadNUnzipFunc implements AgentFunc {
             zis = new ZipInputStream(new FileInputStream(zipFile));
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
-                String entryName = entry.getName();
-                File outFile = new File(destDir, entryName);
+                // Rejects entries that escape destDir (Zip Slip)
+                File outFile = SecurityValidator.resolveZipEntry(destDir, entry.getName());
 
                 if (entry.isDirectory()) {
                     

@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import mwagent.common.LogSafe;
 import mwagent.common.Common;
 import mwagent.vo.MwResponseVO;
 import mwagent.vo.RawCommandsVO;
@@ -54,7 +55,7 @@ public class CommandProcessingLoop {
 		    	        String command_class  = (String)command_.get("command_class");
 
 		    	        if(command_class==null){
-		    	        	getConfig().getLogger().warning("Command_class not found : "+command_.toJSONString());
+		    	        	getConfig().getLogger().warning("Command_class not found : "+LogSafe.safe(command_.toJSONString(), 1000));
 		    	        	continue;
 		    	        }
 

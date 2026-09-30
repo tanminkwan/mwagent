@@ -5,6 +5,7 @@ import static mwagent.common.Config.getConfig;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import mwagent.common.LogSafe;
 import mwagent.common.Common;
 import mwagent.kafka.MwConsumerThread;
 import mwagent.kafka.MwHealthCheckThread;
@@ -31,7 +32,7 @@ public class InitializationPhase {
 		for(Object c : commands){
 
 			JSONObject command = (JSONObject)c;
-			getConfig().getLogger().info(command.toJSONString());
+			getConfig().getLogger().info(LogSafe.safe(command.toJSONString(), 1000));
 
 			String command_class  = (String)command.get("command_class");
 

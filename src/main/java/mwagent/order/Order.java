@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import org.json.simple.JSONObject;
 
+import mwagent.common.LogSafe;
 import mwagent.common.Common;
 import mwagent.kafka.MwProducer;
 import mwagent.vo.CommandVO;
@@ -45,14 +46,21 @@ public abstract class Order {
 	public void sendResults() throws IOException{
 
 		if(!resultVo.getResult().equals("")){
-			getConfig().getLogger().fine("resultVo : "+resultVo.toString());
+			getConfig().getLogger().fine("resultVo : "+summarize(resultVo));
 			sendResult(resultVo);
 		}
 		
 		for(ResultVO rv : resultVos){
-			getConfig().getLogger().fine("resultVo Array : "+rv.toString());
+			getConfig().getLogger().fine("resultVo Array : "+summarize(rv));
 			sendResult(rv);
 		}
+	}
+
+	// The result body can hold file contents or settings; log only its shape
+	static String summarize(ResultVO rv) {
+		String result = rv.getResult();
+		return "isOk=" + rv.isOk() + ", targetFileName=" + rv.getTargetFileName()
+				+ ", result=" + (result == null ? 0 : result.length()) + " chars";
 	}
 
 	protected void convertCommand(JSONObject command) {
@@ -147,7 +155,7 @@ public abstract class Order {
 	protected int sendResult(ResultVO rv) throws IOException {
 
 		int rtn = 0;
-		getConfig().getLogger().fine("sendResult commandVo : " + commandVo.toString());
+		getConfig().getLogger().fine("sendResult commandVo : " + LogSafe.safe(commandVo.toString(), 1000));
 		if (commandVo.getResultReceiver().equals(SERVER) || commandVo.getResultReceiver().equals(SERVER_N_KAFKA)) {
 			rtn = send2Server(rv);
 		}
