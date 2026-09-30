@@ -72,7 +72,7 @@ MwManger는 분산 환경의 서버 관리를 자동화하기 위한 에이전�
 | JSON Simple | 1.1.1 | JSON 처리 |
 | Apache Commons Codec | 1.11 | 인코딩 유틸리티 |
 
-자세한 의존성 정보는 [DEPENDENCIES.md](DEPENDENCIES.md) 참조
+자세한 의존성 정보는 [DEPENDENCIES.md](DEPENDENCIES.md), 라이선스는 [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md) · [NOTICE](NOTICE), SBOM 은 [sbom/mwagent.cdx.json](sbom/mwagent.cdx.json) (CycloneDX 1.6) 참조
 
 ## 빌드 방법
 
@@ -1119,13 +1119,31 @@ mqtt_credential=YOUR_MQTT_PASSWORD
 
 자세한 내용은 [WORK_HISTORY.md](WORK_HISTORY.md) 참조
 
+### Phase 9: 오픈소스 공개 준비 — 보안·의존성·CI (2026-09-30)
+
+**완료 항목 (PLAN-001):**
+- ✅ HTTPS 검증 옵션 `ssl_verify` (기본 false 유지, true 면 truststore/cacerts + 호스트명 검증)
+- ✅ Zip Slip·다운로드 파일명 경로 이탈 차단, `applyChmod` 인자 주입 제거, 비밀값 로그 마스킹(`LogSafe`), 로그 CR/LF 이스케이프(`SafeLogFormatter`)
+- ✅ `command_class` 허용 목록(`OrderCaller`), MQTT payload 1 MiB 상한, `download_n_unzip` http/https 한정
+- ✅ **Kafka 기능 제거** — 결과는 `result_receiver` 와 무관하게 항상 REST. 런타임 jar 13 → 7, bcprov-jdk18on 1.86, 의존성 CVE 0건
+- ✅ JDK 9+ 빌드는 `--release 8`, 테스트 도구 업그레이드(JUnit 5.14, Mockito 4.11, Surefire 3.5), JaCoCo 커버리지 기준
+- ✅ CI (GitHub Actions: JDK 8/17, gitleaks, Trivy, SpotBugs, CodeQL, lib 무결성), Dependabot
+- ✅ 위협 모델 [SPEC-001](docs/SPEC_001_threat_model.md), SECURITY.md, CONTRIBUTING.md, CODE_OF_CONDUCT.md, NOTICE, THIRD_PARTY_LICENSES.md, SBOM
+- ✅ 로컬 mwm-app 과 E2E 확인 (TLS 모드, command_sender × result_receiver 4조합)
+- ✅ 버전 `0000.0011.0000`
+
+## 기여와 보안 신고
+
+- 기여 방법과 Java 8/17 호환 규칙: [CONTRIBUTING.md](CONTRIBUTING.md), 행동 강령: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+- 취약점은 공개 이슈 대신 [SECURITY.md](SECURITY.md) 의 비공개 경로로 신고해 주세요
+
 ## 문의 및 지원
 
 프로젝트 관련 문의사항이나 이슈는 프로젝트 관리자에게 연락하시기 바랍니다.
 
 ---
 
-**Last Updated**: 2026-09-29
-**Version**: 0000.0010.0002
-**Architecture**: Phase 8 - MQTT Receive Status Reporting
+**Last Updated**: 2026-09-30
+**Version**: 0000.0011.0000
+**Architecture**: Phase 9 - Open Source Readiness (security, dependencies, CI)
 **Test Coverage**: 284 tests (255 passing, 23 skipped, 3 aborted, 3 known failures in SecurityValidatorTest/ExtractLogTest)

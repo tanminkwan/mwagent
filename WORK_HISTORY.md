@@ -1,5 +1,48 @@
 # Work History - MwManger Agent
 
+## 2026-09-30 - PLAN-001 오픈소스 공개 준비: 보안·의존성·CI (v0.11.0)
+
+### 작업 브랜치
+- `main` 브랜치에서 작업. 커밋 `0945c9e`(TLS·Zip Slip·로그), `3e789ff`(SAST 6·7순위), `935d45c`(ssl_verify 문서),
+  `1ebb7bd`(Kafka 제거), `c1673d2`(E2E 발견 수정), `f3efe17`(위협 모델·SAST 분류), 이번 커밋(호환·CI·라이선스)
+
+### 완료된 작업
+
+#### 1. 보안 수정 (WS-3)
+- ✅ HTTPS 검증 옵션 `ssl_verify` — 기본 false(기존 동작), true 면 `truststore.path` 또는 JVM cacerts + 호스트명 검증
+- ✅ Zip Slip 차단, 서버 응답 파일명 검증, `download_n_unzip` http/https 한정, `applyChmod` 인자 배열화
+- ✅ `command_class` 허용 목록(`OrderCaller.resolveOrderClass`), MQTT payload 1 MiB 상한
+- ✅ 로그: 응답 본문·결과 원문 제거, `LogSafe` 마스킹, `SafeLogFormatter` CR/LF 이스케이프, HTTP 실패 원인 기록
+- ✅ `SSLCertiFunc.matchesDomain` 결함(`split(".")`), `Locale.ROOT`, JMX 이름 검증, URL 경로 인코딩, cmd.exe 절대 경로
+- ✅ 위협 모델 `docs/SPEC_001_threat_model.md`, SAST 분류 `docs/PLAN-001/TASK_3-7_sast_triage.md` (SpotBugs 327 → 285)
+
+#### 2. 의존성 (WS-2)
+- ✅ **Kafka 기능 제거** (사용자 결정, mwm-app 확인: app 에 Kafka 없음). 결과는 `result_receiver` 와 무관하게 항상 REST
+- ✅ 런타임 jar 13 → 7. bcprov-jdk15on 1.70 → bcprov-jdk18on 1.86, json-simple 의 junit 제외. Trivy·Grype 0건
+- ✅ `verify-lib` 이 SHA256SUMS 에 없는 옛 jar 를 잡고 `download-dependencies` 가 지운다
+
+#### 3. Java 8/17 호환 (WS-4)
+- ✅ 알려진 테스트 실패 3건 해결 → 0건 (ExtractLog·SecurityValidator 테스트를 스펙에 맞춤, `isValidAbsolutePath` 는 상대 경로 거부)
+- ✅ JDK 9+ 는 `--release 8` (pom profile `release-8`, `build-offline.*`)
+- ✅ JUnit 5.14.4, Mockito 4.11.0, AssertJ 3.27.7, Surefire 3.5.4, compiler 3.13.0, JaCoCo 0.8.12 (라인 커버리지 기준 0.47)
+- ✅ JDK 8·17 에서 `mvn verify` 통과 (399 실행, 실패 0, 통합 테스트 26 skip)
+
+#### 4. CI·라이선스·문서 (WS-5·6·7)
+- ✅ `.github/workflows/ci.yml` (build-test 8/17, lib-integrity, secrets, deps, sast-spotbugs), `codeql.yml`, `dependabot.yml`
+- ✅ 기준선: `config/spotbugs-exclude.xml`, `.gitleaksignore`. 규약은 mwm-app 과 맞춤 (SHA 고정 action, gitleaks v8.30.1 dir 모드)
+- ✅ `NOTICE`, `THIRD_PARTY_LICENSES.md`, `licenses/`, `sbom/mwagent.cdx.json` (CycloneDX 1.6, `sbom/generate.sh`, 재현 가능)
+- ✅ `SECURITY.md`, `CONTRIBUTING.md`(호환 정책), `CODE_OF_CONDUCT.md`(Contributor Covenant 2.1), 이슈·PR 템플릿
+- ✅ `Version.java` - `0000.0010.0002` → `0000.0011.0000`
+
+#### 5. mwm-app 연동 확인 (app 세션과 협업)
+- ✅ 로컬 app 에 E2E: TLS 모드 4가지, command_sender × result_receiver 4조합 모두 REST 로 결과 도착, `X-Mqtt-Status` 정상
+- ✅ app 의 `result_receiver` 선택지에 MQTT 가 있어 예전 agent 는 결과를 버렸음 → agent 는 항상 REST 로 보냄
+
+### 남은 것
+- LICENSE 저작권자 표기(app 과 결정), CODE_OF_CONDUCT 연락처, SECURITY 대응 기한 확정
+- 저장소 설정(브랜치 보호, secret scanning), README 사내 전용 내용 정리(공개본 생성 WS-1 과 함께)
+- TLS 1.3 허용 검토(AIX 확인 필요), OWASP Dependency-Check(NVD API 키), Windows 에서 `.bat`·`.ps1` 확인
+
 ## 2026-09-29 - MQTT 수신 상태 보고 (X-Mqtt-Status) (v0.10.2)
 
 ### 작업 브랜치

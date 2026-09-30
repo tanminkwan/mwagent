@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SpotBugs + FindSecBugs baseline for CI (mvn -B compile spotbugs:check).
+  Findings were triaged on 2026-09-30: docs/PLAN-001/TASK_3-7_sast_triage.md. New findings fail the check.
+  Entries are per class + method + pattern, so the same pattern in new code is still reported.
+  Remove an entry when the code is fixed; add one only with a reason in the triage document.
+  Entries without a comment are code-quality findings (no security impact), left for later cleanup.
+-->
+<FindBugsFilter>
+    <!-- SafeLogFormatter escapes CR/LF for every file log message (docs/PLAN-001/TASK_3-7_sast_triage.md) -->
+    <Match><Bug pattern="CRLF_INJECTION_LOGS"/></Match>
+    <!-- reported for every case conversion, including Locale.ROOT; compared values are ASCII constants -->
+    <Match><Bug pattern="IMPROPER_UNICODE"/></Match>
+    <Match><Class name="mwagent.CommandProcessingLoop"/><Method name="execute"/><Bug pattern="DLS_DEAD_LOCAL_STORE,RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"/></Match>
+    <Match><Class name="mwagent.CommandProcessingLoop"/><Method name="fetchPendingCommands"/><Bug pattern="DLS_DEAD_LOCAL_STORE"/></Match>
+    <Match><Class name="mwagent.OrderCallerThread"/><Method name="&lt;init&gt;"/><Bug pattern="EI_EXPOSE_REP2"/></Match>
+    <!-- http/https only (isAllowedDownloadUrl); server-trusted paths / operator config / validator itself (SPEC-001 4.3) -->
+    <Match><Class name="mwagent.agentfunction.DownloadNUnzipFunc"/><Method name="downloadFile"/><Bug pattern="OS_OPEN_STREAM_EXCEPTION_PATH,PATH_TRAVERSAL_IN,URLCONNECTION_SSRF_FD"/></Match>
+    <!-- server-trusted paths / operator config / validator itself (SPEC-001 4.3) -->
+    <Match><Class name="mwagent.agentfunction.DownloadNUnzipFunc"/><Method name="exeCommand"/><Bug pattern="PATH_TRAVERSAL_IN"/></Match>
+    <Match><Class name="mwagent.agentfunction.DownloadNUnzipFunc"/><Method name="unzipFile"/><Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"/></Match>
+    <!-- validated by JmxStatFunc.isValidJmxName -->
+    <Match><Class name="mwagent.agentfunction.JmxStatFunc"/><Method name="exeCommand"/><Bug pattern="LDAP_INJECTION,REC_CATCH_EXCEPTION"/></Match>
+    <!-- server-trusted paths / operator config / validator itself (SPEC-001 4.3) -->
+    <Match><Class name="mwagent.agentfunction.SSLCertiFileFunc"/><Method name="exeCommand"/><Bug pattern="DM_DEFAULT_ENCODING,OS_OPEN_STREAM_EXCEPTION_PATH,PATH_TRAVERSAL_IN,SBSC_USE_STRINGBUFFER_CONCATENATION"/></Match>
+    <Match><Class name="mwagent.agentfunction.SSLCertiFunc"/><Method name="checkSSLCertificate"/><Bug pattern="BC_UNCONFIRMED_CAST_OF_RETURN_VALUE,REC_CATCH_EXCEPTION,SIC_INNER_SHOULD_BE_STATIC_ANON"/></Match>
+    <Match><Class name="mwagent.agentfunction.SSLCertiFunc"/><Method name="exeCommand"/><Bug pattern="REC_CATCH_EXCEPTION"/></Match>
+    <!-- SSLCertiFunc reads remote certificates only (SPEC-001 4.2) -->
+    <Match><Class name="mwagent.agentfunction.SSLCertiFunc$1"/><Method name="checkClientTrusted"/><Bug pattern="WEAK_TRUST_MANAGER"/></Match>
+    <!-- SSLCertiFunc reads remote certificates only (SPEC-001 4.2) -->
+    <Match><Class name="mwagent.agentfunction.SSLCertiFunc$1"/><Method name="checkServerTrusted"/><Bug pattern="WEAK_TRUST_MANAGER"/></Match>
+    <!-- SSLCertiFunc reads remote certificates only (SPEC-001 4.2) -->
+    <Match><Class name="mwagent.agentfunction.SSLCertiFunc$1"/><Method name="getAcceptedIssuers"/><Bug pattern="PZLA_PREFER_ZERO_LENGTH_ARRAYS,WEAK_TRUST_MANAGER"/></Match>
+    <Match><Class name="mwagent.agentfunction.SetPropertiesFunc"/><Method name="parseParams"/><Bug pattern="WMI_WRONG_MAP_ITERATOR"/></Match>
+    <Match><Class name="mwagent.common.Common"/><Method name="createHttpsClient"/><Bug pattern="LI_LAZY_INIT_STATIC,REC_CATCH_EXCEPTION"/></Match>
+    <!-- server-trusted paths / operator config / validator itself (SPEC-001 4.3) -->
+    <Match><Class name="mwagent.common.Common"/><Method name="createMtlsClient"/><Bug pattern="OS_OPEN_STREAM_EXCEPTION_PATH,PATH_TRAVERSAL_IN,REC_CATCH_EXCEPTION"/></Match>
+    <!-- path segments encoded by Common.encodePathSegment; validated by SecurityValidator.isValidFilename -->
+    <Match><Class name="mwagent.common.Common"/><Method name="httpFileDownload"/><Bug pattern="HTTP_PARAMETER_POLLUTION,OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE,OS_OPEN_STREAM_EXCEPTION_PATH,PATH_TRAVERSAL_OUT,REC_CATCH_EXCEPTION"/></Match>
+    <!-- path segments encoded by Common.encodePathSegment -->
+    <Match><Class name="mwagent.common.Common"/><Method name="httpGET"/><Bug pattern="HTTP_PARAMETER_POLLUTION,REC_CATCH_EXCEPTION"/></Match>
+    <Match><Class name="mwagent.common.Config"/><Method name="&lt;init&gt;"/><Bug pattern="SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR"/></Match>
+    <Match><Class name="mwagent.common.Config"/><Method name="getConfig"/><Bug pattern="MS_EXPOSE_REP"/></Match>
+    <Match><Class name="mwagent.common.Config"/><Method name="getEnv"/><Bug pattern="EI_EXPOSE_REP"/></Match>
+    <Match><Class name="mwagent.common.Config"/><Method name="getEnvironment"/><Bug pattern="EI_EXPOSE_REP"/></Match>
+    <Match><Class name="mwagent.common.Config"/><Method name="getHostname"/><Bug pattern="NM_CONFUSING"/></Match>
+    <Match><Class name="mwagent.common.Config"/><Method name="getLogger"/><Bug pattern="EI_EXPOSE_REP"/></Match>
+    <Match><Class name="mwagent.common.Config"/><Method name="getSecurityAllowedReadPaths"/><Bug pattern="EI_EXPOSE_REP"/></Match>
+    <Match><Class name="mwagent.common.Config"/><Method name="hasContinuation"/><Bug pattern="IM_BAD_CHECK_FOR_ODD"/></Match>
+    <!-- empty default values; server-trusted paths / operator config / validator itself (SPEC-001 4.3) -->
+    <Match><Class name="mwagent.common.Config"/><Method name="setConfig"/><Bug pattern="DM_DEFAULT_ENCODING,DM_EXIT,HARD_CODE_PASSWORD,OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE,OS_OPEN_STREAM_EXCEPTION_PATH,PATH_TRAVERSAL_IN,WMI_WRONG_MAP_ITERATOR"/></Match>
+    <Match><Class name="mwagent.common.Config"/><Method name="setEnv"/><Bug pattern="EI_EXPOSE_REP2"/></Match>
+    <Match><Class name="mwagent.common.Config"/><Method name="setLogger"/><Bug pattern="EI_EXPOSE_REP2"/></Match>
+    <!-- server-trusted paths / operator config / validator itself (SPEC-001 4.3) -->
+    <Match><Class name="mwagent.common.Config"/><Method name="writeAtomically"/><Bug pattern="PATH_TRAVERSAL_IN,RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"/></Match>
+    <!-- LogSafe is output encoding, not validation -->
+    <Match><Class name="mwagent.common.LogSafe"/><Method name="safe"/><Bug pattern="MODIFICATION_AFTER_VALIDATION"/></Match>
+    <!-- server-trusted paths / operator config / validator itself (SPEC-001 4.3) -->
+    <Match><Class name="mwagent.common.SecurityValidator"/><Method name="getValidatedPath"/><Bug pattern="PATH_TRAVERSAL_IN"/></Match>
+    <!-- server-trusted paths / operator config / validator itself (SPEC-001 4.3) -->
+    <Match><Class name="mwagent.common.SecurityValidator"/><Method name="isValidAbsolutePath"/><Bug pattern="PATH_TRAVERSAL_IN"/></Match>
+    <Match><Class name="mwagent.common.SecurityValidator"/><Method name="isValidCommandParam"/><Bug pattern="WMI_WRONG_MAP_ITERATOR"/></Match>
+    <!-- server-trusted paths / operator config / validator itself (SPEC-001 4.3) -->
+    <Match><Class name="mwagent.common.SecurityValidator"/><Method name="isValidPath"/><Bug pattern="PATH_TRAVERSAL_IN"/></Match>
+    <!-- server-trusted paths / operator config / validator itself (SPEC-001 4.3) -->
+    <Match><Class name="mwagent.common.SecurityValidator"/><Method name="resolveZipEntry"/><Bug pattern="PATH_TRAVERSAL_IN"/></Match>
+    <!-- server-trusted paths / operator config / validator itself (SPEC-001 4.3) -->
+    <Match><Class name="mwagent.common.TlsSupport"/><Method name="loadTruststore"/><Bug pattern="PATH_TRAVERSAL_IN"/></Match>
+    <Match><Class name="mwagent.infrastructure.http.ApacheHttpClientAdapter"/><Method name="&lt;init&gt;"/><Bug pattern="EI_EXPOSE_REP2"/></Match>
+    <!-- server-trusted paths / operator config / validator itself (SPEC-001 4.3) -->
+    <Match><Class name="mwagent.infrastructure.http.ApacheHttpClientAdapter"/><Method name="createMtlsClient"/><Bug pattern="PATH_TRAVERSAL_IN"/></Match>
+    <!-- path segments encoded by Common.encodePathSegment; server-trusted paths / operator config / validator itself (SPEC-001 4.3) -->
+    <Match><Class name="mwagent.infrastructure.http.ApacheHttpClientAdapter"/><Method name="downloadFile"/><Bug pattern="HTTP_PARAMETER_POLLUTION,PATH_TRAVERSAL_IN"/></Match>
+    <!-- path segments encoded by Common.encodePathSegment -->
+    <Match><Class name="mwagent.infrastructure.http.ApacheHttpClientAdapter"/><Method name="get"/><Bug pattern="HTTP_PARAMETER_POLLUTION"/></Match>
+    <Match><Class name="mwagent.infrastructure.http.HttpClient$HttpResponse"/><Method name="&lt;init&gt;"/><Bug pattern="EI_EXPOSE_REP2"/></Match>
+    <Match><Class name="mwagent.infrastructure.http.HttpClient$HttpResponse"/><Method name="getHeaders"/><Bug pattern="EI_EXPOSE_REP"/></Match>
+    <Match><Class name="mwagent.lifecycle.AgentLifecycleManager"/><Method name="&lt;init&gt;"/><Bug pattern="EI_EXPOSE_REP2"/></Match>
+    <Match><Class name="mwagent.lifecycle.GracefulShutdownHandler"/><Bug pattern="URF_UNREAD_FIELD"/></Match>
+    <Match><Class name="mwagent.mqtt.MwMqttSubscriber"/><Method name="&lt;init&gt;"/><Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON"/></Match>
+    <!-- command execution is the agent feature (SPEC-001 4.1) -->
+    <Match><Class name="mwagent.order.DownloadFile"/><Method name="applyChmod"/><Bug pattern="COMMAND_INJECTION"/></Match>
+    <!-- command execution is the agent feature (SPEC-001 4.1); server-trusted paths / operator config / validator itself (SPEC-001 4.3) -->
+    <Match><Class name="mwagent.order.DownloadFile"/><Method name="downloadFile"/><Bug pattern="COMMAND_INJECTION,DLS_DEAD_LOCAL_STORE,PATH_TRAVERSAL_IN,RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE,REC_CATCH_EXCEPTION"/></Match>
+    <Match><Class name="mwagent.order.DownloadFile"/><Method name="unzipFile"/><Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"/></Match>
+    <!-- command execution is the agent feature (SPEC-001 4.1) -->
+    <Match><Class name="mwagent.order.ExeScript"/><Method name="runScript"/><Bug pattern="COMMAND_INJECTION,OS_OPEN_STREAM_EXCEPTION_PATH"/></Match>
+    <!-- command execution is the agent feature (SPEC-001 4.1); server-trusted paths / operator config / validator itself (SPEC-001 4.3) -->
+    <Match><Class name="mwagent.order.ExeShell"/><Method name="runShell"/><Bug pattern="COMMAND_INJECTION,PATH_TRAVERSAL_IN"/></Match>
+    <!-- command execution is the agent feature (SPEC-001 4.1) -->
+    <Match><Class name="mwagent.order.ExeText"/><Method name="runScript"/><Bug pattern="COMMAND_INJECTION,DM_DEFAULT_ENCODING,OS_OPEN_STREAM_EXCEPTION_PATH,RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"/></Match>
+    <!-- server-trusted paths / operator config / validator itself (SPEC-001 4.3) -->
+    <Match><Class name="mwagent.order.ExtractLog"/><Method name="execute"/><Bug pattern="PATH_TRAVERSAL_IN,REC_CATCH_EXCEPTION"/></Match>
+    <!-- server-trusted paths / operator config / validator itself (SPEC-001 4.3) -->
+    <Match><Class name="mwagent.order.ExtractLog"/><Method name="extract"/><Bug pattern="PATH_TRAVERSAL_IN,REC_CATCH_EXCEPTION"/></Match>
+    <Match><Class name="mwagent.order.Order"/><Bug pattern="MS_SHOULD_BE_FINAL"/></Match>
+    <Match><Class name="mwagent.order.Order"/><Method name="getCommandVo"/><Bug pattern="EI_EXPOSE_REP"/></Match>
+    <Match><Class name="mwagent.order.Order"/><Method name="getResultVo"/><Bug pattern="EI_EXPOSE_REP"/></Match>
+    <Match><Class name="mwagent.order.OrderCaller"/><Method name="executeOrder"/><Bug pattern="REC_CATCH_EXCEPTION"/></Match>
+    <!-- server-trusted paths / operator config / validator itself (SPEC-001 4.3) -->
+    <Match><Class name="mwagent.order.ReadFile"/><Method name="getContent"/><Bug pattern="OS_OPEN_STREAM_EXCEPTION_PATH,PATH_TRAVERSAL_IN"/></Match>
+    <Match><Class name="mwagent.service.CommandExecutorService"/><Method name="executeCommand"/><Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"/></Match>
+    <Match><Class name="mwagent.service.registration.AgentStatusService"/><Method name="noticeStartAndGetStatus"/><Bug pattern="DLS_DEAD_LOCAL_STORE"/></Match>
+    <Match><Class name="mwagent.vo.CommandVO"/><Method name="getAdditionalParamsJson"/><Bug pattern="EI_EXPOSE_REP,REC_CATCH_EXCEPTION"/></Match>
+    <Match><Class name="mwagent.vo.CommandVO"/><Method name="setAdditionalParamsJson"/><Bug pattern="EI_EXPOSE_REP2"/></Match>
+    <Match><Class name="mwagent.vo.MwResponseVO"/><Method name="getResponse"/><Bug pattern="EI_EXPOSE_REP"/></Match>
+    <Match><Class name="mwagent.vo.MwResponseVO"/><Method name="setResponse"/><Bug pattern="EI_EXPOSE_REP2"/></Match>
+    <Match><Class name="mwagent.vo.RawCommandsVO"/><Method name="getCommands"/><Bug pattern="EI_EXPOSE_REP"/></Match>
+    <Match><Class name="mwagent.vo.RawCommandsVO"/><Method name="setCommands"/><Bug pattern="EI_EXPOSE_REP2"/></Match>
+</FindBugsFilter>

@@ -119,6 +119,11 @@ public class SecurityValidator {
             return false;
         }
 
+        // A relative path would be resolved against the working directory; require an absolute one
+        if (!new File(absolutePath).isAbsolute()) {
+            return false;
+        }
+
         // Check for path traversal patterns
         if (PATH_TRAVERSAL.matcher(absolutePath).find()) {
             return false;

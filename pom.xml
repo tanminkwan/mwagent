@@ -22,9 +22,22 @@
         <bouncycastle.version>1.86</bouncycastle.version>
         <json-simple.version>1.1.1</json-simple.version>
         <commons-codec.version>1.11</commons-codec.version>
-        <junit.version>5.8.2</junit.version>
-        <mockito.version>3.12.4</mockito.version>
+        <junit.version>5.14.4</junit.version>
+        <mockito.version>4.11.0</mockito.version>
     </properties>
+
+    <profiles>
+        <!-- JDK 9+ builds use release 8: Java 9+ APIs fail at compile time (Java 8 runtime support) -->
+        <profile>
+            <id>release-8</id>
+            <activation>
+                <jdk>[9,)</jdk>
+            </activation>
+            <properties>
+                <maven.compiler.release>8</maven.compiler.release>
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencies>
         <!-- Apache HttpClient for HTTP/HTTPS communication -->
@@ -97,7 +110,7 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.21.0</version>
+            <version>3.27.7</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -114,12 +127,55 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
+        <pluginManagement>
+            <plugins>
+                <!-- SAST (CI): mvn -B compile spotbugs:check. Baseline in config/spotbugs-exclude.xml -->
+                <plugin>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <version>4.8.6.8</version>
+                    <configuration>
+                        <effort>Max</effort>
+                        <threshold>Low</threshold>
+                        <xmlOutput>true</xmlOutput>
+                        <excludeFilterFile>config/spotbugs-exclude.xml</excludeFilterFile>
+                        <plugins>
+                            <plugin>
+                                <groupId>com.h3xstream.findsecbugs</groupId>
+                                <artifactId>findsecbugs-plugin</artifactId>
+                                <version>1.13.0</version>
+                            </plugin>
+                        </plugins>
+                    </configuration>
+                </plugin>
+
+                <!-- SBOM: mvn -B cyclonedx:makeBom -> sbom/mwagent.cdx.json (runtime dependencies only) -->
+                <plugin>
+                    <groupId>org.cyclonedx</groupId>
+                    <artifactId>cyclonedx-maven-plugin</artifactId>
+                    <version>2.9.1</version>
+                    <configuration>
+                        <schemaVersion>1.6</schemaVersion>
+                        <outputFormat>json</outputFormat>
+                        <outputName>mwagent.cdx</outputName>
+                        <outputDirectory>${project.basedir}/sbom</outputDirectory>
+                        <includeCompileScope>true</includeCompileScope>
+                        <includeRuntimeScope>true</includeRuntimeScope>
+                        <includeProvidedScope>false</includeProvidedScope>
+                        <includeSystemScope>false</includeSystemScope>
+                        <includeTestScope>false</includeTestScope>
+                        <includeLicenseText>false</includeLicenseText>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
         <plugins>
             <!-- Maven Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.13.0</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -131,7 +187,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
+                <version>3.5.4</version>
             </plugin>
 
             <!-- Maven JAR Plugin for creating executable JAR -->
@@ -149,13 +205,11 @@
                 </configuration>
             </plugin>
 
-            <!-- JaCoCo Maven Plugin for code coverage -->
-            <!-- Temporarily disabled due to network issues -->
-            <!--
+            <!-- JaCoCo: coverage report at build/site/jacoco (mvn test). Java 8 supported -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.7</version>
+                <version>0.8.12</version>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -170,8 +224,10 @@
                             <goal>report</goal>
                         </goals>
                     </execution>
+                    <!-- Coverage ratchet (mvn verify / CI). Raise the minimum when coverage goes up; never lower it -->
                     <execution>
                         <id>check</id>
+                        <phase>verify</phase>
                         <goals>
                             <goal>check</goal>
                         </goals>
@@ -183,12 +239,8 @@
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.20</minimum>
-                                        </limit>
-                                        <limit>
-                                            <counter>BRANCH</counter>
-                                            <value>COVEREDRATIO</value>
-                                            <minimum>0.15</minimum>
+                                            <!-- 2026-09-30 baseline: 0.473 (unit tests; integration tests skipped) -->
+                                            <minimum>0.47</minimum>
                                         </limit>
                                     </limits>
                                 </rule>
@@ -197,7 +249,6 @@
                     </execution>
                 </executions>
             </plugin>
-            -->
         </plugins>
     </build>
 </project>

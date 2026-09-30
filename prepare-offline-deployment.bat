@@ -43,6 +43,13 @@ REM 5. 문서 복사
 echo [5/5] Copying documentation...
 copy README.md %DEPLOY_DIR%\ >nul
 copy lib\README.md %DEPLOY_DIR%\lib\ >nul
+REM 라이선스: 배포물에 lib\*.jar 가 들어가므로 함께 넣는다 (Apache-2.0 4장, MIT 고지 의무)
+copy LICENSE %DEPLOY_DIR%\ >nul
+copy NOTICE %DEPLOY_DIR%\ >nul
+copy THIRD_PARTY_LICENSES.md %DEPLOY_DIR%\ >nul
+xcopy /E /I /Q licenses %DEPLOY_DIR%\licenses >nul
+if not exist %DEPLOY_DIR%\sbom mkdir %DEPLOY_DIR%\sbom
+copy sbom\mwagent.cdx.json %DEPLOY_DIR%\sbom\ >nul
 echo.
 
 REM 검증

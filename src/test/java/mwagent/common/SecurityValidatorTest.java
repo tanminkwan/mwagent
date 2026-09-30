@@ -107,11 +107,14 @@ class SecurityValidatorTest {
     }
 
     @Test
-    void isValidPath_WithNullOrEmpty_ShouldReturnFalse() {
-        String baseDir = tempDir.toString();
+    void isValidPath_WithNull_ShouldReturnFalse() {
+        assertThat(SecurityValidator.isValidPath(tempDir.toString(), null)).isFalse();
+    }
 
-        assertThat(SecurityValidator.isValidPath(baseDir, null)).isFalse();
-        assertThat(SecurityValidator.isValidPath(baseDir, "")).isFalse();
+    @Test
+    void isValidPath_WithEmpty_ShouldMeanBaseDir() {
+        // 빈 경로는 기준 디렉터리 자체다 (DownloadFile 의 target_file_path="" 등)
+        assertThat(SecurityValidator.isValidPath(tempDir.toString(), "")).isTrue();
     }
 
     @Test
@@ -131,7 +134,17 @@ class SecurityValidatorTest {
 
         // /etc/passwd is not under userDir
         assertThat(SecurityValidator.isValidAbsolutePath("/etc/passwd", userDir)).isFalse();
+        // On Windows this is absolute and outside userDir; on Linux it is not absolute. Rejected on both
         assertThat(SecurityValidator.isValidAbsolutePath("C:\\Windows\\System32\\config", userDir)).isFalse();
+    }
+
+    @Test
+    void isValidAbsolutePath_WithRelativePath_ShouldReturnFalse() {
+        String userDir = System.getProperty("user.dir");
+
+        // 상대 경로는 작업 디렉터리 기준으로 풀려 허용 목록 검사를 우회하므로 받지 않는다
+        assertThat(SecurityValidator.isValidAbsolutePath("test.txt", userDir)).isFalse();
+        assertThat(SecurityValidator.isValidAbsolutePath("sub/test.txt", userDir)).isFalse();
     }
 
     @Test
