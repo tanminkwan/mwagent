@@ -326,6 +326,31 @@ class MwMqttSubscriberTest {
     }
 
     @Test
+    void dispatch_WithOversizedPayload_ShouldRejectBeforeParsing() throws Exception {
+        MwMqttSubscriber s = newSubscriber();
+        StringBuilder sb = new StringBuilder("{\"cmdId\":\"big\",\"command_class\":\"ExeText\",\"x\":\"");
+        while (sb.length() <= MwMqttSubscriber.MAX_PAYLOAD_BYTES) {
+            sb.append("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        }
+        sb.append("\"}");
+
+        invokeDispatch(s, sb.toString());
+
+        assertThat(captured.warnings())
+                .anySatisfy(m -> assertThat(m).contains("payload too large"));
+    }
+
+    @Test
+    void dispatch_WithNonObjectJson_ShouldIgnore() throws Exception {
+        MwMqttSubscriber s = newSubscriber();
+
+        invokeDispatch(s, "[\"ExeShell\"]");
+
+        assertThat(captured.warnings())
+                .anySatisfy(m -> assertThat(m).contains("not a JSON object"));
+    }
+
+    @Test
     void isConnected_WithoutClient_ShouldBeFalse() {
         assertThat(newSubscriber().isConnected()).isFalse();
     }

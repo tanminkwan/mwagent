@@ -65,4 +65,19 @@ class DownloadNUnzipFuncTest {
             .isInstanceOf(IOException.class);
         assertThat(Files.exists(tempDir.getParent().resolve("evil.txt"))).isFalse();
     }
+
+    @Test
+    void isAllowedDownloadUrl_OnlyHttpAndHttps() {
+        assertThat(DownloadNUnzipFunc.isAllowedDownloadUrl("https://s3.example.com/a.zip?sig=1")).isTrue();
+        assertThat(DownloadNUnzipFunc.isAllowedDownloadUrl("http://example.com/a.zip")).isTrue();
+        assertThat(DownloadNUnzipFunc.isAllowedDownloadUrl("HTTPS://example.com/a.zip")).isTrue();
+
+        // java.net.URL 은 file:, jar:, ftp: 도 연다. 로컬 파일을 target_directory 로 복사하는 통로가 된다
+        assertThat(DownloadNUnzipFunc.isAllowedDownloadUrl("file:///etc/shadow")).isFalse();
+        assertThat(DownloadNUnzipFunc.isAllowedDownloadUrl("jar:file:/tmp/x.jar!/a")).isFalse();
+        assertThat(DownloadNUnzipFunc.isAllowedDownloadUrl("ftp://example.com/a.zip")).isFalse();
+        assertThat(DownloadNUnzipFunc.isAllowedDownloadUrl("not a url")).isFalse();
+        assertThat(DownloadNUnzipFunc.isAllowedDownloadUrl("")).isFalse();
+        assertThat(DownloadNUnzipFunc.isAllowedDownloadUrl(null)).isFalse();
+    }
 }

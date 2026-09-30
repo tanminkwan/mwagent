@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Locale;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -24,7 +25,6 @@ import java.util.Set;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 import mwagent.infrastructure.config.ConfigurationProvider;
 
@@ -272,7 +272,7 @@ public final class Config implements ConfigurationProvider {
 			Logger defaultLogger = Logger.getLogger("Hennry");
 			defaultLogger.setLevel(Level.INFO);
 			FileHandler defaultFh = new FileHandler(System.getProperty("user.dir") + File.separator + "mwagent.%u.%g.log", 1024*1024, 10, true);
-			defaultFh.setFormatter(new SimpleFormatter());
+			defaultFh.setFormatter(new SafeLogFormatter());
 			defaultLogger.addHandler(defaultFh);
 			setLogger(defaultLogger);
 		} catch (IOException e) {
@@ -336,7 +336,7 @@ public final class Config implements ConfigurationProvider {
 					return -3;
 				}
 				FileHandler fh = new FileHandler(log_dir + File.separator + "mwagent.%u.%g.log", 1024*1024, 10, true);
-				fh.setFormatter(new SimpleFormatter());
+				fh.setFormatter(new SafeLogFormatter());
 				logger.addHandler(fh);
 			}
 
@@ -377,7 +377,7 @@ public final class Config implements ConfigurationProvider {
     	
     	getLogger().info(String.format("hostName:%s, userName:%s, get_command_uri:%s, command_check_cycle:%d", getHostName(), getUserName(), getGet_command_uri(), getCommand_check_cycle()));
 		
-		String os = System.getProperty("os.name").toLowerCase();
+		String os = System.getProperty("os.name").toLowerCase(Locale.ROOT);
 		
 		getLogger().info(String.format("OS : %s %n", os));
 		
@@ -585,7 +585,7 @@ public final class Config implements ConfigurationProvider {
                 default:
                     if (c < 0x20 || c > 0x7E) {
                         sb.append("\\u");
-                        String hex = Integer.toHexString(c).toUpperCase();
+                        String hex = Integer.toHexString(c).toUpperCase(Locale.ROOT);
                         for (int pad = hex.length(); pad < 4; pad++) { sb.append('0'); }
                         sb.append(hex);
                     } else {

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.io.FileWriter;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.UUID;
 import org.json.simple.JSONObject;
@@ -59,7 +60,7 @@ public class ExeText extends Order {
             
             // Create a temporary script file with unique name
             String uniqueId = UUID.randomUUID().toString().substring(0, 8);
-            String osName = System.getProperty("os.name").toLowerCase();
+            String osName = System.getProperty("os.name").toLowerCase(Locale.ROOT);
             
             String fileExtension;
             String[] executeCommand;
