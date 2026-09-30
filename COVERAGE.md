@@ -127,11 +127,6 @@ gradle clean build
 - 🔲 SSLCertiFileFunc
 - 🔲 SuckSyperFunc
 
-### Phase 6: Kafka 테스트 (통합 테스트 필요)
-- 🔲 MwProducer
-- 🔲 MwConsumerThread
-- 🔲 MwHealthCheckThread
-
 ---
 
 ## 테스트 작성 가이드라인

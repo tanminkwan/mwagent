@@ -12,8 +12,8 @@ import org.json.simple.JSONObject;
 
 import mwagent.PreWork;
 import mwagent.common.Common;
+import mwagent.common.LogSafe;
 import mwagent.service.CommandExecutorService;
-import mwagent.service.KafkaService;
 import mwagent.mqtt.MqttService;
 import mwagent.service.registration.BootstrapService;
 import mwagent.vo.MwResponseVO;
@@ -23,7 +23,7 @@ import mwagent.vo.RawCommandsVO;
  * Agent 전체 생명주기를 관리하는 매니저
  *
  * Phase 1: Bootstrap (등록 및 승인)
- * Phase 2: Initialization (Kafka, Executor 초기화)
+ * Phase 2: Initialization (BOOT 명령, MQTT, Executor 초기화)
  * Phase 3: Runtime (명령 polling 및 실행)
  * Phase 4: Shutdown (Graceful 종료)
  */
@@ -37,7 +37,6 @@ public class AgentLifecycleManager implements AgentLifecycle {
 
     // Services
     private final BootstrapService bootstrapService;
-    private final KafkaService kafkaService;
     private final MqttService mqttService;
     private final CommandExecutorService commandExecutor;
     private final GracefulShutdownHandler shutdownHandler;
@@ -47,29 +46,26 @@ public class AgentLifecycleManager implements AgentLifecycle {
     private volatile boolean running;
 
     public AgentLifecycleManager() {
-        this(new BootstrapService(), new KafkaService(), new CommandExecutorService(), new MqttService());
+        this(new BootstrapService(), new CommandExecutorService(), new MqttService());
     }
 
     /**
      * Constructor for dependency injection (테스트 용이성)
      */
     public AgentLifecycleManager(BootstrapService bootstrapService,
-                                 KafkaService kafkaService,
                                  CommandExecutorService commandExecutor) {
-        this(bootstrapService, kafkaService, commandExecutor, new MqttService());
+        this(bootstrapService, commandExecutor, new MqttService());
     }
 
     /**
      * Constructor for dependency injection (MQTT 포함)
      */
     public AgentLifecycleManager(BootstrapService bootstrapService,
-                                 KafkaService kafkaService,
                                  CommandExecutorService commandExecutor,
                                  MqttService mqttService) {
         this.logger = getConfig().getLogger();
         this.state = LifecycleState.CREATED;
         this.bootstrapService = bootstrapService;
-        this.kafkaService = kafkaService;
         this.commandExecutor = commandExecutor;
         this.mqttService = mqttService;
         this.shutdownHandler = new GracefulShutdownHandler();
@@ -100,15 +96,7 @@ public class AgentLifecycleManager implements AgentLifecycle {
             logger.info("Phase 2: Initialization - Processing BOOT commands");
             processBootCommands(bootCommands.getCommands());
 
-            // Start Kafka Service
-            if (kafkaService.isConfigured()) {
-                kafkaService.start();
-                shutdownHandler.registerService(kafkaService);
-            } else {
-                logger.info("Kafka not configured, skipping Kafka service");
-            }
-
-            // Start MQTT Service (Kafka 와 병행. 한쪽 실패가 다른 쪽을 막지 않는다)
+            // Start MQTT Service (실패해도 에이전트는 REST 폴링으로 계속 동작한다)
             configureMqttFromProperties();
             if (mqttService.isConfigured()) {
                 try {
@@ -201,7 +189,7 @@ public class AgentLifecycleManager implements AgentLifecycle {
     /**
      * agent.properties 의 MQTT 설정을 MqttService 에 적용한다.
      *
-     * MQTT 는 Kafka 와 달리 설정 소스가 agent.properties 하나뿐이다.
+     * MQTT 설정 소스는 agent.properties 하나뿐이다.
      * BOOT 명령에는 mqtt_broker_address 가 내려오지 않으므로(서버 스펙에 없다)
      * BOOT 명령 유무와 무관하게 동작해야 하며, mqtt_credential 도 properties
      * 전용이라 주소와 자격증명을 같은 소스에서 읽는 편이 설정이 갈리지 않는다.
@@ -231,18 +219,8 @@ public class AgentLifecycleManager implements AgentLifecycle {
 
         for (Object c : commands) {
             JSONObject command = (JSONObject) c;
-            logger.info("Processing BOOT command: " + command.toJSONString());
-
-            String commandClass = (String) command.get("command_class");
-
-            if ("BOOT".equals(commandClass)) {
-                String kafkaBroker = (String) command.get("kafka_broker_address");
-
-                if (kafkaBroker != null && !kafkaBroker.isEmpty()) {
-                    logger.info("Configuring Kafka broker: " + kafkaBroker);
-                    kafkaService.setBrokerAddress(kafkaBroker);
-                }
-            }
+            logger.info("Processing BOOT command: " + LogSafe.safe(command.toJSONString(), 1000));
+            // kafka_broker_address 가 내려와도 무시한다 (Kafka 기능 제거)
 
             // Initialize mTLS client if enabled, otherwise use refresh token
             if (getConfig().isUseMtls()) {

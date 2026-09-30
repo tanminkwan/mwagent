@@ -137,10 +137,10 @@ class SetPropertiesFuncTest {
 
     @Test
     void emptyStringValueIsAllowed() throws Exception {
-        ResultVO rv = run("{\"upsert\":[{\"kafka_broker_address\":\"\"}]}");
+        ResultVO rv = run("{\"upsert\":[{\"mqtt_broker_address\":\"\"}]}");
 
         assertThat(rv.isOk()).isTrue();
-        assertThat(resultJson(rv).get("kafka_broker_address")).isEqualTo("");
+        assertThat(resultJson(rv).get("mqtt_broker_address")).isEqualTo("");
     }
 
     @Test

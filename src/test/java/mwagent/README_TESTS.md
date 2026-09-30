@@ -252,7 +252,6 @@ open build/reports/tests/test/index.html
 - [ ] OrderCaller 클래스
 - [ ] 개별 Order 구현체 (ExeShell, ReadFile 등)
 - [ ] 개별 AgentFunc 구현체
-- [ ] Kafka 관련 클래스 (통합 테스트)
 - [x] ~~HTTP 통신 관련 클래스 (통합 테스트)~~ - MtlsTokenRenewalIntegrationTest로 커버
 - [x] ~~mTLS 토큰 갱신~~ - Phase 1.5에서 완료
 - [x] ~~계단식 토큰 갱신~~ - Phase 1.5에서 완료

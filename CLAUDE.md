@@ -34,6 +34,8 @@ HTTP_PROXY=http://70.10.15.10:8080 HTTPS_PROXY=http://70.10.15.10:8080 ./tools/a
 - `lib/SHA256SUMS` is tracked and is checked by `verify-lib.sh` / `verify-lib.ps1` on download, packaging and offline build
 - When changing a jar version, update `download-dependencies.*`, `pom.xml` and `lib/SHA256SUMS` together
 - Repo scope (what to track / publish): `docs/PLAN-001/TASK_1-0_publish_scope.md`
+- **Kafka 는 제거됐다** (2026-09-30). kafka-clients·slf4j·lz4·snappy·zstd 도 함께 빠졌다. 명령 수신은 REST 폴링 + MQTT(선택), 결과는 REST 뿐이다.
+  BOOT 의 `kafka_broker_address` 는 무시한다. **결과는 `result_receiver` 값과 무관하게 항상 REST 로 보낸다** — `SERVER` 가 아닌 값(`MQTT`·`KAFKA`·`SERVER_N_KAFKA`·모르는 값)은 경고 로그만 남긴다 (`Order.sendResult`)
 
 ## Test Execution
 

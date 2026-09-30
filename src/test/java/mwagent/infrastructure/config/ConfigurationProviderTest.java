@@ -104,21 +104,6 @@ class ConfigurationProviderTest {
     }
 
     @Test
-    @DisplayName("isKafkaEnabled returns boolean based on broker address")
-    void isKafkaEnabled_ReturnsBooleanBasedOnBrokerAddress() {
-        // Set empty broker address
-        config.setKafkaBrokerAddress("");
-        assertFalse(config.isKafkaEnabled());
-
-        // Set valid broker address
-        config.setKafkaBrokerAddress("localhost:9092");
-        assertTrue(config.isKafkaEnabled());
-
-        // Reset
-        config.setKafkaBrokerAddress("");
-    }
-
-    @Test
     @DisplayName("getEnvironment returns non-null map")
     void getEnvironment_ReturnsNonNullMap() {
         assertNotNull(config.getEnvironment());

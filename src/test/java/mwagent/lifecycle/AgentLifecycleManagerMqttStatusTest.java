@@ -37,7 +37,7 @@ class AgentLifecycleManagerMqttStatusTest {
     }
 
     private AgentLifecycleManager newManager(MqttService mqttService) {
-        return new AgentLifecycleManager(null, null, null, mqttService);
+        return new AgentLifecycleManager(null, null, mqttService);
     }
 
     @Test

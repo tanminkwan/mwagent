@@ -18,12 +18,10 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <httpclient.version>4.5.13</httpclient.version>
-        <kafka.version>3.1.0</kafka.version>
         <paho.version>1.2.5</paho.version>
-        <bouncycastle.version>1.70</bouncycastle.version>
+        <bouncycastle.version>1.86</bouncycastle.version>
         <json-simple.version>1.1.1</json-simple.version>
         <commons-codec.version>1.11</commons-codec.version>
-        <slf4j.version>1.7.30</slf4j.version>
         <junit.version>5.8.2</junit.version>
         <mockito.version>3.12.4</mockito.version>
     </properties>
@@ -36,13 +34,6 @@
             <version>${httpclient.version}</version>
         </dependency>
 
-        <!-- Apache Kafka Client for Kafka communication -->
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-            <version>${kafka.version}</version>
-        </dependency>
-
         <!-- Eclipse Paho MQTT v5 Client for MQTT communication (Java 8 compatible) -->
         <dependency>
             <groupId>org.eclipse.paho</groupId>
@@ -53,7 +44,7 @@
         <!-- BouncyCastle for TLS 1.2 support (especially for AIX) -->
         <dependency>
             <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
+            <artifactId>bcprov-jdk18on</artifactId>
             <version>${bouncycastle.version}</version>
         </dependency>
 
@@ -62,6 +53,13 @@
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
             <version>${json-simple.version}</version>
+            <!-- json-simple 1.1.1 pulls junit 4.10 in compile scope (CVE-2020-15250); not used at runtime -->
+            <exclusions>
+                <exclusion>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Apache Commons Codec for encoding utilities -->
@@ -69,20 +67,6 @@
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
             <version>${commons-codec.version}</version>
-        </dependency>
-
-        <!-- SLF4J API (required by Kafka client) -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-
-        <!-- SLF4J Simple implementation for logging -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>${slf4j.version}</version>
         </dependency>
 
         <!-- JUnit 5 for unit testing -->

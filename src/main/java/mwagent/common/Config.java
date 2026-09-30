@@ -47,7 +47,6 @@ public final class Config implements ConfigurationProvider {
 	private String agent_id = "";
 	private String access_token = "";
 	private String refresh_token = "";
-	private String kafka_broker_address = "";
 	private boolean mqtt_enabled = false;
 	private String mqtt_broker_address = "";
 	private String mqtt_credential = "";
@@ -78,12 +77,6 @@ public final class Config implements ConfigurationProvider {
 		return INSTANCE;
 	}
 	
-	public String getKafka_broker_address() {
-		return kafka_broker_address;
-	}
-	public void setKafka_broker_address(String kafka_broker_address) {
-		this.kafka_broker_address = kafka_broker_address;
-	}
 
 	/** MQTT 구독자 사용 여부. false 면 구독자를 아예 기동하지 않는다. */
 	public boolean isMqtt_enabled() {
@@ -309,9 +302,8 @@ public final class Config implements ConfigurationProvider {
 			setCommand_check_cycle(command_check_cycle);
 			setGet_command_uri(get_command_uri);
 			setPost_agent_uri(post_agent_uri);
-			setKafka_broker_address(prop.getProperty("kafka_broker_address", ""));
 
-			// MQTT Configuration (Kafka 와 병행). 기본 비활성 — 명시적으로 켜야 동작한다
+			// MQTT Configuration. 기본 비활성 — 명시적으로 켜야 동작한다
 			setMqtt_enabled(Boolean.parseBoolean(prop.getProperty("mqtt_enabled", "false")));
 			setMqtt_broker_address(prop.getProperty("mqtt_broker_address", ""));
 			setMqtt_credential(prop.getProperty("mqtt_credential", ""));
@@ -871,21 +863,6 @@ public final class Config implements ConfigurationProvider {
     @Override
     public void setRefreshToken(String token) {
         this.refresh_token = token;
-    }
-
-    @Override
-    public boolean isKafkaEnabled() {
-        return kafka_broker_address != null && !kafka_broker_address.isEmpty();
-    }
-
-    @Override
-    public String getKafkaBrokerAddress() {
-        return kafka_broker_address;
-    }
-
-    @Override
-    public void setKafkaBrokerAddress(String address) {
-        this.kafka_broker_address = address;
     }
 
     @Override

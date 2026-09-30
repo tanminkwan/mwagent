@@ -2,7 +2,9 @@
 # lib/*.jar 무결성 검증 (lib/SHA256SUMS 기준)
 #
 #   0: 모두 일치, 또는 SHA-256 도구가 없어 검증을 건너뜀 (경고 출력)
-#   1: 파일 누락 또는 해시 불일치
+#   1: 파일 누락, 해시 불일치, 또는 SHA256SUMS 에 없는 jar 가 lib/ 에 남아 있음
+#      (빌드·배포 스크립트는 lib/*.jar 를 모두 classpath 에 넣으므로, 버전을 올린 뒤 남은
+#       옛 jar 는 클래스 충돌을 일으킨다)
 #
 # AIX/HP-UX 등 sha256sum 이 없는 환경을 위해 shasum, openssl 순으로 대체한다.
 
@@ -45,6 +47,16 @@ while read -r sum name; do
         failed=1
     fi
 done < "$SUMS"
+
+# SHA256SUMS 에 없는 jar (옛 버전 등)
+for jar in lib/*.jar; do
+    [ -f "$jar" ] || continue
+    base="${jar#lib/}"
+    if ! awk -v n="$base" '{ f = $2; sub(/^\*/, "", f); sub(/\r$/, "", f); if (f == n) found = 1 } END { exit !found }' "$SUMS"; then
+        echo "ERROR: $jar is not listed in $SUMS (old version?). Remove it: rm \"$jar\""
+        failed=1
+    fi
+done
 
 if [ "$failed" -ne 0 ]; then
     exit 1

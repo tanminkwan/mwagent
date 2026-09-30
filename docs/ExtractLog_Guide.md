@@ -14,7 +14,7 @@
 
 ## 2. 파라미터 설정 가이드
 
-서버나 카프카(Kafka)를 통해 에이전트(Agent)로 `ExtractLog` 명령을 보낼 때, 아래와 같이 CommandVO 규격에 맞춰 파라미터를 전송해야 합니다.
+서버(REST 폴링 또는 MQTT)를 통해 에이전트(Agent)로 `ExtractLog` 명령을 보낼 때, 아래와 같이 CommandVO 규격에 맞춰 파라미터를 전송해야 합니다.
 
 | 파라미터명 | 설명 | 예시 |
 |---|---|---|
@@ -74,7 +74,7 @@
 
 ## 3. Command Request JSON 예시
 
-API 또는 Kafka 메시지로 명령을 발송할 때의 페이로드 예시입니다. `additional_params`의 겹따옴표(`"`)를 이스케이프(`\"`) 해야 함에 주의하세요.
+API 또는 MQTT 메시지로 명령을 발송할 때의 페이로드 예시입니다. `additional_params`의 겹따옴표(`"`)를 이스케이프(`\"`) 해야 함에 주의하세요.
 
 ```json
 {

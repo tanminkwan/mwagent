@@ -29,7 +29,7 @@ import mwagent.OrderCallerThread;
 /**
  * MQTT 명령 구독자.
  *
- * Kafka 의 MwConsumerThread 와 동일한 biz 동작을 수행한다.
+ * 수신한 명령은 REST 폴링으로 받은 명령과 같은 방식으로 실행한다.
  *   - 메시지 수신 → command_class 추출 → OrderCallerThread 로 위임
  *   - 결과 전송은 Order.sendResult() 가 담당한다 (resultReceiver 설정에 따름)
  *
@@ -92,7 +92,7 @@ public class MwMqttSubscriber {
         this.credential = credential;
     }
 
-    /** Kafka 설정이 host:port 형태이므로 스킴이 없으면 tcp:// 를 붙인다. */
+    /** host:port 형태로 설정해도 되도록 스킴이 없으면 tcp:// 를 붙인다. */
     static String normalizeUri(String address) {
         if (address == null) {
             return null;
@@ -290,7 +290,7 @@ public class MwMqttSubscriber {
 
     /**
      * 수신 메시지를 order 실행으로 넘긴다.
-     * Kafka 경로(MwConsumerThread)와 동일한 규약을 따른다.
+     * REST 폴링 경로와 동일한 규약(command_class → mwagent.order.*)을 따른다.
      */
     private void dispatch(String topic, MqttMessage message) {
         String payload = new String(message.getPayload(), UTF8);

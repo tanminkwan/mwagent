@@ -23,7 +23,7 @@ import mwagent.lifecycle.AgentLifecycleManager;
  * 아키텍처:
  * - AgentLifecycleManager: 전체 생명주기 관리
  * - BootstrapService: 등록 및 승인
- * - KafkaService: Kafka 연결 관리
+ * - MqttService: MQTT 명령 구독 (선택)
  * - CommandExecutorService: 명령 실행 관리
  * - GracefulShutdownHandler: 정상 종료 처리
  */
