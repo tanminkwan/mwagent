@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 /**
- * Common URL 경로 인코딩 · Windows cmd 경로 테스트
+ * Common URL 경로 인코딩 · Windows cmd 경로 · IO 오류 설명 테스트
  */
 class CommonEncodingTest {
 
@@ -39,5 +39,15 @@ class CommonEncodingTest {
         assertThat(Common.windowsCmd("C:\\Windows\\")).isEqualTo("C:\\Windows\\System32\\cmd.exe");
         assertThat(Common.windowsCmd(null)).isEqualTo("cmd.exe");
         assertThat(Common.windowsCmd(" ")).isEqualTo("cmd.exe");
+    }
+
+    @Test
+    void describeIOError_ShouldIncludeTypeAndMessage() {
+        String d = Common.describeIOError(new javax.net.ssl.SSLHandshakeException("PKIX path building failed"));
+        assertThat(d).isEqualTo("SSLHandshakeException: PKIX path building failed");
+
+        assertThat(Common.describeIOError(new java.io.IOException())).isEqualTo("IOException");
+        // 메시지에 개행이 섞여도 한 줄로 남는다
+        assertThat(Common.describeIOError(new java.io.IOException("a\nb"))).isEqualTo("IOException: a\\nb");
     }
 }

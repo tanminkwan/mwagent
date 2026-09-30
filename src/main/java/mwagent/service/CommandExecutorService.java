@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
 
+import mwagent.common.LogSafe;
 import mwagent.OrderCallerThread;
 import mwagent.lifecycle.AgentLifecycle;
 import mwagent.lifecycle.LifecycleState;
@@ -125,14 +126,14 @@ public class CommandExecutorService implements AgentLifecycle {
         String commandClass = (String) command.get("command_class");
 
         if (commandClass == null) {
-            logger.warning("Command_class not found: " + command.toJSONString());
+            logger.warning("Command_class not found: " + LogSafe.safe(command.toJSONString(), 1000));
             return;
         }
 
         try {
             OrderCallerThread thread = new OrderCallerThread("mwagent.order." + commandClass, command);
             executorService.submit(thread);
-            logger.info("Submitted command: " + commandClass + " with data: " + command.toJSONString());
+            logger.info("Submitted command: " + commandClass + " with data: " + LogSafe.safe(command.toJSONString(), 1000));
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to submit command: " + commandClass, e);

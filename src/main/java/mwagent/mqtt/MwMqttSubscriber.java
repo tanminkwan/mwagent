@@ -24,6 +24,7 @@ import org.eclipse.paho.mqttv5.common.packet.MqttProperties;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import mwagent.common.LogSafe;
 import mwagent.OrderCallerThread;
 
 /**
@@ -319,7 +320,7 @@ public class MwMqttSubscriber {
             thread.setDaemon(true);
             thread.start();
 
-            logger.info("Order called by MQTT : topic " + topic + "_" + payload);
+            logger.info("Order called by MQTT : topic " + topic + "_" + LogSafe.safe(payload, 1000));
 
         } catch (Exception e) {
             // 파싱 실패 메시지 하나가 구독을 끊지 않도록 여기서 삼킨다

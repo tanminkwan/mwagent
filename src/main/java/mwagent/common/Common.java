@@ -90,6 +90,15 @@ public class Common {
 		return sb.toString();
 	}
 
+	/**
+	 * One-line cause of a failed request, e.g. "SSLHandshakeException: PKIX path building failed ...".
+	 * Without it a TLS failure under ssl_verify=true is indistinguishable from a network error.
+	 */
+	static String describeIOError(IOException e) {
+		String msg = e.getMessage();
+		return e.getClass().getSimpleName() + (msg == null ? "" : ": " + LogSafe.safe(msg, 400));
+	}
+
 	/** Encodes each "/"-separated segment with {@link #encodePathSegment(String)}, keeping the "/". */
 	public static String encodePath(String path) {
 		if (path == null) {
@@ -248,7 +257,7 @@ public class Common {
             }
         	
         } catch(IOException e){
-        	config.getLogger().warning("HTTP execution failed" + " : " + url);
+        	config.getLogger().warning("HTTP execution failed : " + url + " (" + describeIOError(e) + ")");
         	mrvo.setStatusCode(-104);
         }catch(Exception e){
         	config.getLogger().log(Level.WARNING, e.getMessage(), e);
@@ -304,7 +313,7 @@ public class Common {
             }
 
         } catch(IOException e){
-        	config.getLogger().warning("HTTP execution failed" + " : " + url);
+        	config.getLogger().warning("HTTP execution failed : " + url + " (" + describeIOError(e) + ")");
         	mrvo.setStatusCode(-104);
         }catch(Exception e){
         	config.getLogger().log(Level.WARNING, e.getMessage(), e);
@@ -371,7 +380,7 @@ public class Common {
             }
         	
         } catch(IOException e){
-        	config.getLogger().warning("HTTP execution failed" + " : " + url);
+        	config.getLogger().warning("HTTP execution failed : " + url + " (" + describeIOError(e) + ")");
         	mrvo.setStatusCode(-110);
         }catch(Exception e){
         	config.getLogger().log(Level.WARNING, e.getMessage(), e);
