@@ -16,6 +16,7 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     permissions:
+      actions: read            # needed on private repositories (the action reads the workflow run)
       contents: read
       security-events: write
     steps:
