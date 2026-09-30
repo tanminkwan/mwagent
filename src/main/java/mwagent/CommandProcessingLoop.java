@@ -91,7 +91,7 @@ public class CommandProcessingLoop {
     	RawCommandsVO rcv = new RawCommandsVO();
     	rcv.setReturnCode(1);
 
-        String path = getConfig().getGet_command_uri() + "/" + getConfig().getAgent_id();
+        String path = getConfig().getGet_command_uri() + "/" + Common.encodePathSegment(getConfig().getAgent_id());
 
 		getConfig().getLogger().fine("getCommands : "+path);
 		MwResponseVO mrvo = Common.httpGET(path, getConfig().getAccess_token());

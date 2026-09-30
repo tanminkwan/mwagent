@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.util.logging.Level;
 import java.util.UUID;
 import org.json.simple.JSONObject;
+import mwagent.common.Common;
 import mwagent.vo.ResultVO;
 
 /**
@@ -33,7 +34,6 @@ public class ExeText extends Order {
         try {
             resultVo = runScript();
         } catch (Exception e) {
-            e.printStackTrace();
             getConfig().getLogger().log(Level.SEVERE, e.getMessage(), e);
         }
         return 1;
@@ -67,7 +67,7 @@ public class ExeText extends Order {
             // Determine OS and set appropriate file extension and execution command
             if (osName.contains("windows")) {
                 fileExtension = ".bat";
-                executeCommand = new String[]{"cmd.exe", "/c"};
+                executeCommand = new String[]{Common.windowsCmd(), "/c"};
             } else if (osName.contains("aix")) {
                 fileExtension = ".sh";
                 executeCommand = new String[]{"/bin/ksh"};

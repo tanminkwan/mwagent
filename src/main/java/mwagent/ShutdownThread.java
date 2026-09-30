@@ -33,7 +33,6 @@ public class ShutdownThread extends Thread {
  	       try {        	
  	    	   Thread.sleep(1000);
 	       } catch (InterruptedException e) {
-	           e.printStackTrace();
 	           logger.log(Level.SEVERE, e.getMessage(), e);
 	       }
         }
