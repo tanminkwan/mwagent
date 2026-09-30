@@ -258,6 +258,27 @@ public final class Config implements ConfigurationProvider {
 		this.security_allowed_read_paths = paths.toArray(new String[0]);
 	}
 
+    /**
+     * Logger writing to rotating files dir/mwagent.%u.%g.log (1 MB x 10).
+     * The same records are not also sent to the root ConsoleHandler (stderr): a redirected
+     * stderr (nohup.out) would grow without rotation and duplicate every line.
+     * If the file cannot be opened, console output is kept so logs are not lost.
+     */
+    static Logger createDefaultLogger(String name, String dir) {
+        Logger logger = Logger.getLogger(name);
+        logger.setLevel(Level.INFO);
+        try {
+            FileHandler fh = new FileHandler(dir + File.separator + "mwagent.%u.%g.log", 1024*1024, 10, true);
+            fh.setFormatter(new SafeLogFormatter());
+            logger.addHandler(fh);
+            logger.setUseParentHandlers(false);
+        } catch (IOException e) {
+            logger.setUseParentHandlers(true);
+            System.err.println("Cannot open log file in " + dir + ": " + e.getMessage() + " (logging to console)");
+        }
+        return logger;
+    }
+
     public long setConfig() {
 
 		Properties prop = new Properties();
@@ -268,19 +289,7 @@ public final class Config implements ConfigurationProvider {
 		int rtn = 0;
 
 		// Create default logger first (logs to current directory)
-		try {
-			Logger defaultLogger = Logger.getLogger("Hennry");
-			defaultLogger.setLevel(Level.INFO);
-			FileHandler defaultFh = new FileHandler(System.getProperty("user.dir") + File.separator + "mwagent.%u.%g.log", 1024*1024, 10, true);
-			defaultFh.setFormatter(new SafeLogFormatter());
-			defaultLogger.addHandler(defaultFh);
-			setLogger(defaultLogger);
-		} catch (IOException e) {
-			// If even default logger fails, use console logger
-			Logger consoleLogger = Logger.getLogger("Hennry");
-			consoleLogger.setLevel(Level.INFO);
-			setLogger(consoleLogger);
-		}
+		setLogger(createDefaultLogger("Hennry", System.getProperty("user.dir")));
 
 		try{
 

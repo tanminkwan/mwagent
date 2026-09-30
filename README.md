@@ -457,28 +457,23 @@ security.command_injection_check=false
 
 ## 실행 방법
 
-### Fat JAR 실행 (권장)
+### 포그라운드 실행
 
-Maven 으로 빌드한 경우:
-
-```bash
-java -jar target/mwagent-0000.0009.0001-jar-with-dependencies.jar
-```
-
-### Classpath 직접 지정
+의존성은 jar 안에 넣지 않고 `lib/` 에 둡니다 (Maven·오프라인 빌드 모두 `build/mwagent.jar`):
 
 ```bash
-java -cp "build/mwagent.jar:lib/*" mwagent.MwAgent
+java -cp "build/mwagent.jar:lib/*" mwagent.MwAgent      # Windows 는 ; 로 구분
 ```
+
+로그는 화면이 아니라 로그 파일에 남습니다 (아래 "로그" 참고). 화면에는 기동 배너만 나옵니다.
 
 ### 백그라운드 실행
 
 ```bash
-# Fat JAR 실행
-nohup java -jar mwagent-all.jar > /dev/null 2>&1 &
-
-# Classpath 지정 실행
-nohup java -cp "build/jar/mwagent.jar:lib/*" mwagent.MwAgent > /dev/null 2>&1 &
+# 로그는 mwagent.%u.%g.log (1 MB x 10, 로테이션) 에 남는다.
+# stdout/stderr 에는 로그가 중복되지 않고, 기동 배너와 로거 밖의 오류(JVM 오류, 잡히지 않은 예외 요약)만 나온다.
+# 버리지 말고 파일로 남긴다
+nohup java -cp "build/mwagent.jar:lib/*" mwagent.MwAgent >> mwagent-console.log 2>&1 &
 ```
 
 ### 서비스 등록 (systemd 예제)
@@ -494,10 +489,8 @@ After=network.target
 Type=simple
 User=mwagent
 WorkingDirectory=/opt/mwagent
-# Fat JAR 실행 (권장)
-ExecStart=/usr/bin/java -jar /opt/mwagent/mwagent-all.jar
-# 또는 Classpath 지정
-# ExecStart=/usr/bin/java -cp ".:lib/*" mwagent.MwAgent
+# stdout/stderr 는 journal 에 남는다 (journalctl -u mwagent)
+ExecStart=/usr/bin/java -cp "/opt/mwagent/mwagent.jar:/opt/mwagent/lib/*" mwagent.MwAgent
 Restart=always
 RestartSec=10
 
@@ -833,6 +826,9 @@ mwagent.0.1.log
 
 - 로그 파일 크기: 1MB
 - 최대 파일 수: 10개 (순환)
+- 로그는 파일에만 남고 stdout/stderr 로 중복되지 않습니다. stdout/stderr 에는 기동 배너와 로거 밖의 오류
+  (로그 파일을 못 열었을 때, JVM 오류, 잡히지 않은 예외 요약)만 나오므로 `>> mwagent-console.log 2>&1` 처럼 파일로 남겨 두세요
+- 잡히지 않은 예외는 스택트레이스와 함께 로그 파일에 SEVERE 로 남습니다
 
 ## 테스트
 

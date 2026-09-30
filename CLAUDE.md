@@ -8,7 +8,7 @@
    - Legacy mode (`use_mtls=false`): Uses `/api/v1/security/refresh` endpoint with refresh token
 3. **Version managed in ONE place only**: `Version.java` (`VERSION` constant)
 4. **Build is Maven only** — `build.gradle` was removed (2026-09-29). Offline build (`build-offline.*`) must keep working
-5. **All logs go to file, not System.err** - This is a daemon process
+5. **All logs go to file, not System.err** - This is a daemon process. The logger does not forward to the root ConsoleHandler (`Config.createDefaultLogger`); stdout/stderr only carry the banner and errors outside the logger, and are redirected to `mwagent-console.log` when run in the background
 6. **Git Push Protocol**: Always use **HTTPS** (`https://github.com/...`) for Git remote operations. SSH is not configured on this environment.
 
 ## Build System

@@ -51,6 +51,9 @@ public class MwAgent {
             // Get logger after config is initialized
             logger = getConfig().getLogger();
 
+            // Exceptions nobody catches (e.g. in a worker thread) go to the log file, not only stderr
+            Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionLogger(logger));
+
             // Log version info
             logger.info("=========================================");
             logger.info("MwManger Agent Started");
@@ -92,5 +95,13 @@ public class MwAgent {
             }
             System.exit(1);
         }
+    }
+
+    static Thread.UncaughtExceptionHandler uncaughtExceptionLogger(final Logger log) {
+        return (thread, e) -> {
+            log.log(Level.SEVERE, "Uncaught exception in thread " + thread.getName(), e);
+            // One line on stderr too: it is redirected to mwagent-console.log (README)
+            System.err.println("Uncaught exception in thread " + thread.getName() + ": " + e);
+        };
     }
 }
