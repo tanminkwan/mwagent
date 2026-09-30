@@ -4,6 +4,7 @@ import static mwagent.common.Config.getConfig;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -235,7 +236,7 @@ public class DownloadFile extends Order {
 
 				getConfig().getLogger().info("Download check - fileName: " + fileName + ", extract: " + extract + ", OS: " + getConfig().getOs());
 
-				if (extract && fileName.toLowerCase().endsWith(".zip")) {
+				if (extract && fileName.toLowerCase(Locale.ROOT).endsWith(".zip")) {
 					try {
 						unzipFile(new File(file_location + fileName), new File(file_location));
 						getConfig().getLogger().info("File extracted: " + fileName);
@@ -258,7 +259,7 @@ public class DownloadFile extends Order {
 				// After all tasks, if exe_filename is provided, execute it
 				if (exeFilename != null && !exeFilename.isEmpty()) {
 					// Auto-replace .sh with .bat on Windows
-					if (getConfig().getOs().equals("WIN") && exeFilename.toLowerCase().endsWith(".sh")) {
+					if (getConfig().getOs().equals("WIN") && exeFilename.toLowerCase(Locale.ROOT).endsWith(".sh")) {
 						String originalFilename = exeFilename;
 						exeFilename = exeFilename.substring(0, exeFilename.length() - 3) + ".bat";
 						getConfig().getLogger().info("Windows detected: Auto-replacing " + originalFilename + " with " + exeFilename);

@@ -45,6 +45,13 @@ import mwagent.OrderCallerThread;
  */
 public class MwMqttSubscriber {
 
+    /**
+     * 명령 payload 상한. 정상 명령(ExeText 스크립트, set_properties 등)보다 넉넉하게 잡고,
+     * 그보다 큰 메시지는 파싱 전에 버린다 (메모리 소모 방지).
+     */
+    static final int MAX_PAYLOAD_BYTES = 1024 * 1024;
+
+
     private static final Charset UTF8 = Charset.forName("UTF-8");
 
     /** 연결이 이만큼 유지되어야 "복구"로 인정한다. 플래핑 로그 폭증 방지. */
@@ -294,9 +301,20 @@ public class MwMqttSubscriber {
      * REST 폴링 경로와 동일한 규약(command_class → mwagent.order.*)을 따른다.
      */
     private void dispatch(String topic, MqttMessage message) {
-        String payload = new String(message.getPayload(), UTF8);
+        byte[] raw = message.getPayload();
+        if (raw != null && raw.length > MAX_PAYLOAD_BYTES) {
+            logger.warning("MQTT payload too large, ignored. topic=" + topic + " bytes=" + raw.length
+                    + " (max " + MAX_PAYLOAD_BYTES + ")");
+            return;
+        }
+        String payload = raw == null ? "" : new String(raw, UTF8);
         try {
-            JSONObject command = (JSONObject) new JSONParser().parse(payload);
+            Object parsed = new JSONParser().parse(payload);
+            if (!(parsed instanceof JSONObject)) {
+                logger.warning("MQTT payload is not a JSON object, ignored. topic=" + topic);
+                return;
+            }
+            JSONObject command = (JSONObject) parsed;
 
             Object cmdIdObj = command.get("cmdId");
             if (cmdIdObj != null) {

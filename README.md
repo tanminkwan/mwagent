@@ -877,6 +877,8 @@ Test Breakdown:
 
 ## 보안 고려사항
 
+무엇을 신뢰하고 무엇을 막는지는 [위협 모델 (SPEC-001)](docs/SPEC_001_threat_model.md)에 정리되어 있습니다.
+
 ### 인증서 및 토큰 보호
 
 1. **Refresh Token 보호**: `agent.properties` 파일 권한을 600으로 설정

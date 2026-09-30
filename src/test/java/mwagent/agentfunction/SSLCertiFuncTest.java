@@ -119,6 +119,20 @@ class SSLCertiFuncTest {
 
     @Test
     @Order(3)
+    @DisplayName("matchesDomain: independent of the JVM default locale (Turkish dotless i)")
+    void testMatchesDomain_TurkishLocale() {
+        java.util.Locale saved = java.util.Locale.getDefault();
+        try {
+            java.util.Locale.setDefault(new java.util.Locale("tr", "TR"));
+            // tr 로케일의 toLowerCase() 는 "I" 를 "ı" 로 바꿔 비교가 깨졌다
+            assertThat(SSLCertiFunc.matchesDomain("*.FILE.IO", "api.file.io")).isTrue();
+        } finally {
+            java.util.Locale.setDefault(saved);
+        }
+    }
+
+    @Test
+    @Order(3)
     @DisplayName("matchesDomain: exact match and null handling")
     void testMatchesDomain_ExactAndNull() {
         assertThat(SSLCertiFunc.matchesDomain("localhost", "LOCALHOST")).isTrue();

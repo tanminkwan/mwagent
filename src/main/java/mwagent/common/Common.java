@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.KeyStore;
 import java.security.Security;
+import java.util.Locale;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.logging.Level;
@@ -130,7 +131,7 @@ public class Common {
 
 	private static CloseableHttpClient getHttpClient(String url){
 		
-		if (url.toLowerCase().startsWith("https")) {
+		if (url.toLowerCase(Locale.ROOT).startsWith("https")) {
 			if(httpsClient==null)createHttpsClient();
 			return httpsClient;
 		}else{

@@ -5,6 +5,7 @@ import java.security.Provider;
 import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
+import java.util.Locale;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -302,8 +303,8 @@ public class SSLCertiFunc implements AgentFunc {
 			return false;
 		}
 		if(certDomain.startsWith("*.")){
-			String wildCardBase = certDomain.substring(1).toLowerCase(); // ".example.com"
-			String d = domain.toLowerCase();
+			String wildCardBase = certDomain.substring(1).toLowerCase(Locale.ROOT); // ".example.com"
+			String d = domain.toLowerCase(Locale.ROOT);
 			return d.endsWith(wildCardBase)
 					&& d.split("\\.").length == certDomain.split("\\.").length;
 		}

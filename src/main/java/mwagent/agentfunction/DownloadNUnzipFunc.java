@@ -16,6 +16,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import static mwagent.common.Config.getConfig;
 
 
@@ -70,6 +71,13 @@ public class DownloadNUnzipFunc implements AgentFunc {
             return Common.makeOneResultArray(rv, command);
         }
 
+		// Only http/https: java.net.URL would also open file:, jar:, ftp: (local file copy / SSRF)
+		if (!isAllowedDownloadUrl(downloadUrl)) {
+			getConfig().getLogger().severe("Security: Unsupported download URL scheme: " + LogSafe.safe(downloadUrl));
+			rv.setResult("Error:SecurityException - Only http/https URLs are allowed");
+			return Common.makeOneResultArray(rv, command);
+		}
+
 		// Security validation for target directory
 		String baseDir = System.getProperty("user.dir");
 		if (getConfig().isSecurityPathTraversalCheck()) {
@@ -85,7 +93,7 @@ public class DownloadNUnzipFunc implements AgentFunc {
         	File savedFile = downloadFile(downloadUrl, targetDirectory, backupIfExists);
         	getConfig().getLogger().info("[INFO] Downloaded file: " + savedFile.getAbsolutePath());
 			
-			if (extract && savedFile.getName().toLowerCase().endsWith(".zip")) {
+			if (extract && savedFile.getName().toLowerCase(Locale.ROOT).endsWith(".zip")) {
                 unzipFile(savedFile, new File(targetDirectory)); 
                 getConfig().getLogger().info("[INFO] Unzip completed.");
             } else {
@@ -104,6 +112,18 @@ public class DownloadNUnzipFunc implements AgentFunc {
 		
 	}
 	
+	static boolean isAllowedDownloadUrl(String url) {
+		if (url == null || url.isEmpty()) {
+			return false;
+		}
+		try {
+			String scheme = new URL(url).getProtocol().toLowerCase(Locale.ROOT);
+			return scheme.equals("http") || scheme.equals("https");
+		} catch (java.net.MalformedURLException e) {
+			return false;
+		}
+	}
+
 	private int setParams(JSONObject jsonObj){
 		
         try {
