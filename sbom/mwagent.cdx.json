@@ -1,0 +1,523 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:a8af9425-9a28-3dba-8e64-68c954a41405",
+  "version": 1,
+  "metadata": {
+    "lifecycles": [
+      {
+        "phase": "build"
+      }
+    ],
+    "tools": {
+      "components": [
+        {
+          "type": "library",
+          "author": "OWASP Foundation",
+          "group": "org.cyclonedx",
+          "name": "cyclonedx-maven-plugin",
+          "version": "2.9.1",
+          "description": "CycloneDX Maven plugin",
+          "hashes": [
+            {
+              "alg": "MD5",
+              "content": "9c7a565cf28cce58557d0c621c5ea4b1"
+            },
+            {
+              "alg": "SHA-1",
+              "content": "be882d5a22050bfa9d19090b1420c188617d0e1c"
+            },
+            {
+              "alg": "SHA-256",
+              "content": "698e0f37184a5b28c245c4065fd036dfce253b52f82fbb7113d81d36326cc249"
+            },
+            {
+              "alg": "SHA-512",
+              "content": "c0f0b11026858166f872a2eb54719492e5cecaa0bc9cd6b30b3ecb4a174eed220f4a1b5829d18d6734128e778d3cb3db7ffed177c92866133129cb29081814a0"
+            },
+            {
+              "alg": "SHA-384",
+              "content": "d80964707dfe5caca8c70521d5066f57589304c0a657e6fbc7c0614ea0fc7b3b3dbe7778361eee0f54ba111e9cb0ffcb"
+            }
+          ]
+        }
+      ]
+    },
+    "component": {
+      "type": "library",
+      "bom-ref": "pkg:maven/com.leebalso/mwagent@0000.0011.0000?type=jar",
+      "group": "com.leebalso",
+      "name": "mwagent",
+      "version": "0000.0011.0000",
+      "description": "Leebalso Agent - Remote Management Agent for Distributed Servers",
+      "purl": "pkg:maven/com.leebalso/mwagent@0000.0011.0000?type=jar"
+    },
+    "properties": [
+      {
+        "name": "maven.goal",
+        "value": "makeBom"
+      },
+      {
+        "name": "maven.scopes",
+        "value": "compile,runtime"
+      }
+    ]
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "pkg:maven/org.apache.httpcomponents/httpclient@4.5.13?type=jar",
+      "publisher": "The Apache Software Foundation",
+      "group": "org.apache.httpcomponents",
+      "name": "httpclient",
+      "version": "4.5.13",
+      "description": "Apache HttpComponents Client",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "40d6b9075fbd28fa10292a45a0db9457"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "e5f6cae5ca7ecaac1ec2827a9e2d65ae2869cada"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "6fe9026a566c6a5001608cf3fc32196641f6c1e5e1986d1037ccdbd5f31ef743"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "3567739186e551f84cad3e4b6b270c5b8b19aba297675a96bcdff3663ff7d20d188611d21f675fe5ff1bfd7d8ca31362070910d7b92ab1b699872a120aa6f089"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "093ac3e2dde58e34aa70309c7305eb3c9b5be2509a9293f1672494da55479a86bd112e83326746dc7a32855472952b99"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "purl": "pkg:maven/org.apache.httpcomponents/httpclient@4.5.13?type=jar",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://hc.apache.org/httpcomponents-client"
+        },
+        {
+          "type": "distribution-intake",
+          "url": "https://repository.apache.org/service/local/staging/deploy/maven2"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "http://issues.apache.org/jira/browse/HTTPCLIENT"
+        },
+        {
+          "type": "mailing-list",
+          "url": "http://mail-archives.apache.org/mod_mbox/hc-httpclient-users/"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/apache/httpcomponents-client/tree/4.5.13/httpclient"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:maven/org.apache.httpcomponents/httpcore@4.4.13?type=jar",
+      "publisher": "The Apache Software Foundation",
+      "group": "org.apache.httpcomponents",
+      "name": "httpcore",
+      "version": "4.4.13",
+      "description": "Apache HttpComponents Core (blocking I/O)",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "e07a248f61c52776a2366c075dcd4963"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "853b96d3afbb7bf8cc303fe27ee96836a10c1834"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "e06e89d40943245fcfa39ec537cdbfce3762aecde8f9c597780d2b00c2b43424"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "23430cde8b9bed33c91474ba49f1143284135df1b25fdcbc37bc3bb7e9549e77b3918eb40250093db652ae200367e87316129b23b4f6987e94939d60f467498d"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "b776d57492478c162d428bdd3139be0fa6c3cf4503355c3a04710ca7bc3ee74d66627f49eb42814fd8f8364dbd17aa91"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "purl": "pkg:maven/org.apache.httpcomponents/httpcore@4.4.13?type=jar",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://hc.apache.org/httpcomponents-core-ga"
+        },
+        {
+          "type": "distribution-intake",
+          "url": "https://repository.apache.org/service/local/staging/deploy/maven2"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "http://issues.apache.org/jira/browse/HTTPCORE"
+        },
+        {
+          "type": "mailing-list",
+          "url": "http://mail-archives.apache.org/mod_mbox/hc-httpclient-users/"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/apache/httpcomponents-core/tree/4.4.13/httpcore"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:maven/commons-logging/commons-logging@1.2?type=jar",
+      "publisher": "The Apache Software Foundation",
+      "group": "commons-logging",
+      "name": "commons-logging",
+      "version": "1.2",
+      "description": "Apache Commons Logging is a thin adapter allowing configurable bridging to other, well known logging systems.",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "040b4b4d8eac886f6b4a2a3bd2f31b00"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "4bfc12adfe4842bf07b657f0369c4cb522955686"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "daddea1ea0be0f56978ab3006b8ac92834afeefbd9b7e4e6316fca57df0fa636"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "ed00dbfabd9ae00efa26dd400983601d076fe36408b7d6520084b447e5d1fa527ce65bd6afdcb58506c3a808323d28e88f26cb99c6f5db9ff64f6525ecdfa557"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "ac20720d7156131478205f1b454395abf84cfc8da2f163301af32f63bd3c4764bd26cb54ed53800f33193ae591f3ce9c"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "purl": "pkg:maven/commons-logging/commons-logging@1.2?type=jar",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://commons.apache.org/proper/commons-logging/"
+        },
+        {
+          "type": "build-system",
+          "url": "https://continuum-ci.apache.org/"
+        },
+        {
+          "type": "distribution-intake",
+          "url": "https://repository.apache.org/service/local/staging/deploy/maven2"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "http://issues.apache.org/jira/browse/LOGGING"
+        },
+        {
+          "type": "mailing-list",
+          "url": "http://mail-archives.apache.org/mod_mbox/commons-user/"
+        },
+        {
+          "type": "vcs",
+          "url": "http://svn.apache.org/repos/asf/commons/proper/logging/trunk"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:maven/org.eclipse.paho/org.eclipse.paho.mqttv5.client@1.2.5?type=jar",
+      "publisher": "Eclipse Paho",
+      "group": "org.eclipse.paho",
+      "name": "org.eclipse.paho.mqttv5.client",
+      "version": "1.2.5",
+      "description": "The Paho project provides open-source implementations of open and standard messaging protocols aimed at new, existing, and emerging applications for Machine to Machine (M2M) and Internet of Things (IoT).",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "aec1fefc5558ebf26f2b6ea5d1ab50e2"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "82a20fe54f2bed0ef63b08a904bcfbd546e281f8"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "d71fe7fcd63dbeb5241b415c25af621acc55fc5e6ec65c036115d16a8e790188"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "72c643da8225a72b9b7c5e389e97e7f9d71b651b1552455867fd47a0d1f8f5c1f0840c2c01830d6c90375b1cfc21c3492fd727f067e406f86d54d3a0e27ba4cf"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "41bb00d879798233a8e59fd07b1cb82dff7d4a5b1d5dd9d71cbea7e0b717d7ffc7d5386b497d2f7dd090e690e72237c9"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "EPL-2.0 OR BSD-3-Clause"
+        }
+      ],
+      "purl": "pkg:maven/org.eclipse.paho/org.eclipse.paho.mqttv5.client@1.2.5?type=jar",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://www.eclipse.org/paho/org.eclipse.paho.mqttv5.client"
+        },
+        {
+          "type": "distribution-intake",
+          "url": "https://repo.eclipse.org/content/repositories/paho-releases/"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/eclipse/paho.mqtt.java.git/org.eclipse.paho.mqttv5.client"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:maven/org.bouncycastle/bcprov-jdk18on@1.86?type=jar",
+      "group": "org.bouncycastle",
+      "name": "bcprov-jdk18on",
+      "version": "1.86",
+      "description": "The Bouncy Castle Crypto package is a Java implementation of cryptographic algorithms. This jar contains the JCA/JCE provider and low-level API for the BC Java version 1.86 for Java 1.8 and later.",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "be1401108af4f440b82b47194c72506b"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "830c8467bed8e4c1148262386b09fc42aedcf262"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "2af190b300cbb0b35e248ccf5f4a06b6072030aeb3da7a98ec73abe5b4cb371f"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "4502851281929ef645316ae96ad7d6db6a54d11ce024a66bec654c2eef62b80f174b67a2a15de86b2698f33b696459e21ecfec4a846350f4297394e9a331c43b"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "57247c80abb35a29f4f4e0b6d21fd842635a37be2275bb2759e5a10095a9864ee30310fe4b630e22ff786f325fb9d8d6"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "Bouncy Castle Licence",
+            "url": "https://www.bouncycastle.org/licence.html"
+          }
+        }
+      ],
+      "purl": "pkg:maven/org.bouncycastle/bcprov-jdk18on@1.86?type=jar",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://www.bouncycastle.org/download/bouncy-castle-java/"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/bcgit/bc-java/issues"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/bcgit/bc-java"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:maven/com.googlecode.json-simple/json-simple@1.1.1?type=jar",
+      "group": "com.googlecode.json-simple",
+      "name": "json-simple",
+      "version": "1.1.1",
+      "description": "A simple Java toolkit for JSON",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "5cc2c478d73e8454b4c369cee66c5bc7"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "c9ad4a0850ab676c5c64461a05ca524cdfff59f1"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "4e69696892b88b41c55d49ab2fdcc21eead92bf54acc588c0050596c3b75199c"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "f8798bfbcc8ab8001baf90ce47ec2264234dc1da2d4aa97fdcdc0990472a6b5a5a32f828e776140777d598a99d8a0c0f51c6d0767ae1a829690ab9200ae35742"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "cec0c65bc033bf449a9214c37f4a4f1b8e6d90120cc613b677cfbe92f2b7bb68285d1d910146f1fd7ea7c622f898dcb5"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "purl": "pkg:maven/com.googlecode.json-simple/json-simple@1.1.1?type=jar",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://code.google.com/p/json-simple/"
+        },
+        {
+          "type": "vcs",
+          "url": "http://json-simple.googlecode.com/svn/trunk/"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:maven/commons-codec/commons-codec@1.11?type=jar",
+      "publisher": "The Apache Software Foundation",
+      "group": "commons-codec",
+      "name": "commons-codec",
+      "version": "1.11",
+      "description": "The Apache Commons Codec package contains simple encoder and decoders for various formats such as Base64 and Hexadecimal. In addition to these widely used encoders and decoders, the codec package also maintains a collection of phonetic encoding utilities.",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "567159b1ae257a43e1391a8f59d24cfe"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "3acb4705652e16236558f0f4f2192cc33c3bd189"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "e599d5318e97aa48f42136a2927e6dfa4e8881dff0e6c8e3109ddbbff51d7b7d"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "d9586162b257386b5871e7e9ae255a38014a9efaeef5148de5e40a3b0200364dad8516bddd554352aa2e5337bec2cc11df88c76c4fdde96a40f3421aa60650d7"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "9ae3d8fd4c38f3af52c76c5f98039109901cb0f70700e6d9999b27cc4b30b188e2688aa4adcf6b846376bc3ca125907a"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "purl": "pkg:maven/commons-codec/commons-codec@1.11?type=jar",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://commons.apache.org/proper/commons-codec/"
+        },
+        {
+          "type": "build-system",
+          "url": "https://builds.apache.org/"
+        },
+        {
+          "type": "distribution-intake",
+          "url": "https://repository.apache.org/service/local/staging/deploy/maven2"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "http://issues.apache.org/jira/browse/CODEC"
+        },
+        {
+          "type": "mailing-list",
+          "url": "http://mail-archives.apache.org/mod_mbox/commons-user/"
+        },
+        {
+          "type": "vcs",
+          "url": "http://svn.apache.org/viewvc/commons/proper/codec/trunk"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:maven/com.leebalso/mwagent@0000.0011.0000?type=jar",
+      "dependsOn": [
+        "pkg:maven/org.apache.httpcomponents/httpclient@4.5.13?type=jar",
+        "pkg:maven/org.eclipse.paho/org.eclipse.paho.mqttv5.client@1.2.5?type=jar",
+        "pkg:maven/org.bouncycastle/bcprov-jdk18on@1.86?type=jar",
+        "pkg:maven/com.googlecode.json-simple/json-simple@1.1.1?type=jar",
+        "pkg:maven/commons-codec/commons-codec@1.11?type=jar"
+      ]
+    },
+    {
+      "ref": "pkg:maven/org.apache.httpcomponents/httpclient@4.5.13?type=jar",
+      "dependsOn": [
+        "pkg:maven/org.apache.httpcomponents/httpcore@4.4.13?type=jar",
+        "pkg:maven/commons-logging/commons-logging@1.2?type=jar",
+        "pkg:maven/commons-codec/commons-codec@1.11?type=jar"
+      ]
+    },
+    {
+      "ref": "pkg:maven/org.apache.httpcomponents/httpcore@4.4.13?type=jar",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:maven/commons-logging/commons-logging@1.2?type=jar",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:maven/commons-codec/commons-codec@1.11?type=jar",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:maven/org.eclipse.paho/org.eclipse.paho.mqttv5.client@1.2.5?type=jar",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:maven/org.bouncycastle/bcprov-jdk18on@1.86?type=jar",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:maven/com.googlecode.json-simple/json-simple@1.1.1?type=jar",
+      "dependsOn": []
+    }
+  ]
+}

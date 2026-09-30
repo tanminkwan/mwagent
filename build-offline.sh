@@ -40,9 +40,15 @@ echo "Classpath: $CLASSPATH"
 # 3. 컴파일
 echo "[3/5] Compiling Java sources..."
 find src/main/java -name "*.java" > sources.txt
+# JDK 9+ 는 --release 8 로 Java 9+ API 사용을 컴파일 단계에서 막는다. JDK 8 은 -source/-target 1.8
+JAVAC_VER=$(javac -version 2>&1 | awk '{print $2}')
+case "$JAVAC_VER" in
+    1.*) RELEASE_OPTS="-source 1.8 -target 1.8" ;;
+    *)   RELEASE_OPTS="--release 8" ;;
+esac
+echo "javac $JAVAC_VER ($RELEASE_OPTS)"
 javac -encoding UTF-8 \
-      -source 1.8 \
-      -target 1.8 \
+      $RELEASE_OPTS \
       -d build/classes \
       -cp "$CLASSPATH" \
       @sources.txt

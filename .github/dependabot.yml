@@ -1,0 +1,27 @@
+# Dependabot (PLAN-001 WS-2-5). The agent must keep running on Java 8, so majors that need
+# Java 11+ are ignored. Remove an ignore only after the Java 8 support policy changes (CONTRIBUTING.md).
+version: 2
+updates:
+  - package-ecosystem: maven
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: org.mockito:*          # 5.x requires Java 11
+        versions: ['>= 5']
+      - dependency-name: org.junit.jupiter:*    # JUnit 6 requires Java 17
+        versions: ['>= 6']
+      - dependency-name: org.apache.maven.plugins:maven-compiler-plugin   # 4.x requires Java 17
+        versions: ['>= 4']
+      - dependency-name: com.github.spotbugs:spotbugs-maven-plugin        # baseline is SpotBugs 4.8.6; re-triage before upgrading
+        versions: ['>= 4.9']
+      - dependency-name: com.h3xstream.findsecbugs:findsecbugs-plugin     # same baseline (1.13.0)
+        versions: ['>= 1.14']
+    # lib/ (offline build) must follow: update download-dependencies.*, lib/SHA256SUMS with any
+    # runtime dependency bump. CI lib-integrity fails until they match.
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

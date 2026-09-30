@@ -122,3 +122,6 @@ HTTP_PROXY=http://70.10.15.10:8080 HTTPS_PROXY=http://70.10.15.10:8080 \
 6. All 215 tests passing
 7. `set_properties` Agent Function 추가 (0000.0010.0001) — `agent.properties` 원격 변경/조회
 8. 명령 폴링에 `X-Mqtt-Status` 헤더 추가 (0000.0010.0002) — `mqtt_enabled=true` 일 때만 MQTT 수신 상태 보고
+9. PLAN-001 오픈소스 준비 (0000.0011.0000, 2026-09-30) — `ssl_verify`, Kafka 제거, `OrderCaller` 허용 목록, `LogSafe`/`SafeLogFormatter`,
+   CI(`.github/workflows/`), SpotBugs 기준선 `config/spotbugs-exclude.xml`, gitleaks 기준선 `.gitleaksignore`, SBOM `sbom/generate.sh`.
+   `mvn -B verify` 는 JaCoCo 커버리지 기준(`minimum`)을 확인한다 — 올리기만 하고 내리지 않는다

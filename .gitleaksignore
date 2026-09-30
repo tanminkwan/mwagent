@@ -1,0 +1,24 @@
+# gitleaks baseline for "gitleaks dir /repo" (CI mounts the checkout at /repo).
+# All entries are documentation examples or test constants (truncated or fake tokens),
+# triaged in docs/PLAN-001/TASK_1-1_baseline_secret_scan.md. Real secrets must never be added here.
+/repo/docs/CA-Server-Requirements.md:generic-api-key:142
+/repo/docs/CA-Server-Requirements.md:generic-api-key:478
+/repo/docs/CA-Server-Requirements.md:generic-api-key:508
+/repo/docs/CA-Server-Requirements.md:generic-api-key:660
+/repo/docs/Token-Validation-Architecture.md:generic-api-key:580
+/repo/docs/mTLS-JWT-Authentication-Flow.md:generic-api-key:360
+/repo/docs/mTLS-JWT-Authentication-Flow.md:generic-api-key:364
+/repo/docs/mTLS-JWT-Authentication-Flow.md:generic-api-key:397
+/repo/docs/mTLS-JWT-Authentication-Flow.md:generic-api-key:424
+/repo/docs/mTLS-JWT-Authentication-Flow.md:generic-api-key:425
+/repo/docs/mTLS-JWT-Authentication-Flow.md:generic-api-key:683
+/repo/docs/mTLS-JWT-Authentication-Flow.md:generic-api-key:873
+/repo/src/test/java/mwagent/integration/BizServiceIntegrationTest.java:generic-api-key:285
+/repo/test-server/OAUTH2_MIGRATION.md:generic-api-key:67
+/repo/test-server/OAUTH2_MIGRATION.md:generic-api-key:73
+/repo/test-server/OAUTH2_MIGRATION.md:generic-api-key:116
+/repo/test-server/README.md:generic-api-key:90
+/repo/test-server/README.md:generic-api-key:117
+/repo/test-server/TESTING_GUIDE.md:generic-api-key:154
+/repo/test-server/TESTING_GUIDE.md:curl-auth-header:164
+/repo/test-server/TESTING_GUIDE.md:curl-auth-header:280

@@ -43,7 +43,13 @@ echo [3/5] Compiling Java sources...
 dir /s /b src\main\java\*.java > sources.txt
 
 REM 4. 컴파일
-javac -encoding UTF-8 -source 1.8 -target 1.8 -d build\classes -cp "%CLASSPATH%" @sources.txt
+REM JDK 9+ 는 --release 8 로 Java 9+ API 사용을 컴파일 단계에서 막는다. JDK 8 은 -source/-target 1.8
+set JAVAC_VER=
+for /f "tokens=2" %%v in ('javac -version 2^>^&1') do set JAVAC_VER=%%v
+set RELEASE_OPTS=--release 8
+if "!JAVAC_VER:~0,2!"=="1." set RELEASE_OPTS=-source 1.8 -target 1.8
+echo javac !JAVAC_VER! (!RELEASE_OPTS!)
+javac -encoding UTF-8 !RELEASE_OPTS! -d build\classes -cp "%CLASSPATH%" @sources.txt
 
 if errorlevel 1 (
     echo ERROR: Compilation failed!

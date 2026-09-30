@@ -40,6 +40,10 @@ chmod +x "$DEPLOY_DIR/build-offline.sh"
 echo "[5/5] Copying documentation..."
 cp README.md "$DEPLOY_DIR/"
 cp lib/README.md "$DEPLOY_DIR/lib/"
+# 라이선스: 배포물에 lib/*.jar 가 들어가므로 함께 넣는다 (Apache-2.0 §4, MIT 고지 의무)
+cp LICENSE NOTICE THIRD_PARTY_LICENSES.md "$DEPLOY_DIR/"
+cp -r licenses "$DEPLOY_DIR/"
+mkdir -p "$DEPLOY_DIR/sbom" && cp sbom/mwagent.cdx.json "$DEPLOY_DIR/sbom/"
 echo ""
 
 # 검증

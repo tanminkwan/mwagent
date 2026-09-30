@@ -68,6 +68,7 @@ agent.properties
 META-INF/
 deploy/
 *.txt
+!licenses/*.txt
 !TESTING.md
 !DEPENDENCIES.md
 !WORK_HISTORY.md
