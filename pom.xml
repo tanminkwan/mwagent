@@ -10,8 +10,8 @@
     <version>0.9.27</version>
     <packaging>jar</packaging>
 
-    <name>MwAgent</name>
-    <description>Leebalso Agent - Remote Management Agent for Distributed Servers</description>
+    <name>MWM Agent</name>
+    <description>Agent for MWM (Middleware Management System) - Remote Management Agent for Distributed Servers</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

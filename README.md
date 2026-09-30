@@ -1,6 +1,6 @@
-# MwManger - Leebalso Agent
+# MWM Agent
 
-MwManger는 Leebalso(리발소) 프로젝트의 에이전트 프로그램으로, 각 서버에서 데몬으로 실행되면서 중앙 Leebalso 서버로부터 명령을 전달받아 수행하는 Java 기반 원격 관리 에이전트입니다.
+**MWM Agent**(저장소 `mwagent`, 옛 이름 MwManger)는 [미들웨어관리소(MWM)](https://github.com/tanminkwan/mwm-app)의 에이전트 프로그램으로, 각 서버에서 데몬으로 실행되면서 중앙 미들웨어관리소(MWM) 서버로부터 명령을 전달받아 수행하는 Java 기반 원격 관리 에이전트입니다.
 
 ## 목차
 - [프로젝트 개요](#프로젝트-개요)
@@ -20,7 +20,7 @@ MwManger는 Leebalso(리발소) 프로젝트의 에이전트 프로그램으로,
 
 ## 프로젝트 개요
 
-MwManger는 분산 환경의 서버 관리를 자동화하기 위한 에이전트 프로그램입니다. 중앙 Leebalso 서버의 지시에 따라 다양한 작업을 수행하며, 실시간 명령 수신 및 결과 전송을 지원합니다.
+MWM Agent는 분산 환경의 서버 관리를 자동화하기 위한 에이전트 프로그램입니다. 중앙 미들웨어관리소(MWM) 서버의 지시에 따라 다양한 작업을 수행하며, 실시간 명령 수신 및 결과 전송을 지원합니다.
 
 **버전**: 0000.0009.0006
 **타입**: JAVAAGENT
@@ -58,7 +58,7 @@ MwManger는 분산 환경의 서버 관리를 자동화하기 위한 에이전�
 - **JDK**: 1.8 (Java 8) 이상
 - **메모리**: 최소 256MB
 - **디스크**: 최소 100MB
-- **네트워크**: Leebalso 서버 접근 가능 (MQTT 를 켜면 MQTT 브로커도)
+- **네트워크**: 미들웨어관리소(MWM) 서버 접근 가능 (MQTT 를 켜면 MQTT 브로커도)
 
 ## 필수 라이브러리
 
@@ -192,14 +192,14 @@ public static final String VERSION = "0000.0010.0000";  // 여기만 수정!
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                   Leebalso Server                       │
+│                      MWM Server                         │
 │  (Central Command Server + MQTT Broker)                 │
 └────────────────┬────────────────────┬───────────────────┘
                  │                    │
          HTTP/HTTPS (Polling)    MQTT (Push, 선택)
                  │                    │
 ┌────────────────┴────────────────────┴───────────────────┐
-│                 MwManger Agent                           │
+│                   MWM Agent                              │
 │                                                          │
 │  ┌────────────────────────────────────────────────────┐ │
 │  │  AgentLifecycleManager                             │ │
@@ -370,7 +370,7 @@ mwagent/
 
 ```properties
 # 서버 설정
-server_url=https://leebalso-server.example.com
+server_url=https://mwm.example.com
 get_command_uri=/api/v1/command/getCommands
 post_agent_uri=/api/v1/agent
 
@@ -412,7 +412,7 @@ security.command_injection_check=false
 
 ### 설정 항목 설명
 
-- **server_url**: Leebalso 중앙 서버 URL
+- **server_url**: 미들웨어관리소(MWM) 중앙 서버 URL
 - **get_command_uri**: 명령 조회 API 엔드포인트
 - **post_agent_uri**: 에이전트 등록 API 엔드포인트
 - **token**: 인증용 Refresh Token (최초 발급 필요)
@@ -481,7 +481,7 @@ nohup java -cp "build/mwagent.jar:lib/*" mwagent.MwAgent >> mwagent-console.log 
 
 ```ini
 [Unit]
-Description=MwManger Agent Service
+Description=MWM Agent Service
 After=network.target
 
 [Service]
@@ -1019,14 +1019,14 @@ public class CustomOrder extends Order {
 
 **인증서 Subject 형식:**
 ```
-CN={hostname}_{username}_J, OU=agent, O=Leebalso, C=KR
+CN={hostname}_{username}_J, OU=agent, O=MWM Project, C=KR
 ```
 
 **JWT 토큰 클레임:**
 ```json
 {
   "sub": "testserver01_appuser_J",
-  "iss": "leebalso-auth-server",
+  "iss": "mwm-auth-server",
   "usertype": "agent",
   "hostname": "testserver01",
   "username": "appuser",

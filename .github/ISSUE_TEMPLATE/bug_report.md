@@ -15,7 +15,7 @@ labels: bug
 
 ## 환경
 
-- agent 버전 (시작 로그의 `MwManger Agent version`):
+- agent 버전 (시작 로그의 `MWM Agent version`):
 - OS / JDK (`java -version`):
 - 설정 (`agent.properties` 에서 관련 항목만, **token·비밀번호는 지우고**):
 

@@ -37,7 +37,7 @@ public class MwAgent {
             // Print startup banner with version (before logger initialization)
             String version = getConfig().getAgent_version();
             System.out.println("=========================================");
-            System.out.println("  MwManger Agent Starting");
+            System.out.println("  MWM Agent Starting");
             System.out.println("  Version: " + version);
             System.out.println("=========================================");
 
@@ -56,7 +56,7 @@ public class MwAgent {
 
             // Log version info
             logger.info("=========================================");
-            logger.info("MwManger Agent Started");
+            logger.info("MWM Agent Started");
             logger.info("Version: " + version);
             logger.info("=========================================");
 

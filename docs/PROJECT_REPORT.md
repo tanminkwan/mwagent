@@ -20,7 +20,7 @@
 
 ### 1.1 프로젝트 개요
 
-MwManger는 Leebalso 프로젝트의 에이전트 프로그램으로, 각 서버에서 데몬으로 실행되면서 중앙 서버로부터 명령을 수신하여 수행하는 Java 기반 원격 관리 에이전트입니다.
+MwManger는 미들웨어관리소(MWM)의 에이전트 프로그램으로, 각 서버에서 데몬으로 실행되면서 중앙 서버로부터 명령을 수신하여 수행하는 Java 기반 원격 관리 에이전트입니다.
 
 ### 1.2 리팩토링 배경
 
@@ -256,7 +256,7 @@ Agent ──[Refresh Token]──> Server
 #### 인증서 Subject DN 형식
 
 ```
-CN={hostname}_{username}_J, OU=agent, O=Leebalso, C=KR
+CN={hostname}_{username}_J, OU=agent, O=MWM Project, C=KR
 ```
 
 | 필드 | 예시 값 | JWT Claim 매핑 |
@@ -436,7 +436,7 @@ graph TB
 
     subgraph "관리 영역"
         Admin[관리자<br/>인증서 승인]
-        Leebalso[Leebalso 중앙 서버<br/>명령 발행]
+        MWM[미들웨어관리소 MWM 중앙 서버<br/>명령 발행]
     end
 
     %% 인증서 발급 흐름
@@ -459,8 +459,8 @@ graph TB
     Kafka -.->|명령 수신| Agent
 
     %% 관리 흐름
-    Leebalso -->|명령 발행| Biz
-    Leebalso -->|명령 발행| Kafka
+    MWM -->|명령 발행| Biz
+    MWM -->|명령 발행| Kafka
 ```
 
 #### 컴포넌트 상세

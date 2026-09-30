@@ -22,7 +22,7 @@ echo "[1/4] Creating CA (Certificate Authority)..."
 openssl genrsa -out ca.key 4096
 
 openssl req -x509 -new -nodes -key ca.key -sha256 -days $DAYS_VALID -out ca.crt \
-    -subj "/CN=Test CA/OU=Testing/O=MwAgent/C=KR"
+    -subj "/CN=MWM Test CA/OU=CA/O=MWM Project/C=KR"
 
 echo "   ✓ CA certificate created: ca.crt"
 
@@ -33,7 +33,7 @@ echo "[2/4] Creating server certificate..."
 openssl genrsa -out server.key 2048
 
 openssl req -new -key server.key -out server.csr \
-    -subj "/CN=localhost/OU=Server/O=MwAgent/C=KR"
+    -subj "/CN=localhost/OU=Server/O=MWM Project/C=KR"
 
 # Create server extensions file for SAN (Subject Alternative Names)
 cat > server-ext.cnf << EOF
@@ -58,7 +58,7 @@ echo ""
 echo "[3/4] Creating agent client certificates..."
 
 # Function to create agent certificate
-# Subject format: CN={agent_id}, OU=agent, O=Leebalso, C=KR
+# Subject format: CN={agent_id}, OU=agent, O=MWM Project, C=KR
 #   - CN: Agent ID (hostname_username_J)
 #   - OU: usertype (agent) - identifies this as an agent certificate
 create_agent_cert() {
@@ -74,9 +74,9 @@ create_agent_cert() {
 
     openssl genrsa -out ${AGENT_ID}.key 2048
 
-    # Subject: CN=hostname_username_J, OU=agent, O=Leebalso, C=KR
+    # Subject: CN=hostname_username_J, OU=agent, O=MWM Project, C=KR
     openssl req -new -key ${AGENT_ID}.key -out ${AGENT_ID}.csr \
-        -subj "/CN=${CN}/OU=agent/O=Leebalso/C=KR"
+        -subj "/CN=${CN}/OU=agent/O=MWM Project/C=KR"
 
     openssl x509 -req -in ${AGENT_ID}.csr -CA ca.crt -CAkey ca.key -CAcreateserial \
         -out ${AGENT_ID}.crt -days $DAYS_VALID -sha256
@@ -86,7 +86,7 @@ create_agent_cert() {
         -out ${AGENT_ID}.p12 -name ${AGENT_ID} -password pass:${PASSWORD} -legacy
 
     echo "   ✓ ${AGENT_ID} certificate created: ${AGENT_ID}.p12"
-    echo "     Subject: CN=${CN}, OU=agent, O=Leebalso, C=KR"
+    echo "     Subject: CN=${CN}, OU=agent, O=MWM Project, C=KR"
 }
 
 # Agent test001: hostname=testserver01, username=appuser

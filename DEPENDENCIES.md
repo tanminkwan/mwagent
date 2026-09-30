@@ -12,7 +12,7 @@ MwManger Agent는 JDK 1.8 (Java 8) 이상에서 실행 가능하도록 설계되
 
 ### 1. Apache HttpClient (HTTP/HTTPS 통신)
 
-**목적**: Leebalso 서버와의 HTTP/HTTPS 통신
+**목적**: 미들웨어관리소(MWM) 서버와의 HTTP/HTTPS 통신
 
 ```xml
 <dependency>

@@ -91,7 +91,7 @@ def init_ca():
 
         subject = issuer = x509.Name([
             x509.NameAttribute(NameOID.COUNTRY_NAME, "KR"),
-            x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Leebalso"),
+            x509.NameAttribute(NameOID.ORGANIZATION_NAME, "MWM Project"),
             x509.NameAttribute(NameOID.ORGANIZATIONAL_UNIT_NAME, "CA"),
             x509.NameAttribute(NameOID.COMMON_NAME, "MwAgent Root CA"),
         ])

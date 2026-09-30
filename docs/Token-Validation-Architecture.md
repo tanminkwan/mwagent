@@ -590,7 +590,7 @@ token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
     "token_type": "Bearer",
     "exp": 1735123456,
     "iat": 1735121656,
-    "iss": "leebalso-auth-server",
+    "iss": "mwm-auth-server",
     "aud": "https://api.mwagent.example.com",
 
     "hostname": "testserver01",

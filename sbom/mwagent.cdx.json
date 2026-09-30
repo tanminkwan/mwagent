@@ -49,7 +49,7 @@
       "group": "com.leebalso",
       "name": "mwagent",
       "version": "0000.0011.0000",
-      "description": "Leebalso Agent - Remote Management Agent for Distributed Servers",
+      "description": "Agent for MWM (Middleware Management System) - Remote Management Agent for Distributed Servers",
       "purl": "pkg:maven/com.leebalso/mwagent@0000.0011.0000?type=jar"
     },
     "properties": [

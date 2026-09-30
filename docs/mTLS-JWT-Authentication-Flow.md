@@ -38,14 +38,14 @@
 ### Agent 클라이언트 인증서 Subject DN 형식
 
 ```
-CN={hostname}_{username}_J, OU=agent, O=Leebalso, C=KR
+CN={hostname}_{username}_J, OU=agent, O=MWM Project, C=KR
 ```
 
 | 필드 | 값 | 용도 |
 |------|-----|------|
 | **CN** (Common Name) | `testserver01_appuser_J` | Agent ID (hostname + username 조합) |
 | **OU** (Organizational Unit) | `agent` | 사용자 유형 식별 |
-| **O** (Organization) | `Leebalso` | 조직명 |
+| **O** (Organization) | `MWM Project` | 조직명 |
 | **C** (Country) | `KR` | 국가 코드 |
 
 ### 예시 인증서
@@ -63,7 +63,7 @@ CN={hostname}_{username}_J, OU=agent, O=Leebalso, C=KR
 ```bash
 # Agent 클라이언트 인증서 생성 예시
 openssl req -new -key agent.key \
-    -subj "/C=KR/O=Leebalso/OU=agent/CN=testserver01_appuser_J" \
+    -subj "/C=KR/O=MWM Project/OU=agent/CN=testserver01_appuser_J" \
     -out agent.csr
 ```
 
@@ -78,12 +78,12 @@ openssl req -new -key agent.key \
 ```python
 def parse_certificate_dn(cert_dn):
     """
-    DN 형식: CN=hostname_username_J, OU=agent, O=Leebalso, C=KR
+    DN 형식: CN=hostname_username_J, OU=agent, O=MWM Project, C=KR
     """
     # DN에서 각 필드 추출
     cn_match = re.search(r'CN=([^,]+)', cert_dn)   # testserver01_appuser_J
     ou_match = re.search(r'OU=([^,]+)', cert_dn)   # agent
-    o_match = re.search(r'O=([^,]+)', cert_dn)     # Leebalso
+    o_match = re.search(r'O=([^,]+)', cert_dn)     # MWM Project
     c_match = re.search(r'C=([^,]+)', cert_dn)     # KR
 
     # CN을 파싱하여 hostname과 username 분리
@@ -165,7 +165,7 @@ def generate_access_token(agent_id, client_ip, scope, method):
     payload = {
         # OAuth2 표준 클레임 (RFC 7519)
         "sub": agent_id,                    # Subject: 인증서 CN
-        "iss": "leebalso-auth-server",      # Issuer: 발급자
+        "iss": "mwm-auth-server",      # Issuer: 발급자
         "aud": "https://api.mwagent.example.com",  # Audience: 대상
         "exp": datetime.utcnow() + timedelta(minutes=30),  # 만료 시간
         "iat": datetime.utcnow(),           # 발급 시간
@@ -190,7 +190,7 @@ def generate_access_token(agent_id, client_ip, scope, method):
 | 클레임 | 타입 | 설명 | 예시 값 |
 |--------|------|------|---------|
 | `sub` | 표준 | Subject (Agent ID) | testserver01_appuser_J |
-| `iss` | 표준 | Issuer (발급자) | leebalso-auth-server |
+| `iss` | 표준 | Issuer (발급자) | mwm-auth-server |
 | `aud` | 표준 | Audience (대상) | https://api.mwagent.example.com |
 | `exp` | 표준 | Expiration (만료 시간) | 1735123456 |
 | `iat` | 표준 | Issued At (발급 시간) | 1735121656 |
@@ -232,7 +232,7 @@ def generate_access_token(agent_id, client_ip, scope, method):
          │                                      │
          │ 1. mTLS 연결 (인증서 전송)            │
          │  [CN=testserver01_appuser_J,        │
-         │   OU=agent, O=Leebalso, C=KR]       │
+         │   OU=agent, O=MWM Project, C=KR]       │
          │─────────────────────────────────────>│
          │                                      │
          │ 2. POST /oauth2/token               │
@@ -433,7 +433,7 @@ Authorization: Bearer {refresh_token}
 ```json
 {
     "sub": "testserver01_appuser_J",    // 필수: Agent ID (인증서 CN)
-    "iss": "leebalso-auth-server",      // 필수: 발급자 식별자
+    "iss": "mwm-auth-server",      // 필수: 발급자 식별자
     "aud": "https://api.mwagent.example.com",  // 필수: 대상 시스템
     "exp": 1735123456,                  // 필수: 만료 시간 (Unix timestamp)
     "iat": 1735121656,                  // 필수: 발급 시간
@@ -643,7 +643,7 @@ sequenceDiagram
 │  │ 요청 #1                                              [신규]  │   │
 │  ├─────────────────────────────────────────────────────────────┤   │
 │  │ Subject: CN=prodserver01_appuser_J, OU=agent,               │   │
-│  │          O=Leebalso, C=KR                                   │   │
+│  │          O=MWM Project, C=KR                                   │   │
 │  │                                                             │   │
 │  │ 요청 IP: 10.0.1.50                                          │   │
 │  │ 요청 시각: 2025-12-05 10:30:00                              │   │
@@ -656,7 +656,7 @@ sequenceDiagram
 │  │ 요청 #2                                              [신규]  │   │
 │  ├─────────────────────────────────────────────────────────────┤   │
 │  │ Subject: CN=prodserver02_svcuser_J, OU=agent,               │   │
-│  │          O=Leebalso, C=KR                                   │   │
+│  │          O=MWM Project, C=KR                                   │   │
 │  │                                                             │   │
 │  │ 요청 IP: 10.0.1.51                                          │   │
 │  │ 요청 시각: 2025-12-05 10:31:00                              │   │

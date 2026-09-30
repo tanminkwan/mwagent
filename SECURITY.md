@@ -7,7 +7,7 @@
 
 신고에 다음을 적어 주세요.
 
-- 영향받는 버전 (`Version.java` 의 `VERSION`, 또는 시작 로그의 `MwManger Agent version`)
+- 영향받는 버전 (`Version.java` 의 `VERSION`, 또는 시작 로그의 `MWM Agent version`)
 - 재현 절차와 설정 (`agent.properties` 는 비밀값을 지우고)
 - 예상 영향 (예: 원격 명령 실행, token 노출)
 

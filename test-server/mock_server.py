@@ -4,7 +4,7 @@ OAuth2-compliant Mock Authorization Server with mTLS and IP+Username Validation
 Supports both refresh_token and client_credentials grant types
 
 Certificate Subject Format:
-  CN={hostname}_{username}_J, OU=agent, O=Leebalso, C=KR
+  CN={hostname}_{username}_J, OU=agent, O=MWM Project, C=KR
   - CN: Agent ID (hostname_username_J)
   - OU: usertype (agent) - identifies this as an agent certificate
 """
@@ -23,7 +23,7 @@ app = Flask(__name__)
 SECRET_KEY = "test-secret-key-for-mock-server"
 ACCESS_TOKEN_EXPIRY_MINUTES = 30
 REFRESH_TOKEN_EXPIRY_DAYS = 30
-ISSUER = "leebalso-auth-server"
+ISSUER = "mwm-auth-server"
 AUDIENCE = "https://api.mwagent.example.com"
 
 # Mock database for agents and tokens
@@ -140,7 +140,7 @@ def parse_certificate_dn(cert_dn):
     """
     Parse certificate DN and extract components
 
-    Expected DN format: CN=hostname_username_J, OU=agent, O=Leebalso, C=KR
+    Expected DN format: CN=hostname_username_J, OU=agent, O=MWM Project, C=KR
     Returns dict with: cn, ou, o, c, hostname, username, agent_id
     """
     result = {
@@ -773,7 +773,7 @@ if __name__ == '__main__':
     print("OAuth2 Mock Authorization Server with mTLS + IP Validation")
     print("=" * 70)
     print("\nCertificate Subject Format:")
-    print("  CN={hostname}_{username}_J, OU=agent, O=Leebalso, C=KR")
+    print("  CN={hostname}_{username}_J, OU=agent, O=MWM Project, C=KR")
     print("\nJWT Token Claims:")
     print("  - sub: agent_id (hostname_username_J)")
     print("  - usertype: agent (from OU)")

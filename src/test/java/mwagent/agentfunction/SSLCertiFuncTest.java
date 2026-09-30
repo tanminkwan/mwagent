@@ -245,8 +245,8 @@ class SSLCertiFuncTest {
         // Verify certificate is from our test CA
         String issuer = (String) cert.get("issuer");
         assertThat(issuer)
-                .as("Issuer should be Leebalso Test CA")
-                .contains("Leebalso");
+                .as("Issuer should be MWM Test CA")
+                .contains("MWM Test CA");
 
         System.out.println("\n=== Certificate Details ===");
         System.out.println("Index: " + cert.get("index"));

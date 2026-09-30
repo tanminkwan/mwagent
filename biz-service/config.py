@@ -6,7 +6,7 @@ import os
 # JWT Configuration
 JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'test-secret-key-for-mock-server')
 JWT_ALGORITHM = 'HS256'
-JWT_ISSUER = 'leebalso-auth-server'
+JWT_ISSUER = 'mwm-auth-server'
 JWT_AUDIENCE = 'https://api.mwagent.example.com'
 
 # Redis Configuration (optional - for token validation)

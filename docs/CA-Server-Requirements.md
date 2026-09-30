@@ -71,7 +71,7 @@ CA Server는 PKI (Public Key Infrastructure) 기반의 인증서 발급 및 관�
 
 | 항목 | 값 |
 |------|-----|
-| **Subject DN** | `CN=MwAgent Root CA, OU=CA, O=Leebalso, C=KR` |
+| **Subject DN** | `CN=MwAgent Root CA, OU=CA, O=MWM Project, C=KR` |
 | **Key Algorithm** | RSA 4096bit 또는 ECDSA P-384 |
 | **Signature Algorithm** | SHA256withRSA 또는 SHA256withECDSA |
 | **Validity** | 10년 이상 |
@@ -82,7 +82,7 @@ CA Server는 PKI (Public Key Infrastructure) 기반의 인증서 발급 및 관�
 
 | 항목 | 값 |
 |------|-----|
-| **Subject DN 형식** | `CN={hostname}_{username}_J, OU=agent, O=Leebalso, C=KR` |
+| **Subject DN 형식** | `CN={hostname}_{username}_J, OU=agent, O=MWM Project, C=KR` |
 | **Key Algorithm** | RSA 2048bit 이상 |
 | **Signature Algorithm** | SHA256withRSA |
 | **Validity** | 7일 ~ 90일 (운영 정책에 따름) |
@@ -96,14 +96,14 @@ CA Server는 PKI (Public Key Infrastructure) 기반의 인증서 발급 및 관�
 |------|------|------|------|
 | CN | `{hostname}_{username}_J` | `prodserver01_appuser_J` | Agent 고유 식별자 |
 | OU | 고정값 `agent` | `agent` | 사용자 유형 (mTLS 인증 시 검증) |
-| O | 조직명 | `Leebalso` | 조직 식별 |
+| O | 조직명 | `MWM Project` | 조직 식별 |
 | C | 국가코드 | `KR` | 국가 |
 
 ### 2.3 Server 인증서 (Auth Server, Biz Service용)
 
 | 항목 | 값 |
 |------|-----|
-| **Subject DN 형식** | `CN={hostname}, OU={service_type}, O=Leebalso, C=KR` |
+| **Subject DN 형식** | `CN={hostname}, OU={service_type}, O=MWM Project, C=KR` |
 | **SAN (Subject Alternative Name)** | DNS:{hostname}, DNS:{fqdn}, IP:{ip_address} |
 | **Key Algorithm** | RSA 2048bit 이상 |
 | **Signature Algorithm** | SHA256withRSA |
@@ -221,7 +221,7 @@ Agent가 승인 대기 상태를 polling할 때 사용합니다.
     "expires_at": "2026-03-05T10:30:00Z",
     "serial_number": "1A2B3C4D5E6F",
     "approved_at": "2025-12-05T10:45:00Z",
-    "approved_by": "admin@leebalso.com"
+    "approved_by": "admin@mwm.example.com"
 }
 ```
 
@@ -231,7 +231,7 @@ Agent가 승인 대기 상태를 polling할 때 사용합니다.
     "status": "rejected",
     "request_id": "req-20251205-001",
     "rejected_at": "2025-12-05T10:45:00Z",
-    "rejected_by": "admin@leebalso.com",
+    "rejected_by": "admin@mwm.example.com",
     "reason": "Unknown hostname. Please verify server registration."
 }
 ```
@@ -302,7 +302,7 @@ Content-Type: application/json
 {
     "serial_number": "1A2B3C4D5E6F",
     "reason": "key_compromise",
-    "revoked_by": "admin@leebalso.com"
+    "revoked_by": "admin@mwm.example.com"
 }
 ```
 
@@ -425,7 +425,7 @@ MIIE...
     "certificate": "-----BEGIN CERTIFICATE-----\nMIID...\n-----END CERTIFICATE-----",
     "serial_number": "1A2B3C4D5E6F",
     "expires_at": "2026-03-05T10:30:00Z",
-    "approved_by": "admin@leebalso.com",
+    "approved_by": "admin@mwm.example.com",
     "approved_at": "2025-12-05T10:45:00Z"
 }
 ```
@@ -448,7 +448,7 @@ MIIE...
 {
     "status": "rejected",
     "request_id": "req-20251205-001",
-    "rejected_by": "admin@leebalso.com",
+    "rejected_by": "admin@mwm.example.com",
     "rejected_at": "2025-12-05T10:45:00Z",
     "reason": "Unknown hostname. Please verify server registration."
 }
@@ -478,7 +478,7 @@ Agent 최초 등록 시 사용할 1회용 토큰을 발급합니다.
     "bootstrap_token": "bt-abc123-xyz789-def456",
     "expected_cn": "prodserver01_appuser_J",
     "expires_at": "2025-12-06T10:30:00Z",
-    "created_by": "admin@leebalso.com",
+    "created_by": "admin@mwm.example.com",
     "created_at": "2025-12-05T10:30:00Z"
 }
 ```
@@ -541,7 +541,7 @@ bt-abc123-xyz789-def456
             "status": "active",
             "issued_at": "2025-12-05T10:45:00Z",
             "expires_at": "2026-03-05T10:45:00Z",
-            "issued_by": "admin@leebalso.com"
+            "issued_by": "admin@mwm.example.com"
         }
     ],
     "total_count": 1,

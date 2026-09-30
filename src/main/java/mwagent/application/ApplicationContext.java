@@ -10,7 +10,7 @@ import mwagent.infrastructure.http.ApacheHttpClientAdapter;
 import mwagent.infrastructure.http.HttpClient;
 
 /**
- * Simple dependency injection container for the MwManger application.
+ * Simple dependency injection container for the MWM Agent application.
  * Manages singleton beans and their lifecycle.
  *
  * Usage:

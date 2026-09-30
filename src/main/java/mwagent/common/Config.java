@@ -350,7 +350,7 @@ public final class Config implements ConfigurationProvider {
 			}
 
 			getLogger().info("Logger is activated.");
-			getLogger().info("MwManger Agent version: " + getAgent_version());
+			getLogger().info("MWM Agent version: " + getAgent_version());
 
 			//Get access token
 			rtn = Common.updateToken();
