@@ -28,7 +28,7 @@ jobs:
       # JDK 9+ builds with --release 8 (pom profile release-8). Includes the JaCoCo coverage ratchet
       - run: mvn -B verify
       - if: failure()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: surefire-reports-jdk${{ matrix.java }}
           path: build/surefire-reports/
@@ -82,7 +82,7 @@ jobs:
           cache: maven
       - run: mvn -B compile com.github.spotbugs:spotbugs-maven-plugin:check
       - if: failure()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: spotbugs
           path: build/spotbugsXml.xml
